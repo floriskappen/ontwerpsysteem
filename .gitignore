@@ -1,0 +1,6 @@
+# Local, machine-specific Claude Code settings (permissions etc.)
+.claude/settings.local.json
+
+# Dependencies / build outputs (added as the pipeline lands)
+node_modules/
+dist/

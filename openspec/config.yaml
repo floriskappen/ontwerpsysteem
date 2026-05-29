@@ -1,0 +1,46 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+context: |
+  Project: ontwerpsysteem — a vendor-neutral, agent-readable design system.
+
+  Source of truth: design tokens in DTCG (Design Tokens Community Group) Format Module 2025.10 — plain JSON in `.tokens.json` files. A build step (Style Dictionary) transforms the canonical tokens into platform outputs (CSS custom properties, JS/TS, etc.). Generated outputs are build artifacts: never hand-edited, never the thing a change edits. A living showcase site ("the zoo") renders every token and every component state from the live, built tokens.
+
+  Architecture: a three-tier token model — primitive (raw, context-free values) → semantic (intent / role) → component (per-component) — and never more than three tiers. References only ever point "down" a tier: component tokens reference semantic tokens, semantic tokens reference primitives, primitives hold raw values. Components must never reference primitives directly. Consumers of the system are expected to use semantic (and component) tokens, not primitives.
+
+  Theming (light/dark, density, brand variants, high-contrast) is done by changing what a semantic token points to — via DTCG `$extends` / group inheritance — not by duplicating files. The same semantic token resolves to different primitives per mode; components never change.
+
+  The token format + naming convention + tier rules together form a load-bearing external contract that other projects and other agents consume. Treat it as the highest-risk surface, like a public API: breaking a token name or its meaning is a breaking change for every consumer. The system is explicitly designed to be evolved over time by multiple agent instances, so governance — intent-based naming, JSON Schema validation, semver + changelog, `$deprecated` for graceful retirement — matters as much as the values themselves.
+
+  Scope of OpenSpec here: OpenSpec governs the *machinery* of this repo — the technical apparatus that holds and serves the design system (file/folder structure, the token format + JSON Schema + validation, the build pipeline, the showcase "zoo", governance tooling). It does NOT spec the *content* of the design system — the actual color ramps, type scale, spacing scale, motion timings, and semantic roles ("how it looks"). That content is authored as token files that conform to the contract and the guidelines; it is not an OpenSpec capability. In short: OpenSpec builds and maintains the apparatus; the design system's content lives in the tokens that flow through it.
+
+  See CONSTITUTION.md for the principles and the full token contract.
+
+  Conventions: conventional commits.
+
+# Per-artifact rules (optional)
+rules:
+  proposal:
+    - State which technical capability this change affects — e.g. the token format/schema/validation, the file structure, the build pipeline, the showcase ("zoo"), or governance tooling. If it touches the token contract that consumers depend on (the format, naming grammar, tier rules, public token names, or build outputs), say so explicitly — that is the highest-risk surface.
+    - This change is about machinery, not values. If the proposal is really about *what the design system should look like* (a color ramp, a type scale, the set of semantic roles), it is content, not an OpenSpec change — author it as token files that conform to the contract instead.
+    - Distinguish additive changes (new outputs, new tooling, new modes the machinery supports) from breaking ones (changing the format, naming grammar, or public token surface). Breaking changes must justify the break and name the migration path (`$deprecated`, changelog, semver bump).
+    - Ideal length is ~15-50 lines. The shorter the better.
+  specs:
+    - Capabilities describe the *technical machinery and infrastructure* of the repo — the apparatus that holds and serves the design system — NOT the visual content of the system itself. Examples of capabilities: `token-format` (DTCG conformance + naming grammar + tier rules + JSON Schema + validation), `repo-structure` (file/folder layout and authoring conventions), `build-pipeline` (the Style Dictionary transform and its outputs), `showcase` (the zoo), and `governance` (versioning, deprecation checks, CI gates). This list is illustrative, not fixed.
+    - The actual token *values* — the color ramps, type scale, spacing scale, motion timings, elevation, and the semantic roles ("how the system looks") — are authored content that conforms to the contract. They are NOT OpenSpec specs. Never write a spec whose subject is which colors/sizes/durations exist. OpenSpec describes how the apparatus behaves; the tokens flowing through it are content.
+    - A spec describes a capability's behaviour: what it does, its inputs and outputs, the rules it enforces, and the artifacts it produces. E.g. the `token-format` spec defines the conformance and naming/tier rules (with valid/invalid name examples) and the validation gate — the rules and their enforcement, not the values that satisfy them. The `showcase` spec describes what the zoo renders and how it behaves (e.g. that it reflects the live built tokens, honours `prefers-reduced-motion`, surfaces contrast warnings), not which tokens exist.
+    - Don't paste token JSON or value tables into specs — values are content, not capability behaviour. Name load-bearing structural constants (the `$type` vocabulary in use, the naming grammar, the set of build outputs) but not the design values.
+    - Where a capability enforces an accessibility or motion guarantee, spec the enforcement, not the design value: the validator checks contrast targets and that aliases resolve; the showcase honours reduced-motion and minimum hit-targets; the build fails on dangling/circular references.
+    - Write specs timelessly — describe the current state, not the change. MODIFIED requirements replace the canonical spec verbatim on archive, so avoid "subsumes/replaces/was formerly/remains/no longer" framing in requirement bodies and scenarios. History belongs in the proposal and git log, not the spec.
+    - Keep requirement bodies to one short paragraph. If a requirement needs more, it's probably two requirements, or you're explaining *why* — and rationale belongs in design.md.
+    - One scenario per distinct observable behaviour. If two scenarios share their WHEN clause, merge them. Don't write a scenario whose only purpose is to restate a requirement bullet.
+    - Length is a signal. Capability specs typically land at 80-200 lines; the `token-format` spec may run longer because it is the contract consumers depend on. Above 400 is almost always accidental bloat (prose to delete, scenarios to merge, rationale to move to design.md). Per OpenSpec defaults, most specs stay in Lite mode; Full-mode size is only earned when ambiguity would cost real rework.
+  design:
+    - Keep design.md focused on rationale and trade-offs, not load-bearing values. If a scale, ramp, or role list is required for correct behaviour, move it into specs/.
+    - Each architectural decision is maybe 5-10 lines — what was chosen, what alternatives were considered, why this one. Typical decisions are about the machinery: the naming grammar, the theming mechanism (`$extends` vs separate files), which tiers are public, the build tool and its output targets, the validation/schema approach, and the showcase stack. Content decisions (which color space, which scale ratio) belong with the token content, not here. Resist over-elaborating.
+    - Ideal length is ~40-80 lines.
+  tasks:
+    - Treat validation as a first-class deliverable, not an afterthought. Each `#### Scenario:` in the spec should map to at least one named check; reference it explicitly so coverage is auditable.
+    - The baseline validation gates for any token change: `openspec validate` passes; tokens conform to the DTCG JSON Schema; all aliases resolve with no dangling or circular references; the Style Dictionary build succeeds and emits the expected outputs; declared contrast/accessibility targets are met. Name the specific check for the tokens this change adds.
+    - For anything user-visible, prefer a real build + a browser-driven check of the showcase (Playwright or equivalent) over asserting on raw JSON — the system has visual and perceptual constraints (contrast, motion timing, perceptual evenness of ramps) that a JSON snapshot can't catch.
