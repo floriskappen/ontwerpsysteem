@@ -1,0 +1,11 @@
+{
+  "color": {
+    "$type": "color",
+    "brand": {
+      "base": {
+        "$value": "#3b5bdb",
+        "$description": "Placeholder primitive brand color. Disposable — replaced when real tokens are ported."
+      }
+    }
+  }
+}

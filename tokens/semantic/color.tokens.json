@@ -1,0 +1,11 @@
+{
+  "color": {
+    "$type": "color",
+    "text": {
+      "muted": {
+        "$value": "{color.brand.base}",
+        "$description": "Placeholder semantic alias of a primitive. Disposable — replaced when real tokens are ported."
+      }
+    }
+  }
+}

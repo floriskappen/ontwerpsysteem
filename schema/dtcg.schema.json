@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ontwerpsysteem.local/schema/dtcg-2025-10.json",
+  "title": "DTCG 2025.10 token file",
+  "description": "Structural conformance for Design Tokens Community Group Format Module 2025.10. Validates the $type vocabulary and the group/token shape. Tier-relative rules (reference direction, intent naming, alias resolution, type inheritance) are NOT expressible here and are enforced by the custom checker.",
+  "$ref": "#/$defs/group",
+  "$defs": {
+    "type": {
+      "description": "The DTCG 2025.10 $type vocabulary — atomic and composite.",
+      "enum": [
+        "color",
+        "dimension",
+        "fontFamily",
+        "fontWeight",
+        "duration",
+        "cubicBezier",
+        "number",
+        "typography",
+        "shadow",
+        "border",
+        "strokeStyle",
+        "gradient",
+        "transition"
+      ]
+    },
+    "token": {
+      "type": "object",
+      "required": ["$value"],
+      "properties": {
+        "$value": true,
+        "$type": { "$ref": "#/$defs/type" },
+        "$description": { "type": "string" },
+        "$deprecated": { "type": ["boolean", "string"] },
+        "$extensions": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "group": {
+      "type": "object",
+      "properties": {
+        "$type": { "$ref": "#/$defs/type" },
+        "$description": { "type": "string" },
+        "$deprecated": { "type": ["boolean", "string"] },
+        "$extensions": { "type": "object" }
+      },
+      "patternProperties": {
+        "^[^$]": { "$ref": "#/$defs/node" }
+      },
+      "additionalProperties": false
+    },
+    "node": {
+      "type": "object",
+      "if": { "required": ["$value"] },
+      "then": { "$ref": "#/$defs/token" },
+      "else": { "$ref": "#/$defs/group" }
+    }
+  }
+}

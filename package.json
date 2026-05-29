@@ -1,0 +1,19 @@
+{
+  "name": "ontwerpsysteem",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A vendor-neutral, agent-readable design system. DTCG tokens → validated → built to CSS, JS/TS, and Tailwind v4.",
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "vitest run"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "style-dictionary": "^4.3.3",
+    "vitest": "^3.0.5"
+  }
+}
