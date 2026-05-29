@@ -8,8 +8,11 @@
 // `--color-text-muted` in CSS/Tailwind) across all outputs. This mapping is part
 // of the public contract.
 
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import StyleDictionary from 'style-dictionary';
-import { validateTokenDir } from './validate-core.mjs';
+import { validateTokenDir, TIERS } from './validate-core.mjs';
+import { renderShowcase } from './showcase-core.mjs';
 
 export class BuildAborted extends Error {
   constructor(errors) {
@@ -41,6 +44,33 @@ function registerOnce() {
     format: ({ dictionary }) => {
       const lines = dictionary.allTokens.map((t) => `  ${JSON.stringify(t.name)}: string;`);
       return `declare const tokens: {\n${lines.join('\n')}\n};\n\nexport default tokens;\n`;
+    },
+  });
+
+  // Structured manifest: one entry per token carrying the metadata the flat
+  // CSS/JS outputs drop (tier, $type, raw alias, description). Tier comes from
+  // the source file path; the raw alias from the pre-resolution original value.
+  StyleDictionary.registerFormat({
+    name: 'json/manifest',
+    format: ({ dictionary }) => {
+      const entries = dictionary.allTokens.map((t) => {
+        const fp = (t.filePath ?? '').replaceAll('\\', '/');
+        const tier = TIERS.find((x) => fp.includes(`/${x}/`)) ?? null;
+        const original = t.original?.$value ?? t.original?.value;
+        const isAlias = typeof original === 'string' && /^\{.+\}$/.test(original.trim());
+        const entry = {
+          path: t.path.join('.'),
+          name: t.name,
+          tier,
+          type: t.$type ?? t.type ?? null,
+          value: t.$value ?? t.value,
+          ref: isAlias ? original.trim().slice(1, -1) : null,
+        };
+        const description = t.$description ?? t.description;
+        if (description) entry.description = description;
+        return entry;
+      });
+      return `${JSON.stringify(entries, null, 2)}\n`;
     },
   });
 }
@@ -82,6 +112,11 @@ function makeConfig(tokensDir, distDir) {
           { destination: 'tokens.d.ts', format: 'esm/dts' },
         ],
       },
+      manifest: {
+        transforms: ['attribute/cti', 'name/kebab', 'color/css'],
+        buildPath: `${distDir}/manifest/`,
+        files: [{ destination: 'tokens.json', format: 'json/manifest' }],
+      },
     },
   };
 }
@@ -97,5 +132,15 @@ export async function runBuild({ tokensDir = 'tokens', distDir = 'dist' } = {}) 
   registerOnce();
   const sd = new StyleDictionary(makeConfig(tokensDir, distDir));
   await sd.buildAllPlatforms();
+
+  // Generate the showcase from the freshly built artifacts only (the manifest
+  // and the token CSS) — never from the token sources — so it reflects exactly
+  // what ships. Inputs are inlined into a single self-contained HTML file.
+  const manifest = JSON.parse(readFileSync(join(distDir, 'manifest', 'tokens.json'), 'utf8'));
+  const tokenCss = readFileSync(join(distDir, 'css', 'tokens.css'), 'utf8');
+  const html = renderShowcase({ manifest, tokenCss });
+  mkdirSync(join(distDir, 'showcase'), { recursive: true });
+  writeFileSync(join(distDir, 'showcase', 'index.html'), html);
+
   return { errors: [] };
 }

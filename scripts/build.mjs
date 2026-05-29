@@ -11,7 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 try {
   await runBuild({ tokensDir: join(root, 'tokens'), distDir: join(root, 'dist') });
-  console.log('✓ Build complete → dist/ (css, js, tailwind).');
+  console.log('✓ Build complete → dist/ (css, js, tailwind, manifest, showcase).');
 } catch (err) {
   if (err instanceof BuildAborted) {
     console.error(`✖ ${err.message} Run "npm run validate" for details. dist/ left untouched.`);
