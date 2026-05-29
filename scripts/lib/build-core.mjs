@@ -9,10 +9,31 @@
 // of the public contract.
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import StyleDictionary from 'style-dictionary';
 import { validateTokenDir, TIERS } from './validate-core.mjs';
 import { renderShowcase } from './showcase-core.mjs';
+
+const FONTS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'assets', 'fonts');
+
+// Self-host the fonts: base64-inline the woff2s as @font-face so the showcase
+// renders in Archivo / JetBrains Mono while staying a single self-contained file
+// (no network, openable over file://). Deterministic — same bytes every build.
+let _fontCss;
+function fontCss() {
+  if (_fontCss === undefined) {
+    const b64 = (f) => readFileSync(join(FONTS_DIR, f)).toString('base64');
+    const face = (family, weight, file) =>
+      `@font-face { font-family: '${family}'; font-style: normal; font-weight: ${weight}; font-display: swap; ` +
+      `src: url(data:font/woff2;base64,${b64(file)}) format('woff2'); }`;
+    _fontCss = [
+      face('Archivo', '500 700', 'archivo-latin.woff2'),
+      face('JetBrains Mono', '500', 'jetbrains-mono-latin.woff2'),
+    ].join('\n');
+  }
+  return _fontCss;
+}
 
 export class BuildAborted extends Error {
   constructor(errors) {
@@ -138,7 +159,7 @@ export async function runBuild({ tokensDir = 'tokens', distDir = 'dist' } = {}) 
   // what ships. Inputs are inlined into a single self-contained HTML file.
   const manifest = JSON.parse(readFileSync(join(distDir, 'manifest', 'tokens.json'), 'utf8'));
   const tokenCss = readFileSync(join(distDir, 'css', 'tokens.css'), 'utf8');
-  const html = renderShowcase({ manifest, tokenCss });
+  const html = renderShowcase({ manifest, tokenCss, fontCss: fontCss() });
   mkdirSync(join(distDir, 'showcase'), { recursive: true });
   writeFileSync(join(distDir, 'showcase', 'index.html'), html);
 

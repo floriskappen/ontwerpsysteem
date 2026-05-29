@@ -1,7 +1,7 @@
 # showcase Specification
 
 ## Purpose
-TBD - created by archiving change add-showcase. Update Purpose after archive.
+The showcase ("the zoo") is a single, self-contained page that presents the design system as a curated, on-brand artifact — colour, type, and components shown in use — rendered from the built tokens so what is shown is always what ships. The exhaustive token record lives in the build outputs; the zoo is the designed view.
 ## Requirements
 ### Requirement: Showcase renders only from built outputs
 
@@ -17,70 +17,77 @@ The showcase SHALL render the design system exclusively from build artifacts und
 - **WHEN** the showcase is generated
 - **THEN** it consumes only artifacts under `dist/` and does not read files under `tokens/`
 
-### Requirement: Token gallery renders every token by tier and type
-
-The showcase SHALL render a gallery containing every token in the manifest, grouped by tier (primitive → semantic → component) and by `$type`. Each token SHALL be shown with a representation appropriate to its `$type` — for example a swatch for `color`, a sized bar for `dimension`, a text specimen for `fontFamily`/`fontWeight`/`typography`, a replayable sample for `duration`/`cubicBezier`/`transition`, an applied box for `shadow`/`border`/`gradient`/`strokeStyle`, and the literal value for `number`. The gallery is data-driven: it lists whatever the manifest contains, with no hand-maintained token list.
-
-#### Scenario: Every token appears, grouped
-
-- **WHEN** the showcase is generated from a manifest
-- **THEN** every token in the manifest appears in the gallery, grouped by its tier and `$type`
-- **AND** each token is rendered with a representation appropriate to its `$type`
-
-#### Scenario: Aliases show their resolution
-
-- **WHEN** a semantic or component token aliases a lower-tier token
-- **THEN** the gallery shows both its resolved value and the token it references
-
-### Requirement: Demo UI elements are styled strictly from tokens
-
-The showcase SHALL render a fixed, curated set of representative UI elements — button, text input, selection control, card, badge, and link/alert — to show the tokens applied in context. Every visual property of these elements SHALL derive from a design token via the built CSS custom properties; the showcase SHALL NOT introduce hardcoded colors, sizes, or other literal visual values. When a referenced token does not exist, the element SHALL render without that styling rather than substituting a literal, so that missing coverage is visible.
-
-#### Scenario: Element styling traces to tokens
-
-- **WHEN** a demo element is rendered
-- **THEN** each of its visual properties resolves to a token custom property
-- **AND** the showcase's own styles introduce no literal color or size values
-
-#### Scenario: Absent token surfaces as a gap
-
-- **WHEN** a demo element references a token not present in the built set
-- **THEN** the element renders without that styling and substitutes no literal value, making the missing token visible
-
-### Requirement: Each demo element renders the interaction-state matrix
-
-For every demo UI element, the showcase SHALL render the standard interaction-state matrix: default, hover, active, focus, disabled, loading, and error. Interactive states (hover, active, focus, disabled) SHALL be shown via native CSS state; non-interactive states (loading, error) SHALL be shown as explicit variants. Each state's appearance SHALL derive only from tokens.
-
-#### Scenario: All states shown per element
-
-- **WHEN** a demo element is rendered
-- **THEN** the showcase presents it in each of the default, hover, active, focus, disabled, loading, and error states
-
 ### Requirement: Showcase honours motion and focus accessibility
 
-The showcase SHALL honour `prefers-reduced-motion`: animated token samples (durations, easings, transitions) SHALL NOT auto-play when reduced motion is requested, and SHALL instead be replayable on demand. Focusable demo elements SHALL show a visible focus indicator.
+The showcase SHALL honour `prefers-reduced-motion`: ambient motion (such as drifting bloom) SHALL not play when reduced motion is requested. Interactive components SHALL show a visible focus indicator on keyboard focus.
 
 #### Scenario: Reduced motion is respected
 
 - **WHEN** the viewer has `prefers-reduced-motion` set
-- **THEN** animated samples do not auto-play and can be triggered manually
+- **THEN** ambient animation does not play
 
 #### Scenario: Focus is visible
 
-- **WHEN** a focusable demo element receives keyboard focus
+- **WHEN** an interactive component receives keyboard focus
 - **THEN** a visible focus indicator is shown
 
 ### Requirement: Showcase is a generated, self-contained artifact
 
-The showcase SHALL be produced as a generated artifact under `dist/` — never committed, like all build outputs — and SHALL be viewable as static files without requiring a runtime server or framework. Regenerating the showcase from unchanged inputs SHALL be deterministic.
+The showcase SHALL be produced as a generated artifact under `dist/` — never committed, like all build outputs — and SHALL be viewable as static files without requiring a runtime server or framework. Fonts SHALL be self-hosted and embedded so the page renders in its real typefaces with no network requests. Regenerating the showcase from unchanged inputs SHALL be deterministic.
 
-#### Scenario: Viewable without a server
+#### Scenario: Viewable offline without a server
 
 - **WHEN** the showcase has been generated
-- **THEN** it can be opened directly in a browser from `dist/` without a running server
+- **THEN** it opens directly in a browser from `dist/` with no running server and no network requests
+- **AND** its fonts render from embedded data
 
 #### Scenario: Generated, not committed
 
 - **WHEN** the repository is inspected
 - **THEN** the showcase output lives under `dist/`, is git-ignored, and is regenerated by the build
+
+### Requirement: Showcase is rendered in the system's own aesthetic
+
+The showcase SHALL present itself using the design system's own tokens — surface, ink, accent, type, and spacing — so the page reads as an artifact of the system rather than as generic tool chrome. It SHALL honour the system's own visual decisions (such as its corner treatment) rather than imposing values that contradict them. Because the page consumes the built CSS custom properties, changing the tokens and rebuilding reskins the showcase.
+
+#### Scenario: The page wears the system
+
+- **WHEN** the showcase is generated
+- **THEN** its surface, text, accent, and type are drawn from the system's own tokens
+- **AND** changing a token and rebuilding reskins the page accordingly
+
+#### Scenario: The page does not contradict the system
+
+- **WHEN** the showcase renders its own layout and components
+- **THEN** it follows the system's visual decisions (for example, square corners) rather than introducing its own
+
+### Requirement: Showcase presents the system curated, not exhaustively
+
+The showcase SHALL be a designed, curated presentation — colour shown as a palette, type as a specimen, and components shown in use — rather than an exhaustive inventory of every token. It SHALL NOT surface internal structure such as tier names or per-token technical listings. The complete machine-readable record SHALL remain available in the build outputs (the token manifest and the token CSS).
+
+#### Scenario: Curated sections, not a token dump
+
+- **WHEN** the showcase is generated
+- **THEN** it presents colour, type, and components as designed sections
+- **AND** it does not enumerate every token or expose tier and structural jargon
+
+#### Scenario: Full record stays in the build outputs
+
+- **WHEN** a consumer needs the complete token inventory
+- **THEN** it is available in the token manifest and the token CSS, not required on the page
+
+### Requirement: Components are shown in use with real interaction
+
+The showcase SHALL present a curated set of representative components (such as buttons, fields, folio marks, and a card) as they actually appear, styled through the system's component and semantic tokens. Interaction states SHALL be shown through real CSS states (hover, focus) rather than an enumerated grid of every state.
+
+#### Scenario: Components styled from tokens
+
+- **WHEN** a component is shown
+- **THEN** its appearance derives from the system's tokens via the built CSS custom properties
+
+#### Scenario: States are real, not enumerated
+
+- **WHEN** a user hovers or focuses a component
+- **THEN** the component responds with its real interaction state
+- **AND** the page does not render a fixed grid of every state
 

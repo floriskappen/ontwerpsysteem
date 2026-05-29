@@ -1,31 +1,19 @@
-// The showcase ("the zoo"): renders the design system as a single self-contained
-// HTML page from the BUILT artifacts only — the token manifest and the token CSS,
-// both passed in and inlined. It never reads token sources, so what it shows is
-// exactly what ships. Output is deterministic (no timestamps/randomness).
+// The showcase ("the zoo"): a single, self-contained page that presents the
+// design system the way the system itself would — a class-schedule sheet pinned
+// to a sun-warmed wall. Cream paper + grain, the a–l rooster axis, a red margin
+// rule, lowercased Archivo, square corners, breathing hairline borders.
 //
-// Two parts:
-//   1. Token galleries — every manifest token, grouped by tier then $type, each
-//      with a type-appropriate visual. Data-driven: new tokens appear for free.
-//   2. Demo UI elements — a fixed curated set shown across the interaction-state
-//      matrix, styled ONLY through `var(--token)` custom properties. Where a token
-//      is missing the property goes unset, so the gap is visible.
+// It is rendered from the BUILT artifacts only (the token manifest + the token
+// CSS, both inlined) — never from token sources, so what you see is what ships.
+// It is curated, not exhaustive: it shows colour, type and components IN USE.
+// The full token inventory lives in dist/manifest/tokens.json and dist/css — the
+// technical record belongs in code, not on the wall.
 //
-// Styling rule: the demo-element appearance block (between DEMO-STYLES markers)
-// contains no literal colors or sizes — only `var(--…)`. Layout/chrome literals
-// live outside that block.
+// Everything visual is driven by the system's own custom properties (var(--…)),
+// so the page reskins itself when the tokens change. Output is deterministic.
 
-const TIER_ORDER = ['primitive', 'semantic', 'component'];
-
-const DEMO_ELEMENTS = [
-  { kind: 'button', cls: 'zoo-button', label: 'Button' },
-  { kind: 'input', cls: 'zoo-input', label: 'Text input' },
-  { kind: 'checkbox', cls: 'zoo-checkbox', label: 'Selection control' },
-  { kind: 'card', cls: 'zoo-democard', label: 'Card' },
-  { kind: 'badge', cls: 'zoo-badge', label: 'Badge' },
-  { kind: 'alert', cls: 'zoo-alert', label: 'Link / alert' },
-];
-
-const STATES = ['default', 'hover', 'active', 'focus', 'disabled', 'loading', 'error'];
+const COLS = 12;
+const AXIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l'];
 
 function escapeHtml(s) {
   return String(s)
@@ -35,294 +23,318 @@ function escapeHtml(s) {
     .replaceAll('"', '&quot;');
 }
 
-function stringifyValue(v) {
-  return typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v);
-}
+// A multiplied fractal-noise grain, inline so the page stays self-contained.
+const GRAIN =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E\")";
 
-// --- Token galleries -------------------------------------------------------
-
-function animSample(name, decl) {
-  return (
-    `<div class="zoo-anim-wrap">` +
-    `<div class="zoo-anim" style="${decl}"></div>` +
-    `<button type="button" class="zoo-replay" data-replay>Replay</button>` +
-    `</div>`
-  );
-}
-
-function renderSample(e) {
-  const v = `var(--${e.name})`;
-  switch (e.type) {
-    case 'color':
-      return `<div class="zoo-swatch" style="background:${v}"></div>`;
-    case 'dimension':
-      return `<div class="zoo-bar" style="inline-size:${v}"></div>`;
-    case 'fontFamily':
-      return `<div class="zoo-specimen" style="font-family:${v}">Ag — the quick brown fox</div>`;
-    case 'fontWeight':
-      return `<div class="zoo-specimen" style="font-weight:${v}">Ag — the quick brown fox</div>`;
-    case 'typography':
-      return `<div class="zoo-specimen" style="font:${v}">Ag — the quick brown fox</div>`;
-    case 'shadow':
-      return `<div class="zoo-box" style="box-shadow:${v}"></div>`;
-    case 'border':
-      return `<div class="zoo-box" style="border:${v}"></div>`;
-    case 'gradient':
-      return `<div class="zoo-box" style="background:${v}"></div>`;
-    case 'duration':
-    case 'transition':
-      return animSample(e.name, `animation-duration:${v}`);
-    case 'cubicBezier':
-      return animSample(e.name, `animation-timing-function:${v}`);
-    default: // number, strokeStyle, unknown
-      return `<code class="zoo-value">${escapeHtml(stringifyValue(e.value))}</code>`;
-  }
-}
-
-function renderCard(e) {
-  return (
-    `<figure class="zoo-card">` +
-    `<div class="zoo-sample">${renderSample(e)}</div>` +
-    `<figcaption>` +
-    `<code class="zoo-name">--${escapeHtml(e.name)}</code>` +
-    `<span class="zoo-val">${escapeHtml(stringifyValue(e.value))}</span>` +
-    (e.ref ? `<span class="zoo-ref">→ {${escapeHtml(e.ref)}}</span>` : '') +
-    (e.description ? `<p class="zoo-desc">${escapeHtml(e.description)}</p>` : '') +
-    `</figcaption>` +
-    `</figure>`
-  );
-}
-
-function groupBy(items, key) {
-  const m = new Map();
-  for (const it of items) {
-    const k = it[key];
-    if (!m.has(k)) m.set(k, []);
-    m.get(k).push(it);
-  }
-  return m;
-}
-
-function renderGalleries(manifest) {
-  const tiers = [...TIER_ORDER, ...new Set(manifest.map((e) => e.tier).filter((t) => !TIER_ORDER.includes(t)))];
-  let html = '';
-  for (const tier of tiers) {
-    const items = manifest.filter((e) => e.tier === tier);
-    if (items.length === 0) continue;
-    html += `<section class="zoo-tier"><h3 class="zoo-tier-title">${escapeHtml(tier ?? 'other')}</h3>`;
-    for (const [type, toks] of groupBy(items, 'type')) {
-      html +=
-        `<div class="zoo-typegroup">` +
-        `<h4 class="zoo-type-title">${escapeHtml(type ?? 'untyped')}</h4>` +
-        `<div class="zoo-grid">${toks.map(renderCard).join('')}</div>` +
-        `</div>`;
-    }
-    html += `</section>`;
-  }
-  return html || `<p class="zoo-empty">No tokens in the built set yet.</p>`;
-}
-
-// --- Demo UI elements + state matrix --------------------------------------
-
-function stateClass(state) {
-  return state === 'default' ? '' : `is-${state}`;
-}
-
-function renderControl(el, state) {
-  const cls = `${el.cls} ${stateClass(state)}`.trim();
-  const disabled = state === 'disabled' ? ' disabled' : '';
-  const invalid = state === 'error' ? ' aria-invalid="true"' : '';
-  switch (el.kind) {
-    case 'button':
+// --- Curated palette: solid colours only, in manifest order (paper → ink →
+// accent). The rgba rule/bloom variants are deliberately left off the wall. ---
+function renderPalette(manifest) {
+  const chips = manifest
+    .filter((e) => e.tier === 'primitive' && e.type === 'color' && /^#/.test(String(e.value)))
+    .map((e) => {
+      const name = e.path.replace(/^color\./, '');
       return (
-        `<button type="button" class="${cls}"${disabled}>` +
-        (state === 'loading' ? `<span class="zoo-spinner" aria-hidden="true"></span> ` : '') +
-        `Button</button>`
+        `<figure class="chip">` +
+        `<div class="chip-swatch" style="background:${escapeHtml(e.value)}"></div>` +
+        `<figcaption class="chip-meta"><span class="chip-name">${escapeHtml(name)}</span>` +
+        `<span class="mark">${escapeHtml(String(e.value))}</span></figcaption>` +
+        `</figure>`
       );
-    case 'input':
-      return `<input class="${cls}" type="text" value="Text"${disabled}${invalid}>`;
-    case 'checkbox':
-      return (
-        `<label class="zoo-checkbox-label">` +
-        `<input class="${cls}" type="checkbox" checked${disabled}${invalid}> Option` +
-        `</label>`
-      );
-    case 'card':
-      return (
-        `<div class="${cls}">` +
-        `<strong>Card title</strong>` +
-        `<p class="zoo-text-muted">Body text using an existing token.</p>` +
-        `</div>`
-      );
-    case 'badge':
-      return `<span class="${cls}">Badge</span>`;
-    case 'alert':
-      return `<div class="${cls}"><a class="zoo-link" href="#">A link</a> inside an alert.</div>`;
-    default:
-      return '';
-  }
+    })
+    .join('');
+  return `<div class="chips">${chips}</div>`;
 }
 
-function renderDemo() {
-  return DEMO_ELEMENTS.map(
-    (el) =>
-      `<div class="zoo-demo">` +
-      `<h4 class="zoo-demo-title">${escapeHtml(el.label)}</h4>` +
-      `<div class="zoo-states">` +
-      STATES.map(
-        (s) =>
-          `<div class="zoo-state">` +
-          `<span class="zoo-state-label">${s}</span>` +
-          `<div class="zoo-state-box">${renderControl(el, s)}</div>` +
-          `</div>`,
-      ).join('') +
-      `</div>` +
-      `</div>`,
-  ).join('');
+// --- Type specimen: the scale set in real, lowercased Archivo. ---
+function renderType() {
+  const specimen = [
+    ['display', 'de ontwerp', 'display · 168'],
+    ['t-heading-lg', 'a quiet quarterly read', 'heading · 40'],
+    ['t-heading-md', 'where the company is pointing', 'heading · 20'],
+    ['t-body', 'eight pages, mailed in cream. no dashboard, no streaks, no shame — a reader for long things, lit like an afternoon window.', 'body · 15'],
+    ['t-body-sm', 'streak: 6 days · 1 skipped, that’s fine', 'small · 13'],
+  ];
+  const lines = specimen
+    .map(
+      ([cls, text, tag]) =>
+        `<div class="spec-row"><span class="mark spec-tag">${escapeHtml(tag)}</span>` +
+        `<p class="${cls} spec-line">${escapeHtml(text)}</p></div>`,
+    )
+    .join('');
+  return `<div class="spec">${lines}<p class="mark spec-foot">archivo · lowercased · weights 500–700 · jetbrains mono for marks</p></div>`;
 }
 
-// --- Styles ----------------------------------------------------------------
+// --- Components in use: real :hover / :focus, never a state grid. ---
+function renderComponents() {
+  return `
+<div class="use-grid">
+  <div class="use-cell" data-coord="a1">
+    <span class="mark use-label">buttons</span>
+    <div class="use-row">
+      <button class="btn">download pdf</button>
+      <button class="btn btn-red">begin reading</button>
+      <button class="btn btn-ink">put it to bed</button>
+    </div>
+    <p class="mark use-hint">hover — paper inverts on ink</p>
+  </div>
 
-// Chrome: showcase layout and gallery sizing. Literals are allowed here because
-// this is the museum, not an exhibit. Also holds the baseline focus indicator
-// (an accessibility guarantee) and the reduced-motion rule.
-const CHROME_STYLES = `
-:root { color-scheme: light dark; }
-* { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; }
-.zoo-header { padding: 1.5rem 2rem; border-bottom: 1px solid rgba(128,128,128,0.3); }
-.zoo-header h1 { margin: 0; font-size: 1.25rem; }
-.zoo-note { margin: 0.5rem 0 0; font-size: 0.85rem; opacity: 0.7; max-width: 70ch; }
-main { padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 2.5rem; }
-.zoo-section > h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; margin: 0 0 1rem; }
-.zoo-tier-title { margin: 1.25rem 0 0.5rem; font-size: 1rem; }
-.zoo-type-title { margin: 0.75rem 0 0.5rem; font-size: 0.85rem; font-weight: 600; opacity: 0.6; }
-.zoo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.75rem; }
-.zoo-card { margin: 0; border: 1px solid rgba(128,128,128,0.25); border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.4rem; }
-.zoo-sample { min-height: 52px; display: flex; align-items: center; }
-.zoo-swatch { inline-size: 100%; block-size: 52px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.12); }
-.zoo-bar { block-size: 12px; min-inline-size: 4px; background: rgba(128,128,128,0.5); border-radius: 4px; }
-.zoo-box { inline-size: 72px; block-size: 52px; border-radius: 6px; background: rgba(128,128,128,0.15); }
-.zoo-specimen { font-size: 1.1rem; }
-.zoo-name { font-size: 0.78rem; font-weight: 600; word-break: break-all; }
-.zoo-val, .zoo-ref { font-size: 0.72rem; opacity: 0.7; }
-.zoo-ref { font-style: italic; }
-.zoo-desc { font-size: 0.7rem; opacity: 0.55; margin: 0.2rem 0 0; }
-.zoo-value { font-size: 0.85rem; }
-.zoo-empty { opacity: 0.6; }
-.zoo-states { display: grid; grid-template-columns: repeat(7, minmax(104px, 1fr)); gap: 0.75rem; align-items: start; }
-.zoo-state { display: flex; flex-direction: column; gap: 0.4rem; }
-.zoo-state-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.5; }
-.zoo-state-box { min-height: 44px; display: flex; align-items: center; }
-.zoo-demo-title { margin: 1rem 0 0.5rem; }
-:focus-visible { outline: 3px solid #4488ff; outline-offset: 2px; }
-.zoo-anim-wrap { display: flex; align-items: center; gap: 0.5rem; }
-.zoo-anim { inline-size: 24px; block-size: 24px; border-radius: 50%; background: rgba(128,128,128,0.5); animation-name: zoo-pulse; animation-iteration-count: 1; animation-fill-mode: both; animation-play-state: paused; }
-.zoo-anim.is-playing { animation-play-state: running; }
-.zoo-replay { font-size: 0.7rem; }
-.zoo-spinner { display: inline-block; inline-size: 0.8em; block-size: 0.8em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: zoo-spin 0.8s linear infinite; vertical-align: middle; }
-@keyframes zoo-pulse { from { transform: translateX(0); } to { transform: translateX(56px); } }
-@keyframes zoo-spin { to { transform: rotate(360deg); } }
+  <div class="use-cell" data-coord="e1">
+    <span class="mark use-label">fields</span>
+    <label class="field">
+      <span class="field-label">e-post</span>
+      <input type="text" placeholder="jouw@adres.nl">
+    </label>
+    <label class="field">
+      <span class="field-label">naam</span>
+      <input type="text" value="jelle boon">
+    </label>
+    <p class="mark use-hint">focus — the full border goes red</p>
+  </div>
+
+  <div class="use-cell" data-coord="a4">
+    <span class="mark use-label">folio marks</span>
+    <div class="use-row">
+      <span class="pill"><i class="pdot"></i>on schedule</span>
+      <span class="pill pill-red"><i class="pdot"></i>open in margin</span>
+      <span class="pill pill-ink"><i class="pdot"></i>filed · iv 2026</span>
+      <span class="pill pill-quiet"><i class="pdot"></i>draft</span>
+    </div>
+  </div>
+
+  <div class="use-cell card" data-coord="e4">
+    <span class="mark use-label">i.</span>
+    <h3 class="t-heading-md card-title">de bedrijfskompas</h3>
+    <p class="t-body-sm card-body">a quarterly read on where the company is pointing — eight pages, no dashboard. <a class="lnk" href="#">begin reading</a>.</p>
+  </div>
+</div>`;
+}
+
+function tickStrip() {
+  const marks = ['fill', 'half', 'slash', 'dot', '', 'fill', '', 'red', 'dot', '', 'half', 'slash'];
+  return `<div class="ticks">${marks.map((m) => `<span class="tk${m ? ' tk-' + m : ''}"></span>`).join('')}</div>`;
+}
+
+function axisRow() {
+  return `<div class="axis">${AXIS.map((l) => `<span class="mark">${l}</span>`).join('')}</div>`;
+}
+
+// --- Page styles. Colour/type/spacing all come from the system's own tokens
+// (var(--…)); literals are reserved for layout and atmosphere. Square corners
+// everywhere — the system has no radius. ---
+function pageStyles() {
+  return `
+* { box-sizing: border-box; border-radius: 0; }
+html, body { margin: 0; }
+body {
+  background: var(--color-surface-page);
+  color: var(--color-text-default);
+  font: var(--typography-body);
+  text-transform: lowercase;
+  letter-spacing: -0.012em;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+}
+/* grain — multiplied across the sheet */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: ${GRAIN}; background-size: 180px 180px;
+  mix-blend-mode: multiply; opacity: 0.5;
+}
+/* bloom — three slow blobs, sun through a window */
+.bloom { position: fixed; inset: -20vmax; z-index: 0; pointer-events: none; mix-blend-mode: screen; filter: blur(80px); }
+.bloom i { position: absolute; width: 56vmax; height: 56vmax; border-radius: 50%; opacity: 0.5; will-change: transform; display: block; }
+.bloom .b1 { background: radial-gradient(circle, var(--color-cream-bloom) 0%, transparent 60%); top: -12vmax; left: -6vmax; animation: d1 38s ease-in-out infinite alternate; }
+.bloom .b2 { background: radial-gradient(circle, var(--color-amber) 0%, transparent 55%); top: 28vmax; right: -16vmax; opacity: 0.32; animation: d2 51s ease-in-out infinite alternate; }
+.bloom .b3 { background: radial-gradient(circle, var(--color-red-soft) 0%, transparent 50%); bottom: -24vmax; left: 22vmax; opacity: 0.2; animation: d3 67s ease-in-out infinite alternate; }
+@keyframes d1 { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
+@keyframes d2 { to { transform: translate(-10vmax, -5vmax) scale(0.95); } }
+@keyframes d3 { to { transform: translate(12vmax, -8vmax) scale(1.1); } }
+
+.sheet { position: relative; z-index: 1; padding: var(--space-2xl) var(--space-2xl) var(--space-2xl) var(--size-page-left); max-width: 1280px; margin: 0 auto; }
+/* red margin rule with a top dot */
+.rule { position: fixed; top: var(--space-2xl); bottom: var(--space-2xl); left: var(--size-margin-rule-x); width: 1px; background: var(--color-accent-base); z-index: 2; }
+.rule::before { content: ""; position: absolute; left: -3px; top: 0; width: var(--size-dot); height: var(--size-dot); background: var(--color-accent-base); }
+
+.mark { font: var(--typography-mark); text-transform: uppercase; color: var(--color-text-quiet); }
+.mark-red { color: var(--color-accent-base); }
+
+/* folio strips */
+.folio { display: flex; justify-content: space-between; align-items: baseline; padding-block: var(--space-sm); border-bottom: 1px solid var(--color-border-default); }
+.folio.foot { border-bottom: 0; border-top: 1px solid var(--color-border-default); margin-top: var(--space-2xl); }
+.folio .dot-red { color: var(--color-accent-base); }
+
+.axis { display: grid; grid-template-columns: repeat(${COLS}, 1fr); border-bottom: 1px solid var(--color-border-default); margin-top: -1px; }
+.axis > span { padding: 4px 6px; border-left: 1px solid var(--color-border-quiet); }
+.axis > span:first-child { border-left: 0; }
+
+section { margin-top: var(--space-2xl); }
+.sec-head { display: flex; align-items: baseline; gap: var(--space-md); margin-bottom: var(--space-lg); }
+.sec-head .n { color: var(--color-accent-base); }
+.sec-head h2 { font: var(--typography-heading-md); text-transform: lowercase; margin: 0; }
+
+/* masthead — display type, full-bleed and clipped (line-height 0.92) */
+.masthead { overflow: hidden; margin-top: var(--space-xl); }
+.masthead .big { font: var(--typography-display); line-height: 0.92; letter-spacing: -0.04em; white-space: nowrap; margin: 0; }
+.masthead .sub { font: var(--typography-body-lg); color: var(--color-text-soft); max-width: 46ch; margin: var(--space-md) 0 0; }
+
+/* palette */
+.chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); border: 1px solid var(--color-border-default); }
+.chip { margin: 0; border-left: 1px solid var(--color-border-quiet); }
+.chip:first-child { border-left: 0; }
+.chip-swatch { height: 92px; border-bottom: 1px solid var(--color-border-quiet); }
+.chip-meta { display: flex; flex-direction: column; gap: 2px; padding: var(--space-sm); }
+.chip-name { font: var(--typography-body-sm); }
+
+/* type specimen */
+.spec { border-top: 1px solid var(--color-border-default); }
+.spec-row { display: grid; grid-template-columns: 96px 1fr; gap: var(--space-md); align-items: baseline; padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border-quiet); }
+.spec-tag { padding-top: 6px; }
+.spec-line { margin: 0; max-width: none; }
+.spec-foot { margin: var(--space-md) 0 0; }
+.display { font: var(--typography-display); line-height: 0.92; letter-spacing: -0.04em; }
+.t-heading-lg { font: var(--typography-heading-lg); }
+.t-heading-md { font: var(--typography-heading-md); }
+.t-body { font: var(--typography-body); }
+.t-body-sm { font: var(--typography-body-sm); color: var(--color-text-soft); }
+
+/* components in use */
+.use-grid { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--color-border-default); }
+.use-cell { position: relative; padding: var(--space-xl); border-left: 1px solid var(--color-border-default); border-top: 1px solid var(--color-border-default); display: flex; flex-direction: column; gap: var(--space-md); align-items: flex-start; min-height: var(--size-cell-min); }
+.use-cell:nth-child(-n+2) { border-top: 0; }
+.use-cell:nth-child(odd) { border-left: 0; }
+.use-cell::after { content: attr(data-coord); position: absolute; top: 6px; right: 8px; font: var(--typography-mark); text-transform: uppercase; color: var(--color-text-faint); }
+.use-label { align-self: flex-start; }
+.use-hint { margin: auto 0 0; color: var(--color-text-faint); }
+.use-row { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: center; }
+
+/* buttons */
+.btn { font: var(--button-typography); text-transform: lowercase; color: var(--button-text-default); background: var(--button-surface-default);
+  border: 1px solid var(--button-border-default); padding: var(--button-padding-block) var(--button-padding-inline); cursor: pointer;
+  transition: background-color var(--motion-duration-hover) var(--motion-easing-standard), color var(--motion-duration-hover) var(--motion-easing-standard), border-color var(--motion-duration-hover) var(--motion-easing-standard); }
+.btn:hover { background: var(--button-surface-hover); color: var(--button-text-hover); border-color: var(--button-border-hover); }
+.btn-red { border-color: var(--color-accent-base); color: var(--color-accent-base); }
+.btn-red:hover { background: var(--color-accent-base); color: var(--color-text-on-ink); border-color: var(--color-accent-base); }
+.btn-ink { background: var(--color-surface-ink); color: var(--color-text-on-ink); border-color: var(--color-surface-ink); }
+.btn-ink:hover { background: transparent; color: var(--color-text-default); border-color: var(--color-border-strong); }
+
+/* fields — label as gutter */
+.field { display: grid; grid-template-columns: 104px 1fr; align-items: stretch; border: 1px solid var(--field-border-default); width: 100%; max-width: 360px;
+  transition: border-color var(--motion-duration-hover) var(--motion-easing-standard); }
+.field + .field { margin-top: -1px; }
+.field-label { font: var(--typography-mark); text-transform: uppercase; color: var(--color-text-quiet); padding: 0 var(--space-md); display: flex; align-items: center;
+  background: var(--color-surface-deep); border-right: 1px solid var(--color-border-quiet); transition: color var(--motion-duration-hover) var(--motion-easing-standard); }
+.field input { border: 0; background: transparent; font: var(--field-typography); color: var(--field-text); padding: var(--field-padding-block) var(--field-padding-inline); outline: none; text-transform: lowercase; width: 100%; }
+.field input::placeholder { color: var(--field-placeholder); }
+.field:focus-within { border-color: var(--field-border-focus); }
+.field:focus-within .field-label { color: var(--color-accent-base); }
+
+/* folio pills */
+.pill { display: inline-flex; align-items: center; gap: var(--space-inline-gap); font: var(--badge-typography); text-transform: uppercase; color: var(--badge-text);
+  border: 1px solid var(--badge-border); padding: var(--badge-padding-block) var(--badge-padding-inline); }
+.pdot { width: 6px; height: 6px; background: currentColor; }
+.pill-red { color: var(--color-accent-base); border-color: var(--color-accent-base); }
+.pill-ink { background: var(--color-surface-ink); color: var(--color-text-on-ink); border-color: var(--color-surface-ink); }
+.pill-quiet { color: var(--color-text-quiet); border-color: var(--color-border-quiet); }
+
+/* card */
+.card { background: var(--color-surface-claim); }
+.card-title { margin: 0; }
+.card-body { margin: 0; max-width: 34ch; }
+.lnk { color: var(--link-text-default); text-decoration: underline; text-decoration-color: var(--link-underline-default); text-underline-offset: 3px;
+  transition: text-decoration-color var(--motion-duration-hover) var(--motion-easing-standard), color var(--motion-duration-hover) var(--motion-easing-standard); }
+.lnk:hover { color: var(--link-text-hover); text-decoration-color: var(--link-underline-hover); }
+
+/* tick strip */
+.ticks { display: grid; grid-template-columns: repeat(${COLS}, 1fr); border: 1px solid var(--color-border-default); margin-top: var(--space-lg); }
+.tk { height: var(--size-tick); border-left: 1px solid var(--color-border-quiet); position: relative; }
+.tk:first-child { border-left: 0; }
+.tk-fill { background: var(--color-text-default); }
+.tk-red { background: var(--color-accent-base); }
+.tk-half { background: linear-gradient(180deg, transparent 50%, var(--color-text-default) 50%); }
+.tk-slash::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 46%, var(--color-text-default) 46% 54%, transparent 54%); }
+.tk-dot::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, var(--color-text-default) 0 2px, transparent 2.5px); }
+
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent-base); outline-offset: 2px; }
+::selection { background: var(--color-accent-base); color: var(--color-surface-page); }
+
 @media (prefers-reduced-motion: reduce) {
-  .zoo-anim, .zoo-anim.is-playing, .zoo-spinner { animation: none !important; }
+  .bloom i { animation: none; }
+}
+@media (max-width: 720px) {
+  .sheet { padding-left: var(--space-xl); }
+  .rule { left: var(--space-md); }
+  .use-grid { grid-template-columns: 1fr; }
+  .use-cell:nth-child(odd) { border-left: 0; }
+  .use-cell { border-left: 0; }
+  .use-cell:nth-child(2) { border-top: 1px solid var(--color-border-default); }
 }
 `;
-
-// Demo-element appearance: token-only. Every color/size is a var(--…); a missing
-// token leaves the property unset, surfacing the gap. No literals in this block.
-const DEMO_STYLES = `/* DEMO-STYLES-START — token-only; appearance is var(--…), gaps stay visible */
-.zoo-button { display: inline-flex; align-items: center; cursor: pointer; gap: var(--space-control-gap);
-  background: var(--color-action-bg); color: var(--color-action-text);
-  border-style: solid; border-color: var(--color-action-border); border-width: var(--border-width-control);
-  border-radius: var(--radius-control); padding-block: var(--space-control-block); padding-inline: var(--space-control-inline);
-  font: var(--typography-label); }
-.zoo-button:hover, .zoo-button.is-hover { background: var(--color-action-bg-hover); }
-.zoo-button:active, .zoo-button.is-active { background: var(--color-action-bg-active); }
-.zoo-button:focus-visible, .zoo-button.is-focus { outline-color: var(--color-focus-ring); }
-.zoo-button[disabled], .zoo-button.is-disabled { background: var(--color-action-bg-disabled); color: var(--color-text-disabled); cursor: not-allowed; }
-.zoo-button.is-error { background: var(--color-feedback-error-bg); color: var(--color-feedback-error-text); }
-
-.zoo-input { background: var(--color-surface); color: var(--color-text);
-  border-style: solid; border-color: var(--color-border); border-width: var(--border-width-control);
-  border-radius: var(--radius-control); padding-block: var(--space-control-block); padding-inline: var(--space-control-inline);
-  font: var(--typography-body); }
-.zoo-input:hover, .zoo-input.is-hover { border-color: var(--color-border-hover); }
-.zoo-input:focus-visible, .zoo-input.is-focus { border-color: var(--color-focus-ring); outline-color: var(--color-focus-ring); }
-.zoo-input[disabled], .zoo-input.is-disabled { background: var(--color-surface-disabled); color: var(--color-text-disabled); }
-.zoo-input.is-error, .zoo-input[aria-invalid="true"] { border-color: var(--color-feedback-error-border); }
-
-.zoo-checkbox { accent-color: var(--color-action-bg); }
-.zoo-checkbox-label { display: inline-flex; align-items: center; gap: var(--space-inline-gap); color: var(--color-text); font: var(--typography-body); }
-.zoo-checkbox.is-error { outline-color: var(--color-feedback-error-border); }
-
-.zoo-democard { display: block; background: var(--color-surface); color: var(--color-text);
-  border-style: solid; border-color: var(--color-border); border-width: var(--border-width-surface);
-  border-radius: var(--radius-surface); padding: var(--space-surface); box-shadow: var(--shadow-surface);
-  font: var(--typography-body); }
-.zoo-democard.is-error { border-color: var(--color-feedback-error-border); }
-
-.zoo-badge { display: inline-flex; align-items: center; background: var(--color-accent-bg); color: var(--color-accent-text);
-  border-radius: var(--radius-pill); padding-block: var(--space-badge-block); padding-inline: var(--space-badge-inline);
-  font: var(--typography-caption); }
-.zoo-badge.is-error { background: var(--color-feedback-error-bg); color: var(--color-feedback-error-text); }
-
-.zoo-alert { display: block; background: var(--color-surface); color: var(--color-text);
-  border-style: solid; border-color: var(--color-border); border-width: var(--border-width-surface);
-  border-radius: var(--radius-surface); padding: var(--space-surface); font: var(--typography-body); }
-.zoo-alert.is-error { background: var(--color-feedback-error-bg); color: var(--color-feedback-error-text); border-color: var(--color-feedback-error-border); }
-.zoo-link { color: var(--color-text-link); text-decoration: underline; }
-.zoo-text-muted { color: var(--color-text-muted); }
-/* DEMO-STYLES-END */`;
-
-const REPLAY_SCRIPT = `
-document.querySelectorAll('[data-replay]').forEach(function (btn) {
-  btn.addEventListener('click', function () {
-    var anim = btn.parentElement.querySelector('.zoo-anim');
-    if (!anim) return;
-    anim.classList.remove('is-playing');
-    void anim.offsetWidth;
-    anim.classList.add('is-playing');
-  });
-});`;
+}
 
 /**
- * Render the showcase to a single self-contained HTML string.
- * @param {{manifest: Array<object>, tokenCss: string}} input — built artifacts only.
+ * Render the zoo to a single self-contained HTML string.
+ * @param {{manifest: Array<object>, tokenCss: string, fontCss?: string}} input — built artifacts only.
  * @returns {string} deterministic HTML
  */
-export function renderShowcase({ manifest, tokenCss }) {
+export function renderShowcase({ manifest, tokenCss, fontCss = '' }) {
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ontwerpsysteem — the zoo</title>
+<title>de ontwerp — the zoo</title>
 <style>
+${fontCss.trim()}
 /* --- built token custom properties (inlined) --- */
 ${tokenCss.trim()}
-/* --- showcase chrome --- */
-${CHROME_STYLES.trim()}
-/* --- demo elements (token-only) --- */
-${DEMO_STYLES}
+/* --- the sheet --- */
+${pageStyles().trim()}
 </style>
 </head>
 <body>
-<header class="zoo-header">
-<h1>ontwerpsysteem — the zoo</h1>
-<p class="zoo-note">Rendered from the built tokens. Demo elements are styled only from design tokens; an unstyled control means the semantic token it needs does not exist yet — a visible coverage gap, not a bug.</p>
-</header>
-<main>
-<section class="zoo-section">
-<h2>Tokens</h2>
-${renderGalleries(manifest)}
-</section>
-<section class="zoo-section">
-<h2>UI elements — state matrix</h2>
-${renderDemo()}
-</section>
-</main>
-<script type="application/json" id="zoo-manifest">${JSON.stringify(manifest)}</script>
-<script>${REPLAY_SCRIPT}</script>
+<div class="bloom" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+<div class="rule" aria-hidden="true"></div>
+<div class="sheet">
+
+  <div class="folio">
+    <span class="mark mark-red">de ontwerp</span>
+    <span class="mark">the zoo · design system</span>
+    <span class="mark"><span class="dot-red">●</span> in cream</span>
+  </div>
+  ${axisRow()}
+
+  <header class="masthead">
+    <h1 class="big">de ontwerp</h1>
+    <p class="sub">a class-schedule sheet pinned to a sun-warmed wall — dutch grid logic crossed with a quiet literary warmth.</p>
+  </header>
+
+  <section>
+    <div class="sec-head"><span class="mark n">i.</span><h2>paper &amp; ink</h2></div>
+    ${renderPalette(manifest)}
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="mark n">ii.</span><h2>type</h2></div>
+    ${renderType()}
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="mark n">iii.</span><h2>in use</h2></div>
+    ${renderComponents()}
+    ${tickStrip()}
+  </section>
+
+  <div class="folio foot">
+    <span class="mark">rooster · 12 columns · a–l</span>
+    <span class="mark">druk iv — 2026</span>
+    <span class="mark"><span class="dot-red">●</span> printed in cream</span>
+  </div>
+
+</div>
 </body>
 </html>
 `;
