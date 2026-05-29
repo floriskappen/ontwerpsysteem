@@ -1,0 +1,6 @@
+{
+  "opacity": {
+    "$type": "number",
+    "muted": { "$value": 0.45, "$description": "disabled controls" }
+  }
+}

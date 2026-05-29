@@ -1,0 +1,94 @@
+{
+  "button": {
+    "text": {
+      "$type": "color",
+      "default": { "$value": "{color.text.default}" },
+      "hover": { "$value": "{color.text.on-ink}", "$description": "buttons invert on hover — paper on ink" }
+    },
+    "surface": {
+      "$type": "color",
+      "default": { "$value": "transparent" },
+      "hover": { "$value": "{color.surface.ink}" }
+    },
+    "border": {
+      "$type": "color",
+      "default": { "$value": "{color.border.strong}" },
+      "hover": { "$value": "{color.surface.ink}" }
+    },
+    "radius": { "$type": "dimension", "$value": "{radius.none}" },
+    "padding": {
+      "$type": "dimension",
+      "block": { "$value": "{space.control.block}" },
+      "inline": { "$value": "{space.control.inline}" }
+    },
+    "typography": { "$type": "typography", "$value": "{typography.label}" }
+  },
+
+  "field": {
+    "text": { "$type": "color", "$value": "{color.text.default}" },
+    "placeholder": { "$type": "color", "$value": "{color.text.faint}" },
+    "surface": { "$type": "color", "$value": "transparent" },
+    "border": {
+      "$type": "color",
+      "default": { "$value": "{color.border.default}" },
+      "focus": { "$value": "{color.accent.base}", "$description": "focus turns the full border red" }
+    },
+    "radius": { "$type": "dimension", "$value": "{radius.none}" },
+    "padding": {
+      "$type": "dimension",
+      "block": { "$value": "{space.control.block}" },
+      "inline": { "$value": "{space.control.inline}" }
+    },
+    "typography": { "$type": "typography", "$value": "{typography.body}" }
+  },
+
+  "selection": {
+    "$description": "extension — no source component; styled from the system accent",
+    "accent": { "$type": "color", "$value": "{color.accent.base}" },
+    "text": { "$type": "color", "$value": "{color.text.default}" }
+  },
+
+  "card": {
+    "surface": { "$type": "color", "$value": "{color.surface.claim}" },
+    "text": { "$type": "color", "$value": "{color.text.default}" },
+    "border": { "$type": "color", "$value": "{color.border.default}" },
+    "radius": { "$type": "dimension", "$value": "{radius.none}" },
+    "padding": { "$type": "dimension", "$value": "{space.inset}" },
+    "typography": { "$type": "typography", "$value": "{typography.body}" }
+  },
+
+  "badge": {
+    "text": { "$type": "color", "$value": "{color.text.default}" },
+    "surface": { "$type": "color", "$value": "transparent" },
+    "border": { "$type": "color", "$value": "{color.border.default}" },
+    "radius": { "$type": "dimension", "$value": "{radius.none}" },
+    "padding": {
+      "$type": "dimension",
+      "block": { "$value": "{space.badge.block}" },
+      "inline": { "$value": "{space.badge.inline}" }
+    },
+    "typography": { "$type": "typography", "$value": "{typography.mark}" }
+  },
+
+  "alert": {
+    "$description": "extension — no source component; a deep-paper folio strip",
+    "surface": { "$type": "color", "$value": "{color.surface.deep}" },
+    "text": { "$type": "color", "$value": "{color.text.default}" },
+    "border": { "$type": "color", "$value": "{color.border.default}" },
+    "radius": { "$type": "dimension", "$value": "{radius.none}" },
+    "padding": { "$type": "dimension", "$value": "{space.inset}" }
+  },
+
+  "link": {
+    "text": {
+      "$type": "color",
+      "default": { "$value": "{color.text.default}" },
+      "hover": { "$value": "{color.accent.base}" }
+    },
+    "underline": {
+      "$type": "color",
+      "default": { "$value": "{color.border.quiet}" },
+      "hover": { "$value": "{color.accent.base}" }
+    }
+  }
+}

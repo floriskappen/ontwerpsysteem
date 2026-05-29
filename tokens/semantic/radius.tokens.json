@@ -1,0 +1,8 @@
+{
+  "radius": {
+    "$type": "dimension",
+    "none": { "$value": "{radius.0}", "$description": "default — square corners everywhere" },
+    "chip": { "$value": "{radius.1}", "$description": "utility chips" },
+    "chip-max": { "$value": "{radius.2}", "$description": "maximum allowed, very rare" }
+  }
+}

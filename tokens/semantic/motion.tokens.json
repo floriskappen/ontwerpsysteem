@@ -1,0 +1,14 @@
+{
+  "motion": {
+    "duration": {
+      "$type": "duration",
+      "bloom": { "$value": "{duration.bloom}", "$description": "cursor-bloom lag" },
+      "hover": { "$value": "{duration.ui-fast}", "$description": "interactive hover" },
+      "transition": { "$value": "{duration.ui}", "$description": "surface background / border" }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "standard": { "$value": "{easing.paper}", "$description": "the one easing — quiet" }
+    }
+  }
+}

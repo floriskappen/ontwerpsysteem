@@ -1,0 +1,15 @@
+{
+  "space": {
+    "$type": "dimension",
+    "inset": { "$value": "{space.lg}", "$description": "surface / card padding (source 16–18px → 16)" },
+    "inline-gap": { "$value": "{space.sm}", "$description": "gap between inline items (source 6–8px → 8)" },
+    "control": {
+      "block": { "$value": "{space.sm}", "$description": "control vertical padding (source ~10px → 8, snapped to scale)" },
+      "inline": { "$value": "{space.md}", "$description": "control horizontal padding (source ~12–14px → 12, snapped)" }
+    },
+    "badge": {
+      "block": { "$value": "{space.xs}", "$description": "badge vertical padding" },
+      "inline": { "$value": "{space.sm}", "$description": "badge horizontal padding (source 9px → 8)" }
+    }
+  }
+}

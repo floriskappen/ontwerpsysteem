@@ -1,11 +1,30 @@
 {
   "color": {
     "$type": "color",
+    "surface": {
+      "page": { "$value": "{color.paper}", "$description": "the base sheet" },
+      "warm": { "$value": "{color.paper-warm}" },
+      "deep": { "$value": "{color.paper-deep}", "$description": "margin / footer strips" },
+      "claim": { "$value": "{color.cream-bloom-a55}", "$description": "claimed-cell fill" },
+      "claim-hover": { "$value": "{color.cream-bloom-a85}" },
+      "ink": { "$value": "{color.ink}", "$description": "inverted ink cells / solid buttons" }
+    },
     "text": {
-      "muted": {
-        "$value": "{color.brand.base}",
-        "$description": "Placeholder semantic alias of a primitive. Disposable — replaced when real tokens are ported."
-      }
+      "default": { "$value": "{color.ink}" },
+      "soft": { "$value": "{color.ink-soft}" },
+      "quiet": { "$value": "{color.ink-quiet}", "$description": "utility marks" },
+      "faint": { "$value": "{color.ink-faint}", "$description": "axis labels, placeholders" },
+      "on-ink": { "$value": "{color.paper}", "$description": "text on ink surfaces" }
+    },
+    "accent": {
+      "base": { "$value": "{color.red}", "$description": "the single accent — margin rule, links on hover" },
+      "soft": { "$value": "{color.red-soft}" }
+    },
+    "border": {
+      "default": { "$value": "{color.ink-a65}" },
+      "quiet": { "$value": "{color.ink-a25}" },
+      "strong": { "$value": "{color.ink-a95}" },
+      "accent": { "$value": "{color.red-a85}" }
     }
   }
 }

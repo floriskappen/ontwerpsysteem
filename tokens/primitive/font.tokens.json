@@ -1,0 +1,21 @@
+{
+  "font": {
+    "sans": {
+      "$type": "fontFamily",
+      "$value": ["Archivo", "Helvetica Neue", "system-ui", "sans-serif"],
+      "$description": "display + ui, lowercased, weights 500–700"
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": ["JetBrains Mono", "ui-monospace", "SF Mono", "Menlo", "monospace"],
+      "$description": "utility marks, 10px uppercase"
+    }
+  },
+  "weight": {
+    "$type": "fontWeight",
+    "regular": { "$value": 400 },
+    "medium": { "$value": 500 },
+    "semibold": { "$value": 600 },
+    "bold": { "$value": 700 }
+  }
+}

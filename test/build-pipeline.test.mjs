@@ -32,11 +32,11 @@ describe('build-pipeline', () => {
     expect(treesEqual(a, b)).toBe(true);
   });
 
-  it('Stable name derivation (color.text.muted → --color-text-muted)', async () => {
+  it('Stable name derivation (color.text.default → --color-text-default)', async () => {
     const dist = tmpDir();
     await runBuild({ tokensDir: realTokens, distDir: dist });
     const css = readFileSync(join(dist, 'css', 'tokens.css'), 'utf8');
-    expect(css).toMatch(/--color-text-muted:/);
+    expect(css).toMatch(/--color-text-default:/);
   });
 
   it('Emits all three platform artifacts', async () => {

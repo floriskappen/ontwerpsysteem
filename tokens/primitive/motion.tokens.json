@@ -1,0 +1,18 @@
+{
+  "duration": {
+    "$type": "duration",
+    "bloom": { "$value": "180ms", "$description": "cursor-bloom lag" },
+    "ui-fast": { "$value": "200ms", "$description": "button hover" },
+    "ui": { "$value": "240ms", "$description": "cell background / border" },
+    "ui-slow": { "$value": "320ms", "$description": "upper bound of hover transitions" },
+    "breathe-min": { "$value": "7s", "$description": "fastest breathing-rule loop" },
+    "breathe-max": { "$value": "16s", "$description": "slowest breathing-rule loop" },
+    "drift-1": { "$value": "38s", "$description": "cream bloom drift loop" },
+    "drift-2": { "$value": "51s", "$description": "amber bloom drift loop" },
+    "drift-3": { "$value": "67s", "$description": "red bloom drift loop" }
+  },
+  "easing": {
+    "$type": "cubicBezier",
+    "paper": { "$value": [0.22, 0.61, 0.36, 1], "$description": "the one easing — quiet, never snappy" }
+  }
+}

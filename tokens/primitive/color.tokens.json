@@ -1,11 +1,25 @@
 {
   "color": {
     "$type": "color",
-    "brand": {
-      "base": {
-        "$value": "#3b5bdb",
-        "$description": "Placeholder primitive brand color. Disposable — replaced when real tokens are ported."
-      }
-    }
+    "paper": { "$value": "#F1ECE0", "$description": "warm cream — the base sheet" },
+    "paper-warm": { "$value": "#ECE4D2", "$description": "slightly toasted" },
+    "paper-deep": { "$value": "#E4DBC4", "$description": "margin / footer strips" },
+    "ink": { "$value": "#1F1B16", "$description": "warm near-black, never #000" },
+    "ink-soft": { "$value": "#4A4239", "$description": "secondary text" },
+    "ink-quiet": { "$value": "#8A8170", "$description": "tertiary / utility marks" },
+    "ink-faint": { "$value": "#B8AE99", "$description": "footnote, axis labels, placeholders" },
+    "red": { "$value": "#B84A39", "$description": "toasted red — margin rule, never decoration" },
+    "red-soft": { "$value": "#C9614F" },
+    "amber": { "$value": "#D49A56", "$description": "bloom only" },
+    "cream-bloom": { "$value": "#F4E5C7", "$description": "bloom only" },
+
+    "ink-a25": { "$value": "rgba(31, 27, 22, 0.25)", "$description": "ink @ 25% — quiet rule" },
+    "ink-a65": { "$value": "rgba(31, 27, 22, 0.65)", "$description": "ink @ 65% — default rule" },
+    "ink-a95": { "$value": "rgba(31, 27, 22, 0.95)", "$description": "ink @ 95% — strong rule" },
+    "red-a85": { "$value": "rgba(184, 74, 57, 0.85)", "$description": "red @ 85% — accent rule" },
+    "cream-bloom-a55": { "$value": "rgba(244, 237, 219, 0.55)", "$description": "claimed-cell fill" },
+    "cream-bloom-a85": { "$value": "rgba(244, 237, 219, 0.85)", "$description": "claimed-cell fill on hover" },
+    "amber-a55": { "$value": "rgba(212, 154, 86, 0.55)", "$description": "cursor-bloom inner stop" },
+    "amber-a18": { "$value": "rgba(212, 154, 86, 0.18)", "$description": "cursor-bloom outer stop" }
   }
 }

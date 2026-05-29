@@ -1,0 +1,32 @@
+{
+  "space": {
+    "$type": "dimension",
+    "xs": { "$value": "4px" },
+    "sm": { "$value": "8px" },
+    "md": { "$value": "12px" },
+    "lg": { "$value": "16px" },
+    "xl": { "$value": "24px" },
+    "2xl": { "$value": "32px" }
+  },
+  "radius": {
+    "$type": "dimension",
+    "0": { "$value": "0px", "$description": "default — corners are square" },
+    "1": { "$value": "1px", "$description": "utility chips" },
+    "2": { "$value": "2px", "$description": "maximum, very rare" }
+  },
+  "size": {
+    "$type": "dimension",
+    "hairline": { "$value": "1px", "$description": "cell border / margin-rule width" },
+    "dot": { "$value": "7px", "$description": "margin-rule dot" },
+    "tick": { "$value": "18px", "$description": "tick-strip height" },
+    "cell-min": { "$value": "120px", "$description": "claimed-cell min height" },
+    "page-inset": { "$value": "32px", "$description": "page margin (top / right)" },
+    "page-left": { "$value": "96px", "$description": "left margin where the red rule lives" },
+    "margin-rule-x": { "$value": "56px", "$description": "x position of the red margin rule" }
+  },
+  "blur": {
+    "$type": "dimension",
+    "bloom": { "$value": "80px", "$description": "bloom-blob blur" },
+    "cursor": { "$value": "18px", "$description": "cursor-bloom blur" }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "typography": {
+    "$type": "typography",
+    "display": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.bold}", "fontSize": "168px", "lineHeight": 0.92, "letterSpacing": "-0.04em" },
+      "$description": "source is fluid: clamp(72px, 11vw, 168px); 168px is the max"
+    },
+    "heading-xl": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.bold}", "fontSize": "88px", "lineHeight": 0.95, "letterSpacing": "-0.035em" },
+      "$description": "h1 — source fluid: clamp(48px, 6vw, 88px)"
+    },
+    "heading-lg": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.semibold}", "fontSize": "40px", "lineHeight": 1.02, "letterSpacing": "-0.028em" },
+      "$description": "h2 — source fluid: clamp(28px, 3vw, 40px)"
+    },
+    "heading-md": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.semibold}", "fontSize": "20px", "lineHeight": 1.1, "letterSpacing": "-0.022em" },
+      "$description": "h3"
+    },
+    "heading-sm": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.semibold}", "fontSize": "15px", "lineHeight": 1.2, "letterSpacing": "-0.018em" },
+      "$description": "h4"
+    },
+    "body": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.medium}", "fontSize": "15px", "lineHeight": 1.5, "letterSpacing": "-0.012em" }
+    },
+    "body-lg": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.medium}", "fontSize": "18px", "lineHeight": 1.45, "letterSpacing": "-0.018em" }
+    },
+    "body-sm": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.medium}", "fontSize": "13px", "lineHeight": 1.45, "letterSpacing": "-0.005em" }
+    },
+    "mark": {
+      "$value": { "fontFamily": "{font.mono}", "fontWeight": "{weight.medium}", "fontSize": "10px", "lineHeight": 1, "letterSpacing": "0.08em" },
+      "$description": "utility marks — the one place uppercase is allowed (apply text-transform in CSS)"
+    },
+    "label": {
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.semibold}", "fontSize": "13px", "lineHeight": 1.2, "letterSpacing": "-0.012em" },
+      "$description": "control labels — buttons, etc."
+    }
+  }
+}
