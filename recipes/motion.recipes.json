@@ -1,0 +1,32 @@
+[
+  {
+    "id": "motion.clock.stepped",
+    "intent": "system stepped animation clock",
+    "useWhen": "all periodic animations",
+    "avoid": "continuous linear transitions",
+    "sourceModules": ["design-system/source/zoo/effects/weather-particles.mjs"],
+    "valueRefs": [],
+    "reducedMotion": "disabled",
+    "notes": "evaluated at 8fps using stepped keyframe timing"
+  },
+  {
+    "id": "motion.weather.wind",
+    "intent": "staggered horizontal wind gust streaks",
+    "useWhen": "wind weather theme is selected",
+    "avoid": "standard dashboard load cycles",
+    "sourceModules": ["design-system/source/zoo/effects/weather-particles.mjs", "design-system/source/zoo/styles/weather.css"],
+    "valueRefs": [],
+    "reducedMotion": "disabled",
+    "notes": "speed and delay randomized deterministically using LCG"
+  },
+  {
+    "id": "motion.weather.rain",
+    "intent": "slanted rainfall streaks and splatters",
+    "useWhen": "rain weather theme is active",
+    "avoid": "regular page scroll animation",
+    "sourceModules": ["design-system/source/zoo/effects/weather-particles.mjs", "design-system/source/zoo/styles/weather.css"],
+    "valueRefs": [],
+    "reducedMotion": "disabled",
+    "notes": "impact timing desynchronized"
+  }
+]

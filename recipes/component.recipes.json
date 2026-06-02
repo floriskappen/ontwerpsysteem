@@ -1,0 +1,12 @@
+[
+  {
+    "id": "component.button.ink-press",
+    "intent": "tactile button with Ben-Day dot halftone pattern",
+    "useWhen": "interactive primary or secondary actions",
+    "avoid": "standard flat system default buttons",
+    "sourceModules": ["design-system/source/zoo/sections/components.mjs", "design-system/source/zoo/styles/components.css"],
+    "valueRefs": ["color.border.strong", "color.text.default"],
+    "reducedMotion": "unaffected",
+    "notes": "press effect is immediate with 2px transform"
+  }
+]

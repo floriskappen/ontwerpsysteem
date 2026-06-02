@@ -1,0 +1,12 @@
+[
+  {
+    "id": "atmosphere.grid.breathing",
+    "intent": "ambient background breathing lines",
+    "useWhen": "establishing calm structural depth",
+    "avoid": "foreground components",
+    "sourceModules": ["design-system/source/zoo/effects/grid.mjs", "design-system/source/zoo/styles/atmosphere.css"],
+    "valueRefs": [],
+    "reducedMotion": "disabled",
+    "notes": "desynchronized using cell indices"
+  }
+]

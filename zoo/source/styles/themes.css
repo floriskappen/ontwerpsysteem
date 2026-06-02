@@ -1,0 +1,18 @@
+/* theme switcher — top of page; selecting a skin reskins the whole page (the
+   generated body:has() rules override the colour roles). It is one segmented
+   control (joined segments, a shared 3px plate edge) so it reads as a pick-one,
+   each segment carrying a mini paper+accent swatch. */
+.theme-bar { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; padding-bottom: var(--space-lg); margin-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border-default); }
+.theme-switch-label { font: var(--typography-mark); text-transform: uppercase; color: var(--color-text-quiet); }
+.theme-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-strong); border-bottom-width: 3px; }
+.th-radio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.th-tab { display: inline-flex; align-items: center; gap: var(--space-sm); padding: 6px var(--space-md); cursor: pointer;
+  font: var(--typography-label); text-transform: lowercase; color: var(--color-text-default); background: var(--color-surface-page);
+  border-left: 1px solid var(--color-border-default); }
+.th-tab:first-of-type { border-left: 0; }
+.th-tab:hover { background: var(--color-surface-deep); }
+.th-chip { width: 22px; height: 15px; background: var(--s); border: 1px solid var(--color-border-strong); position: relative; flex: none; }
+.th-chip::after { content: ""; position: absolute; right: 2px; top: 2px; bottom: 2px; width: 5px; background: var(--a); }
+/* the palette reskins with the chosen theme; its built hex values are the cream
+   baseline, so hide them once a demo skin is on (they would no longer match). */
+body:not(:has(#th-cream:checked)) .sw-val { display: none; }

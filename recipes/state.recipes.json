@@ -1,0 +1,22 @@
+[
+  {
+    "id": "state.loading.germinating",
+    "intent": "organic progress loading state",
+    "useWhen": "asynchronous operation loading",
+    "avoid": "standard circular spinners",
+    "sourceModules": ["design-system/source/zoo/sections/states.mjs", "design-system/source/zoo/styles/states.css"],
+    "valueRefs": ["color.text.soft"],
+    "reducedMotion": "shows fully formed rest state",
+    "notes": "spiral seed head fills in Vogel golden angle order"
+  },
+  {
+    "id": "state.done.ripe",
+    "intent": "growth done state indicators",
+    "useWhen": "task completion",
+    "avoid": "green check marks",
+    "sourceModules": ["design-system/source/zoo/sections/states.mjs", "design-system/source/zoo/styles/states.css"],
+    "valueRefs": ["color.accent.base"],
+    "reducedMotion": "static fully-colored rest state",
+    "notes": "shape deepens through stages"
+  }
+]

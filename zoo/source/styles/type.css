@@ -1,0 +1,17 @@
+/* typography layout and voices */
+
+.val { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-text-quiet); }
+
+/* type specimen — no top rule of its own; the section header already draws the line */
+.spec-row { display: grid; grid-template-columns: 120px 1fr; gap: var(--space-lg); align-items: baseline; padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border-quiet); }
+.spec-row:first-child { padding-top: 0; }
+.spec-tag { display: flex; flex-direction: column; gap: 2px; }
+.spec-role { font: var(--typography-label); text-transform: lowercase; color: var(--color-text-default); }
+.spec-line { margin: 0; max-width: none; }
+.spec-fig { font-family: 'Caveat', cursive; font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: 0.02em; color: var(--color-accent-base); text-transform: none; }
+.spec-foot { margin: var(--space-md) 0 0; font: var(--typography-body-sm); color: var(--color-text-soft); }
+.display { font: var(--typography-display); line-height: 0.92; letter-spacing: -0.04em; }
+.t-heading-lg { font: var(--typography-heading-lg); }
+.t-heading-md { font: var(--typography-heading-md); }
+.t-body { font: var(--typography-body); }
+.t-body-sm { font: var(--typography-body-sm); color: var(--color-text-soft); }

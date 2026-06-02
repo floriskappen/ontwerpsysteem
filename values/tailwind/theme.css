@@ -1,0 +1,139 @@
+@theme {
+  --button-text-default: #1f1b16;
+  --button-text-hover: #f1ece0; /** buttons invert on hover — paper on ink */
+  --button-surface-default: rgba(0, 0, 0, 0);
+  --button-surface-hover: #1f1b16;
+  --button-border-default: rgba(31, 27, 22, 0.95);
+  --button-border-hover: #1f1b16;
+  --button-radius: 0px;
+  --button-padding-block: 8px;
+  --button-padding-inline: 12px;
+  --button-typography: 600 13px/1.2 Archivo, 'Helvetica Neue', system-ui, sans-serif;
+  --field-text: #1f1b16;
+  --field-placeholder: #b8ae99;
+  --field-surface: rgba(0, 0, 0, 0);
+  --field-border-default: rgba(31, 27, 22, 0.65);
+  --field-border-focus: #b84a39; /** focus turns the full border red */
+  --field-radius: 0px;
+  --field-padding-block: 8px;
+  --field-padding-inline: 12px;
+  --field-typography: 500 15px/1.5 Archivo, 'Helvetica Neue', system-ui, sans-serif;
+  --selection-accent: #b84a39;
+  --selection-text: #1f1b16;
+  --card-surface: rgba(244, 237, 219, 0.55);
+  --card-text: #1f1b16;
+  --card-border: rgba(31, 27, 22, 0.65);
+  --card-radius: 0px;
+  --card-padding: 16px;
+  --card-typography: 500 15px/1.5 Archivo, 'Helvetica Neue', system-ui, sans-serif;
+  --badge-text: #1f1b16;
+  --badge-surface: rgba(0, 0, 0, 0);
+  --badge-border: rgba(31, 27, 22, 0.65);
+  --badge-radius: 0px;
+  --badge-padding-block: 4px;
+  --badge-padding-inline: 8px;
+  --badge-typography: 500 10px/1 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --alert-surface: #e4dbc4;
+  --alert-text: #1f1b16;
+  --alert-border: rgba(31, 27, 22, 0.65);
+  --alert-radius: 0px;
+  --alert-padding: 16px;
+  --link-text-default: #1f1b16;
+  --link-text-hover: #b84a39;
+  --link-underline-default: rgba(31, 27, 22, 0.25);
+  --link-underline-hover: #b84a39;
+  --color-paper: #f1ece0; /** warm cream — the base sheet */
+  --color-paper-warm: #ece4d2; /** slightly toasted */
+  --color-paper-deep: #e4dbc4; /** margin / footer strips */
+  --color-ink: #1f1b16; /** warm near-black, never #000 */
+  --color-ink-soft: #4a4239; /** secondary text */
+  --color-ink-quiet: #8a8170; /** tertiary / utility marks */
+  --color-ink-faint: #b8ae99; /** footnote, axis labels, placeholders */
+  --color-red: #b84a39; /** toasted red — margin rule, never decoration */
+  --color-red-soft: #c9614f;
+  --color-amber: #d49a56; /** bloom only */
+  --color-cream-bloom: #f4e5c7; /** bloom only */
+  --color-ink-a25: rgba(31, 27, 22, 0.25); /** ink @ 25% — quiet rule */
+  --color-ink-a65: rgba(31, 27, 22, 0.65); /** ink @ 65% — default rule */
+  --color-ink-a95: rgba(31, 27, 22, 0.95); /** ink @ 95% — strong rule */
+  --color-red-a85: rgba(184, 74, 57, 0.85); /** red @ 85% — accent rule */
+  --color-cream-bloom-a55: rgba(244, 237, 219, 0.55); /** claimed-cell fill */
+  --color-cream-bloom-a85: rgba(244, 237, 219, 0.85); /** claimed-cell fill on hover */
+  --color-amber-a55: rgba(212, 154, 86, 0.55); /** cursor-bloom inner stop */
+  --color-amber-a18: rgba(212, 154, 86, 0.18); /** cursor-bloom outer stop */
+  --color-surface-page: #f1ece0; /** the base sheet */
+  --color-surface-warm: #ece4d2;
+  --color-surface-deep: #e4dbc4; /** margin / footer strips */
+  --color-surface-claim: rgba(244, 237, 219, 0.55); /** claimed-cell fill */
+  --color-surface-claim-hover: rgba(244, 237, 219, 0.85);
+  --color-surface-ink: #1f1b16; /** inverted ink cells / solid buttons */
+  --color-text-default: #1f1b16;
+  --color-text-soft: #4a4239;
+  --color-text-quiet: #8a8170; /** utility marks */
+  --color-text-faint: #b8ae99; /** axis labels, placeholders */
+  --color-text-on-ink: #f1ece0; /** text on ink surfaces */
+  --color-accent-base: #b84a39; /** the single accent — margin rule, links on hover */
+  --color-accent-soft: #c9614f;
+  --color-border-default: rgba(31, 27, 22, 0.65);
+  --color-border-quiet: rgba(31, 27, 22, 0.25);
+  --color-border-strong: rgba(31, 27, 22, 0.95);
+  --color-border-accent: rgba(184, 74, 57, 0.85);
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-inset: 16px; /** surface / card padding (source 16–18px → 16) */
+  --space-inline-gap: 8px; /** gap between inline items (source 6–8px → 8) */
+  --space-control-block: 8px; /** control vertical padding (source ~10px → 8, snapped to scale) */
+  --space-control-inline: 12px; /** control horizontal padding (source ~12–14px → 12, snapped) */
+  --space-badge-block: 4px; /** badge vertical padding */
+  --space-badge-inline: 8px; /** badge horizontal padding (source 9px → 8) */
+  --radius-0: 0px; /** default — corners are square */
+  --radius-1: 1px; /** utility chips */
+  --radius-2: 2px; /** maximum, very rare */
+  --radius-none: 0px; /** default — square corners everywhere */
+  --radius-chip: 1px; /** utility chips */
+  --radius-chip-max: 2px; /** maximum allowed, very rare */
+  --size-hairline: 1px; /** cell border / margin-rule width */
+  --size-dot: 7px; /** margin-rule dot */
+  --size-tick: 18px; /** tick-strip height */
+  --size-cell-min: 120px; /** claimed-cell min height */
+  --size-page-inset: 32px; /** page margin (top / right) */
+  --size-page-left: 96px; /** left margin where the red rule lives */
+  --size-margin-rule-x: 56px; /** x position of the red margin rule */
+  --blur-bloom: 80px; /** bloom-blob blur */
+  --blur-cursor: 18px; /** cursor-bloom blur */
+  --font-sans: Archivo, 'Helvetica Neue', system-ui, sans-serif; /** display + ui, lowercased, weights 500–700 */
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; /** utility marks, 10px uppercase */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --duration-bloom: 180ms; /** cursor-bloom lag */
+  --duration-ui-fast: 200ms; /** button hover */
+  --duration-ui: 240ms; /** cell background / border */
+  --duration-ui-slow: 320ms; /** upper bound of hover transitions */
+  --duration-breathe-min: 7s; /** fastest breathing-rule loop */
+  --duration-breathe-max: 16s; /** slowest breathing-rule loop */
+  --duration-drift-1: 38s; /** cream bloom drift loop */
+  --duration-drift-2: 51s; /** amber bloom drift loop */
+  --duration-drift-3: 67s; /** red bloom drift loop */
+  --easing-paper: cubic-bezier(0.22, 0.61, 0.36, 1); /** the one easing — quiet, never snappy */
+  --opacity-muted: 0.45; /** disabled controls */
+  --motion-duration-bloom: 180ms; /** cursor-bloom lag */
+  --motion-duration-hover: 200ms; /** interactive hover */
+  --motion-duration-transition: 240ms; /** surface background / border */
+  --motion-easing-standard: cubic-bezier(0.22, 0.61, 0.36, 1); /** the one easing — quiet */
+  --typography-display: 700 168px/0.92 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** source is fluid: clamp(72px, 11vw, 168px); 168px is the max */
+  --typography-heading-xl: 700 88px/0.95 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** h1 — source fluid: clamp(48px, 6vw, 88px) */
+  --typography-heading-lg: 600 40px/1.02 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** h2 — source fluid: clamp(28px, 3vw, 40px) */
+  --typography-heading-md: 600 20px/1.1 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** h3 */
+  --typography-heading-sm: 600 15px/1.2 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** h4 */
+  --typography-body: 500 15px/1.5 Archivo, 'Helvetica Neue', system-ui, sans-serif;
+  --typography-body-lg: 500 18px/1.45 Archivo, 'Helvetica Neue', system-ui, sans-serif;
+  --typography-body-sm: 500 13px/1.45 Archivo, 'Helvetica Neue', system-ui, sans-serif;
+  --typography-mark: 500 10px/1 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; /** utility marks — the one place uppercase is allowed (apply text-transform in CSS) */
+  --typography-label: 600 13px/1.2 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** control labels — buttons, etc. */
+}

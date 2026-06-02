@@ -1,0 +1,64 @@
+* { box-sizing: border-box; border-radius: 0; }
+html, body { margin: 0; }
+body {
+  background: var(--color-surface-page);
+  color: var(--color-text-default);
+  font: var(--typography-body);
+  text-transform: lowercase;
+  letter-spacing: -0.012em;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+  overflow-x: hidden;
+  /* interactions are instant — hover changes have no transition and the press is an
+     untransitioned hard drop; the only motion on the page is the ambient grid and
+     bloom. */
+  /* re-link the colour-carrying component vars to their colour roles so one role
+     override (the theming demo) reskins the whole page. The build flattens these
+     aliases to literals; the showcase restores the link for the live reskin. */
+  --button-text-default: var(--color-text-default);
+  --button-text-hover: var(--color-text-on-ink);
+  --button-surface-hover: var(--color-surface-ink);
+  --button-border-default: var(--color-border-strong);
+  --button-border-hover: var(--color-surface-ink);
+  --field-border-default: var(--color-border-default);
+  --field-border-focus: var(--color-accent-base);
+  --field-text: var(--color-text-default);
+  --field-placeholder: var(--color-text-faint);
+  --badge-text: var(--color-text-default);
+  --badge-border: var(--color-border-default);
+  --link-text-default: var(--color-text-default);
+  --link-text-hover: var(--color-accent-base);
+  --link-underline-default: var(--color-border-quiet);
+  --link-underline-hover: var(--color-accent-base);
+  /* bloom + pollen colours — the cream baseline (a warm amber + soft red glow, amber
+     motes). The theming demo overrides these per skin (see renderThemeBar) so the
+     atmosphere and the pollen reskin with the theme too. */
+  --wx-bloom-a: var(--color-cream-bloom);
+  --wx-bloom-b: var(--color-amber);
+  --wx-bloom-c: var(--color-red-soft);
+  --wx-pollen: var(--color-amber);
+}
+
+.sheet { position: relative; z-index: 1; padding: var(--space-2xl); max-width: 1180px; margin: 0 auto; }
+
+/* masthead */
+.masthead { overflow: hidden; position: relative; }
+/* the masthead carries the pollen effect: a field of warm motes drifting up behind
+   the wordmark, whose own glyphs lift gently (.wx-drift). */
+.masthead-wx { z-index: 0; }
+.masthead .big { position: relative; z-index: 1; font: var(--typography-display); line-height: 0.92; letter-spacing: -0.04em; white-space: nowrap; margin: 0; }
+.masthead .sub { position: relative; z-index: 1; font: var(--typography-body-lg); color: var(--color-text-soft); max-width: 48ch; margin: var(--space-md) 0 0; }
+
+section { margin-top: var(--space-2xl); }
+.sec-head { display: flex; align-items: baseline; gap: var(--space-lg); margin-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border-default); padding-bottom: var(--space-sm); }
+.fig { font-family: 'Caveat', cursive; font-weight: 700; font-size: 52px; line-height: 0.7; color: var(--color-accent-base); text-transform: none; }
+.sec-head h2 { font: var(--typography-heading-lg); text-transform: lowercase; margin: 0; }
+.sec-head .sec-note { margin-left: auto; align-self: center; font: var(--typography-body-sm); text-transform: lowercase; color: var(--color-text-soft); }
+
+.colophon { display: flex; align-items: center; gap: var(--space-md); margin-top: var(--space-2xl); padding-top: var(--space-lg); border-top: 1px solid var(--color-border-default); font: var(--typography-body-sm); color: var(--color-text-soft); }
+
+a { color: inherit; }
+a:focus-visible, button:focus-visible, .th-tab:focus-visible { outline: 2px solid var(--color-accent-base); outline-offset: 2px; }
+::selection { background: var(--color-accent-base); color: var(--color-surface-page); }

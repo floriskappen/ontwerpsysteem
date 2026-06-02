@@ -1,0 +1,146 @@
+[
+  {
+    "id": "atmosphere.grid.breathing",
+    "intent": "ambient background breathing lines",
+    "useWhen": "establishing calm structural depth",
+    "avoid": "foreground components",
+    "sourceModules": [
+      "design-system/source/zoo/effects/grid.mjs",
+      "design-system/source/zoo/styles/atmosphere.css"
+    ],
+    "valueRefs": [],
+    "reducedMotion": "disabled",
+    "notes": "desynchronized using cell indices"
+  },
+  {
+    "id": "component.button.ink-press",
+    "intent": "tactile button with Ben-Day dot halftone pattern",
+    "useWhen": "interactive primary or secondary actions",
+    "avoid": "standard flat system default buttons",
+    "sourceModules": [
+      "design-system/source/zoo/sections/components.mjs",
+      "design-system/source/zoo/styles/components.css"
+    ],
+    "valueRefs": [
+      "color.border.strong",
+      "color.text.default"
+    ],
+    "reducedMotion": "unaffected",
+    "notes": "press effect is immediate with 2px transform"
+  },
+  {
+    "id": "material.surface.paper-grain",
+    "intent": "tactile unbleached paper tooth",
+    "useWhen": "any background surface or container panel",
+    "avoid": "pure flat digital shapes",
+    "sourceModules": [
+      "design-system/source/zoo/styles/atmosphere.css",
+      "design-system/source/zoo/styles/material.css"
+    ],
+    "valueRefs": [
+      "color.surface.page"
+    ],
+    "reducedMotion": "unaffected",
+    "notes": "radial grain noise image overlaid using multiply"
+  },
+  {
+    "id": "material.pigment.multiply-blot",
+    "intent": "organic ink bleed behavior",
+    "useWhen": "coda or decorative graphic layering",
+    "avoid": "standard component icons",
+    "sourceModules": [
+      "design-system/source/zoo/styles/material.css",
+      "design-system/source/zoo/sections/palette.mjs"
+    ],
+    "valueRefs": [
+      "color.accent.soft",
+      "color.text.soft"
+    ],
+    "reducedMotion": "unaffected",
+    "notes": "layers combine via CSS multiply"
+  },
+  {
+    "id": "motion.clock.stepped",
+    "intent": "system stepped animation clock",
+    "useWhen": "all periodic animations",
+    "avoid": "continuous linear transitions",
+    "sourceModules": [
+      "design-system/source/zoo/effects/weather-particles.mjs"
+    ],
+    "valueRefs": [],
+    "reducedMotion": "disabled",
+    "notes": "evaluated at 8fps using stepped keyframe timing"
+  },
+  {
+    "id": "motion.weather.wind",
+    "intent": "staggered horizontal wind gust streaks",
+    "useWhen": "wind weather theme is selected",
+    "avoid": "standard dashboard load cycles",
+    "sourceModules": [
+      "design-system/source/zoo/effects/weather-particles.mjs",
+      "design-system/source/zoo/styles/weather.css"
+    ],
+    "valueRefs": [],
+    "reducedMotion": "disabled",
+    "notes": "speed and delay randomized deterministically using LCG"
+  },
+  {
+    "id": "motion.weather.rain",
+    "intent": "slanted rainfall streaks and splatters",
+    "useWhen": "rain weather theme is active",
+    "avoid": "regular page scroll animation",
+    "sourceModules": [
+      "design-system/source/zoo/effects/weather-particles.mjs",
+      "design-system/source/zoo/styles/weather.css"
+    ],
+    "valueRefs": [],
+    "reducedMotion": "disabled",
+    "notes": "impact timing desynchronized"
+  },
+  {
+    "id": "state.loading.germinating",
+    "intent": "organic progress loading state",
+    "useWhen": "asynchronous operation loading",
+    "avoid": "standard circular spinners",
+    "sourceModules": [
+      "design-system/source/zoo/sections/states.mjs",
+      "design-system/source/zoo/styles/states.css"
+    ],
+    "valueRefs": [
+      "color.text.soft"
+    ],
+    "reducedMotion": "shows fully formed rest state",
+    "notes": "spiral seed head fills in Vogel golden angle order"
+  },
+  {
+    "id": "state.done.ripe",
+    "intent": "growth done state indicators",
+    "useWhen": "task completion",
+    "avoid": "green check marks",
+    "sourceModules": [
+      "design-system/source/zoo/sections/states.mjs",
+      "design-system/source/zoo/styles/states.css"
+    ],
+    "valueRefs": [
+      "color.accent.base"
+    ],
+    "reducedMotion": "static fully-colored rest state",
+    "notes": "shape deepens through stages"
+  },
+  {
+    "id": "theme.recipes.json",
+    "intent": "illustrative role swaps",
+    "useWhen": "previewing user paper options",
+    "avoid": "standard client-side next-theme runtime loaders",
+    "sourceModules": [
+      "design-system/source/zoo/sections/theme-bar.mjs",
+      "design-system/source/zoo/styles/themes.css"
+    ],
+    "valueRefs": [
+      "color.surface.page",
+      "color.accent.base"
+    ],
+    "reducedMotion": "unaffected",
+    "notes": "pure CSS-based reskinning"
+  }
+]
