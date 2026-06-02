@@ -18,8 +18,10 @@ import { renderShowcase } from './showcase-core.mjs';
 const FONTS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'assets', 'fonts');
 
 // Self-host the fonts: base64-inline the woff2s as @font-face so the showcase
-// renders in Archivo / JetBrains Mono while staying a single self-contained file
-// (no network, openable over file://). Deterministic — same bytes every build.
+// renders in Archivo / JetBrains Mono / Caveat while staying a single
+// self-contained file (no network, openable over file://). Deterministic — same
+// bytes every build. Caveat is the zoo's handwritten annotation voice (section
+// figures, marks); the system's content type stays Archivo + JetBrains Mono.
 let _fontCss;
 function fontCss() {
   if (_fontCss === undefined) {
@@ -30,6 +32,7 @@ function fontCss() {
     _fontCss = [
       face('Archivo', '500 700', 'archivo-latin.woff2'),
       face('JetBrains Mono', '500', 'jetbrains-mono-latin.woff2'),
+      face('Caveat', '500 700', 'caveat-latin.woff2'),
     ].join('\n');
   }
   return _fontCss;

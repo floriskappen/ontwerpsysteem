@@ -5,7 +5,11 @@ The showcase ("the zoo") is a single, self-contained page that presents the desi
 ## Requirements
 ### Requirement: Showcase renders only from built outputs
 
-The showcase SHALL render the design system exclusively from build artifacts under `dist/` — the token manifest and the built CSS — and SHALL NOT read or re-resolve token source files under `tokens/`. This guarantees the showcase reflects exactly what the build produces, so what is shown is always what ships.
+The showcase SHALL draw the design system's real values exclusively from build artifacts
+under `dist/` — the token manifest and the built CSS — and SHALL NOT read or re-resolve
+token source files under `tokens/`, so the system as shown is always what ships.
+Clearly-illustrative demonstration content (such as the theming-by-swapping skins) is
+permitted provided it does not misrepresent the shipped token set.
 
 #### Scenario: Showcase reflects the built set
 
@@ -90,4 +94,24 @@ The showcase SHALL present a curated set of representative components (such as b
 - **WHEN** a user hovers or focuses a component
 - **THEN** the component responds with its real interaction state
 - **AND** the page does not render a fixed grid of every state
+
+### Requirement: Showcase demonstrates theming by swapping colour roles
+
+The showcase SHALL demonstrate the system's "theme by swapping" principle by presenting
+alternate skins that change only colour roles (surface, ink, accent, border) while the
+structure, type and components stay identical, switchable in-page without a server or
+network. These demo skins are illustrative of the swap mechanism and SHALL be presented
+as a demonstration; they SHALL NOT be represented as the system's shipped token set.
+
+#### Scenario: The reskin is shown by swapping only colour roles
+
+- **WHEN** the viewer switches between the demo skins
+- **THEN** only the colour roles change while the same layout, type and components remain
+- **AND** switching works with no server and no network request
+
+#### Scenario: Demo skins are not misrepresented as shipped tokens
+
+- **WHEN** the theming demo is shown
+- **THEN** it is presented as an illustrative demonstration of swapping, distinct from the
+  system's real palette drawn from the build outputs
 
