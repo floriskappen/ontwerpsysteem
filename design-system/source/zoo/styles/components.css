@@ -1,0 +1,50 @@
+/* components in use */
+.use-grid { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--color-border-default);
+  position: relative; isolation: isolate; background: var(--color-surface-page); }
+.use-cell { position: relative; padding: var(--space-xl); border-left: 1px solid var(--color-border-default); border-top: 1px solid var(--color-border-default); display: flex; flex-direction: column; gap: var(--space-md); align-items: flex-start; min-height: var(--size-cell-min); }
+.use-cell:nth-child(-n+2) { border-top: 0; }
+.use-cell:nth-child(odd) { border-left: 0; }
+.use-label { font: var(--typography-label); text-transform: lowercase; color: var(--color-text-default); }
+.use-row { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: center; }
+
+.lbl { position: relative; z-index: 1; }
+
+/* buttons — opaque (the grid never shows through), a faint halftone (Ben-Day) dot
+   screen on every one, a heavier bottom-edge, an INSTANT press (transform is not
+   transitioned, so it reads as a hard drop) and a snappy, few-step hover. */
+.btn { font: var(--button-typography); text-transform: lowercase; color: var(--button-text-default); background: var(--color-surface-page);
+  border: 1px solid var(--button-border-default); border-bottom-width: 3px; padding: var(--button-padding-block) var(--button-padding-inline);
+  position: relative; overflow: hidden; cursor: pointer; }
+.btn::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(rgb(31 27 22) 1px, transparent 1.4px); background-size: 5px 5px; background-position: center; opacity: 0.06; }
+.btn:hover { background: var(--button-surface-hover); color: var(--button-text-hover); border-color: var(--button-border-hover); }
+.btn:active { transform: translateY(2px); border-bottom-width: 1px; }
+.btn-red { color: var(--color-accent-base); border-color: var(--color-accent-base); }
+.btn-red:hover { background: var(--color-accent-base); color: var(--color-text-on-ink); border-color: var(--color-accent-base); }
+.btn-ink { background: var(--color-surface-ink); color: var(--color-text-on-ink); border-color: var(--color-surface-ink); }
+.btn-ink:hover { background: var(--color-surface-page); color: var(--color-text-default); border-color: var(--color-border-strong); }
+
+/* fields — label as gutter */
+.field { display: grid; grid-template-columns: 104px 1fr; align-items: stretch; border: 1px solid var(--field-border-default); width: 100%; max-width: 360px; }
+.field + .field { margin-top: -1px; }
+.field-label { font: var(--typography-mark); text-transform: uppercase; color: var(--color-text-quiet); padding: 0 var(--space-md); display: flex; align-items: center;
+  background: var(--color-surface-deep); border-right: 1px solid var(--color-border-quiet); }
+.field input { border: 0; background: transparent; font: var(--field-typography); color: var(--field-text); padding: var(--field-padding-block) var(--field-padding-inline); outline: none; text-transform: lowercase; width: 100%; }
+.field input::placeholder { color: var(--field-placeholder); }
+.field:focus-within { border-color: var(--field-border-focus); }
+.field:focus-within .field-label { color: var(--color-accent-base); }
+
+/* marks (pills) */
+.pill { display: inline-flex; align-items: center; gap: var(--space-inline-gap); font: var(--badge-typography); text-transform: uppercase; color: var(--badge-text);
+  border: 1px solid var(--badge-border); padding: var(--badge-padding-block) var(--badge-padding-inline); }
+.pill .pdot { width: 6px; height: 6px; background: currentColor; position: relative; z-index: 1; }
+.pill-red { color: var(--color-accent-base); border-color: var(--color-accent-base); }
+.pill-ink { background: var(--color-surface-ink); color: var(--color-text-on-ink); border-color: var(--color-surface-ink); }
+.pill-quiet { color: var(--color-text-quiet); border-color: var(--color-border-quiet); }
+
+/* card */
+.card { background: var(--color-surface-claim); }
+.card-title { margin: 0; }
+.card-body { margin: 0; max-width: 34ch; }
+.lnk { color: var(--link-text-default); text-decoration: underline; text-decoration-color: var(--link-underline-default); text-underline-offset: 3px; }
+.lnk:hover { color: var(--link-text-hover); text-decoration-color: var(--link-underline-hover); }

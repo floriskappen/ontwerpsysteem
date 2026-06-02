@@ -7,7 +7,7 @@ import { runBuild, BuildAborted } from '../scripts/lib/build-core.mjs';
 import { tmpDir, treesEqual } from './helpers.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const realTokens = join(root, 'tokens');
+const realTokens = join(root, 'design-system', 'source', 'values');
 
 describe('build-pipeline', () => {
   it('Build runs only on valid tokens (aborts, writes nothing)', async () => {

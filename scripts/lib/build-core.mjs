@@ -8,7 +8,7 @@
 // `--color-text-muted` in CSS/Tailwind) across all outputs. This mapping is part
 // of the public contract.
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import StyleDictionary from 'style-dictionary';
@@ -145,11 +145,32 @@ function makeConfig(tokensDir, distDir) {
   };
 }
 
+function compileRecipes(recipesDir) {
+  try {
+    const files = readdirSync(recipesDir).filter((f) => f.endsWith('.recipes.json'));
+    const allRecipes = [];
+    for (const file of files) {
+      const content = JSON.parse(readFileSync(join(recipesDir, file), 'utf8'));
+      if (Array.isArray(content)) {
+        allRecipes.push(...content);
+      } else {
+        allRecipes.push(content);
+      }
+    }
+    writeFileSync(join(recipesDir, 'index.json'), JSON.stringify(allRecipes, null, 2) + '\n');
+  } catch (err) {
+    console.warn('Warning: Failed to compile recipes:', err.message);
+  }
+}
+
 /**
  * Validate then build. Throws BuildAborted (without writing output) if invalid.
  * @param {{tokensDir?: string, distDir?: string}} opts
  */
 export async function runBuild({ tokensDir = 'tokens', distDir = 'dist' } = {}) {
+  const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+  compileRecipes(join(root, 'design-system', 'recipes'));
+
   const { errors } = validateTokenDir(tokensDir);
   if (errors.length > 0) throw new BuildAborted(errors);
 
@@ -157,14 +178,14 @@ export async function runBuild({ tokensDir = 'tokens', distDir = 'dist' } = {}) 
   const sd = new StyleDictionary(makeConfig(tokensDir, distDir));
   await sd.buildAllPlatforms();
 
-  // Generate the showcase from the freshly built artifacts only (the manifest
+  // Generate the zoo from the freshly built artifacts only (the manifest
   // and the token CSS) — never from the token sources — so it reflects exactly
   // what ships. Inputs are inlined into a single self-contained HTML file.
   const manifest = JSON.parse(readFileSync(join(distDir, 'manifest', 'tokens.json'), 'utf8'));
   const tokenCss = readFileSync(join(distDir, 'css', 'tokens.css'), 'utf8');
   const html = renderShowcase({ manifest, tokenCss, fontCss: fontCss() });
-  mkdirSync(join(distDir, 'showcase'), { recursive: true });
-  writeFileSync(join(distDir, 'showcase', 'index.html'), html);
+  mkdirSync(join(distDir, 'zoo'), { recursive: true });
+  writeFileSync(join(distDir, 'zoo', 'index.html'), html);
 
   return { errors: [] };
 }

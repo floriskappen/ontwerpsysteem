@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 import { validateTokenDir } from './lib/validate-core.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const tokensDir = join(root, 'tokens');
+const tokensDir = join(root, 'design-system', 'source', 'values');
 
 const { errors } = validateTokenDir(tokensDir);
 

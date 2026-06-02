@@ -1,7 +1,7 @@
 # token-format Specification
 
 ## Purpose
-TBD - created by archiving change scaffold-token-pipeline. Update Purpose after archive.
+Defines the conformance rules for value sources so the design system's values stay consistent and machine-checkable: DTCG-format `.tokens.json` files under `design-system/source/values/`, a naming grammar, primitive/semantic/component tiering, and alias/reference resolution. A validation gate enforces these rules and exits non-zero on any violation.
 ## Requirements
 ### Requirement: Tokens conform to the DTCG 2025.10 format
 
@@ -52,10 +52,9 @@ The system SHALL have exactly three tiers — primitive, semantic, component —
 
 ### Requirement: Validation gate enforces the contract
 
-The validation gate SHALL run the full conformance check over `tokens/`: the DTCG JSON Schema, the naming grammar check, the tier/reference rules, and alias resolution. The gate SHALL exit non-zero on any violation and report the offending token path(s). The build SHALL depend on this gate passing.
+The validation gate SHALL run the full conformance check (DTCG JSON Schema, naming grammar, tier/reference rules, alias resolution) over all files located under `design-system/source/values/`. The gate SHALL exit non-zero on any violation.
 
-#### Scenario: Validation blocks a non-conforming change
-
-- **WHEN** the validation gate finds any schema, naming, tier, or reference violation
-- **THEN** it exits non-zero and prints each violation with its token path
+#### Scenario: Validation of the new values path
+- **WHEN** the validation gate is executed
+- **THEN** it scans the files under `design-system/source/values/` and reports any non-conforming tokens
 

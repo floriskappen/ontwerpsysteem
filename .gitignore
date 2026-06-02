@@ -4,3 +4,7 @@
 # Dependencies / build outputs (added as the pipeline lands)
 node_modules/
 dist/
+design-system/dist/
+
+# Local agent tooling artifacts
+.antigravitycli/

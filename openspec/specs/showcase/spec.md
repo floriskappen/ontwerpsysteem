@@ -3,23 +3,13 @@
 ## Purpose
 The showcase ("the zoo") is a single, self-contained page that presents the design system as a curated, on-brand artifact — colour, type, and components shown in use — rendered from the built tokens so what is shown is always what ships. The exhaustive token record lives in the build outputs; the zoo is the designed view.
 ## Requirements
-### Requirement: Showcase renders only from built outputs
+### Requirement: Showcase draws its values only from built outputs
 
-The showcase SHALL draw the design system's real values exclusively from build artifacts
-under `dist/` — the token manifest and the built CSS — and SHALL NOT read or re-resolve
-token source files under `tokens/`, so the system as shown is always what ships.
-Clearly-illustrative demonstration content (such as the theming-by-swapping skins) is
-permitted provided it does not misrepresent the shipped token set.
+The showcase SHALL draw the design system's *values* exclusively from built outputs located under `design-system/dist/` (such as CSS custom properties and the token manifest) and SHALL NOT read raw value/token sources directly. This governs values only; the zoo's own structure (markup, styles, and effects) is authored as modular source under `design-system/source/zoo/` — see "Showcase is generated from modular source files".
 
-#### Scenario: Showcase reflects the built set
-
-- **WHEN** the tokens change and the build is re-run
-- **THEN** the showcase reflects the new built values with no edit to the showcase itself
-
-#### Scenario: Sources are never read directly
-
-- **WHEN** the showcase is generated
-- **THEN** it consumes only artifacts under `dist/` and does not read files under `tokens/`
+#### Scenario: Showcase reflects built values
+- **WHEN** the values are modified and the system is rebuilt
+- **THEN** the showcase is regenerated using only the outputs in `design-system/dist/`
 
 ### Requirement: Showcase honours motion and focus accessibility
 
@@ -114,4 +104,13 @@ as a demonstration; they SHALL NOT be represented as the system's shipped token 
 - **WHEN** the theming demo is shown
 - **THEN** it is presented as an illustrative demonstration of swapping, distinct from the
   system's real palette drawn from the build outputs
+
+### Requirement: Showcase is generated from modular source files
+
+The showcase ("the zoo") SHALL be generated from modular source files located in `design-system/source/zoo/`. The source SHALL be separated by section (e.g. `sections/`), styles (e.g. `styles/`), and interactive effects (e.g. `effects/`). The build process SHALL compile these modules into a single, self-contained HTML file.
+
+#### Scenario: Showcase generation from modular sources
+- **WHEN** the showcase build is triggered
+- **THEN** it reads the modular components and styles from `design-system/source/zoo/`
+- **AND** produces a single compiled file at `design-system/dist/zoo/index.html`
 

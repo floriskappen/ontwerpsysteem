@@ -1,0 +1,29 @@
+/* atmosphere: a pulsing grid, grain, and a slow warm bloom */
+.grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  display: grid; grid-template-columns: repeat(var(--cols), 1fr); grid-template-rows: repeat(var(--rows), 1fr);
+}
+@property --bo { syntax: '<number>'; initial-value: 0.08; inherits: false; }
+.grid i {
+  --bo: var(--a);
+  border-right: 1px solid rgb(31 27 22 / var(--bo));
+  border-bottom: 1px solid rgb(31 27 22 / var(--bo));
+  animation: bo var(--d) ease-in-out infinite; animation-delay: var(--dl);
+}
+@keyframes bo { 0%, 100% { --bo: var(--a); } 50% { --bo: var(--b); } }
+
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: multiply; opacity: 0.62;
+}
+
+.bloom { position: fixed; inset: -20vmax; z-index: 0; pointer-events: none; mix-blend-mode: multiply; filter: blur(64px); }
+.bloom i { position: absolute; width: 68vmax; height: 68vmax; opacity: 0.85; will-change: transform; display: block; }
+.bloom .b1 { background: radial-gradient(circle, var(--wx-bloom-a) 0%, transparent 68%); top: -14vmax; left: -8vmax; animation: d1 38s ease-in-out infinite alternate; }
+.bloom .b2 { background: radial-gradient(circle, var(--wx-bloom-b) 0%, transparent 64%); top: 24vmax; right: -18vmax; opacity: 0.42; animation: d2 51s ease-in-out infinite alternate; }
+.bloom .b3 { background: radial-gradient(circle, var(--wx-bloom-c) 0%, transparent 60%); bottom: -26vmax; left: 20vmax; opacity: 0.34; animation: d3 67s ease-in-out infinite alternate; }
+@keyframes d1 { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
+@keyframes d2 { to { transform: translate(-10vmax, -5vmax) scale(0.95); } }
+@keyframes d3 { to { transform: translate(12vmax, -8vmax) scale(1.1); } }

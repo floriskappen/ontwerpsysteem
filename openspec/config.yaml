@@ -15,7 +15,7 @@ context: |
 
   Scope of OpenSpec here: OpenSpec governs the *machinery* of this repo — the technical apparatus that holds and serves the design system (file/folder structure, the token format + JSON Schema + validation, the build pipeline, the showcase "zoo", governance tooling). It does NOT spec the *content* of the design system — the actual color ramps, type scale, spacing scale, motion timings, and semantic roles ("how it looks"). That content is authored as token files that conform to the contract and the guidelines; it is not an OpenSpec capability. In short: OpenSpec builds and maintains the apparatus; the design system's content lives in the tokens that flow through it.
 
-  See CONSTITUTION.md for the principles and the full token contract.
+  See AGENTS.md for the reading order and design-system/brief.md for the core principles.
 
   Conventions: conventional commits.
 

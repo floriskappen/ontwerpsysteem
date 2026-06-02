@@ -10,8 +10,11 @@ import { runBuild, BuildAborted } from './lib/build-core.mjs';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 try {
-  await runBuild({ tokensDir: join(root, 'tokens'), distDir: join(root, 'dist') });
-  console.log('✓ Build complete → dist/ (css, js, tailwind, manifest, showcase).');
+  await runBuild({
+    tokensDir: join(root, 'design-system', 'source', 'values'),
+    distDir: join(root, 'design-system', 'dist')
+  });
+  console.log('✓ Build complete → design-system/dist/ (css, js, tailwind, manifest, zoo).');
 } catch (err) {
   if (err instanceof BuildAborted) {
     console.error(`✖ ${err.message} Run "npm run validate" for details. dist/ left untouched.`);

@@ -24,13 +24,13 @@ describe('repo-structure', () => {
   it('Outputs are reproducible and ignored', async () => {
     const a = tmpDir();
     const b = tmpDir();
-    await runBuild({ tokensDir: join(root, 'tokens'), distDir: a });
-    await runBuild({ tokensDir: join(root, 'tokens'), distDir: b });
+    await runBuild({ tokensDir: join(root, 'design-system', 'source', 'values'), distDir: a });
+    await runBuild({ tokensDir: join(root, 'design-system', 'source', 'values'), distDir: b });
     expect(treesEqual(a, b)).toBe(true);
 
     // dist/ is git-ignored.
-    const ignored = execFileSync('git', ['check-ignore', 'dist'], { cwd: root }).toString().trim();
-    expect(ignored).toBe('dist');
+    const ignored = execFileSync('git', ['check-ignore', 'design-system/dist/'], { cwd: root }).toString().trim();
+    expect(ignored).toBe('design-system/dist/');
   });
 
   it('Clean install runs the pipeline (scripts and deps are declared)', () => {

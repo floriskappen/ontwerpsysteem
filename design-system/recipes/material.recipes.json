@@ -1,0 +1,22 @@
+[
+  {
+    "id": "material.surface.paper-grain",
+    "intent": "tactile unbleached paper tooth",
+    "useWhen": "any background surface or container panel",
+    "avoid": "pure flat digital shapes",
+    "sourceModules": ["design-system/source/zoo/styles/atmosphere.css", "design-system/source/zoo/styles/material.css"],
+    "valueRefs": ["color.surface.page"],
+    "reducedMotion": "unaffected",
+    "notes": "radial grain noise image overlaid using multiply"
+  },
+  {
+    "id": "material.pigment.multiply-blot",
+    "intent": "organic ink bleed behavior",
+    "useWhen": "coda or decorative graphic layering",
+    "avoid": "standard component icons",
+    "sourceModules": ["design-system/source/zoo/styles/material.css", "design-system/source/zoo/sections/palette.mjs"],
+    "valueRefs": ["color.accent.soft", "color.text.soft"],
+    "reducedMotion": "unaffected",
+    "notes": "layers combine via CSS multiply"
+  }
+]

@@ -6,7 +6,7 @@ import { runBuild } from '../scripts/lib/build-core.mjs';
 import { tmpDir } from './helpers.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const realTokens = join(root, 'tokens');
+const realTokens = join(root, 'design-system', 'source', 'values');
 
 function buildManifest() {
   const dist = tmpDir();

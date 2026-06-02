@@ -1,21 +1,15 @@
 # build-pipeline Specification
 
 ## Purpose
-TBD - created by archiving change scaffold-token-pipeline. Update Purpose after archive.
+Defines how value sources become shippable artifacts: the build validates the sources under `design-system/source/values/`, then emits platform outputs under `design-system/dist/` — CSS custom properties, JS/TS ESM, a Tailwind v4 theme, and a structured token manifest. Builds are deterministic, and outputs are generated rather than committed.
 ## Requirements
 ### Requirement: Build transforms canonical tokens into platform outputs
 
-The build SHALL read all token sources under `tokens/`, resolve aliases, and emit platform outputs under `dist/`. The build SHALL run the validation gate first and SHALL NOT emit any output if validation fails. Given unchanged sources, the build SHALL be deterministic — repeated runs produce identical outputs.
+The build SHALL read all value source files under `design-system/source/values/`, validate them, and emit built platform outputs (CSS custom properties, JS/TS ESM, Tailwind v4 theme, and structured token manifest) under `design-system/dist/`.
 
-#### Scenario: Build runs only on valid tokens
-
-- **WHEN** the build is invoked and the validation gate fails
-- **THEN** the build aborts and `dist/` is not written or modified
-
-#### Scenario: Deterministic output
-
-- **WHEN** the build is run twice with no source changes
-- **THEN** the two `dist/` results are byte-identical
+#### Scenario: Build executes and outputs to design-system/dist
+- **WHEN** the build is run on a valid set of source files
+- **THEN** it generates the platform outputs inside `design-system/dist/`
 
 ### Requirement: Output names map deterministically from token paths
 

@@ -8,7 +8,7 @@
 // unit-tested per scenario without touching disk. The CLI wrapper
 // (scripts/validate.mjs) is responsible for reading files and process exit.
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
@@ -290,9 +290,110 @@ export function collectTokenFiles(tokensDir) {
   return { entries, errors };
 }
 
+function validateRecipesAndShowcase(root, tokenPaths, errors) {
+  const recipesDir = join(root, 'design-system', 'recipes');
+  let recipes = [];
+  try {
+    const indexPath = join(recipesDir, 'index.json');
+    if (existsSync(indexPath)) {
+      recipes = JSON.parse(readFileSync(indexPath, 'utf8'));
+    }
+  } catch (err) {
+    errors.push({
+      rule: 'recipes',
+      message: `Failed to parse recipes index.json: ${err.message}`
+    });
+    return;
+  }
+
+  const recipeIds = new Set(recipes.map((r) => r.id));
+
+  // Validate each recipe
+  for (const recipe of recipes) {
+    // 1. Check sourceModules exist
+    for (const mod of recipe.sourceModules || []) {
+      const fullModPath = join(root, mod);
+      if (!existsSync(fullModPath)) {
+        errors.push({
+          file: `recipes/index.json`,
+          path: recipe.id,
+          rule: 'recipes',
+          message: `Recipe "${recipe.id}" references non-existent source module: "${mod}"`
+        });
+      }
+    }
+    // 2. Check valueRefs exist
+    for (const ref of recipe.valueRefs || []) {
+      if (!tokenPaths.has(ref)) {
+        errors.push({
+          file: `recipes/index.json`,
+          path: recipe.id,
+          rule: 'recipes',
+          message: `Recipe "${recipe.id}" references non-existent token: "${ref}"`
+        });
+      }
+    }
+  }
+
+  // 3. Validate showcase source modules under design-system/source/zoo/sections & effects
+  const zooDirs = [
+    join(root, 'design-system', 'source', 'zoo', 'sections'),
+    join(root, 'design-system', 'source', 'zoo', 'effects')
+  ];
+
+  for (const dir of zooDirs) {
+    if (!existsSync(dir)) continue;
+    for (const name of readdirSync(dir)) {
+      if (!name.endsWith('.mjs')) continue;
+      const file = join(dir, name);
+      const content = readFileSync(file, 'utf8');
+      const implementsMatches = content.match(/export\s+const\s+implementsRecipes\s*=\s*\[([\s\S]*?)\]/);
+      if (!implementsMatches) {
+        errors.push({
+          file: relative(root, file),
+          rule: 'showcase-metadata',
+          message: `Showcase module "${relative(root, file)}" does not declare implementsRecipes metadata.`
+        });
+        continue;
+      }
+      
+      // Parse the IDs inside implementsRecipes
+      const rawIds = implementsMatches[1];
+      const ids = rawIds
+        .split(',')
+        .map((s) => s.trim().replace(/['"`]/g, ''))
+        .filter(Boolean);
+      
+      for (const id of ids) {
+        if (!recipeIds.has(id)) {
+          errors.push({
+            file: relative(root, file),
+            rule: 'showcase-metadata',
+            message: `Showcase module "${relative(root, file)}" references invalid recipe ID: "${id}"`
+          });
+        }
+      }
+    }
+  }
+}
+
 /** Run the full gate over a tokens directory on disk. */
 export function validateTokenDir(tokensDir) {
   const { entries, errors: structureErrors } = collectTokenFiles(tokensDir);
   const { errors } = validateEntries(entries);
-  return { errors: [...structureErrors, ...errors] };
+  const allErrors = [...structureErrors, ...errors];
+
+  if (allErrors.length === 0) {
+    // Collect all valid token paths
+    const tokenPaths = new Set();
+    for (const entry of entries) {
+      for (const { path } of walkTokens(entry.data)) {
+        tokenPaths.add(path);
+      }
+    }
+    const root = join(tokensDir, '..', '..', '..');
+    validateRecipesAndShowcase(root, tokenPaths, allErrors);
+  }
+
+  return { errors: allErrors };
 }

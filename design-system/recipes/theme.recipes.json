@@ -1,0 +1,12 @@
+[
+  {
+    "id": "theme.recipes.json",
+    "intent": "illustrative role swaps",
+    "useWhen": "previewing user paper options",
+    "avoid": "standard client-side next-theme runtime loaders",
+    "sourceModules": ["design-system/source/zoo/sections/theme-bar.mjs", "design-system/source/zoo/styles/themes.css"],
+    "valueRefs": ["color.surface.page", "color.accent.base"],
+    "reducedMotion": "unaffected",
+    "notes": "pure CSS-based reskinning"
+  }
+]

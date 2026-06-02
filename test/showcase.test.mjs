@@ -113,10 +113,10 @@ describe('showcase (the zoo)', () => {
     expect(html()).toBe(html());
   });
 
-  it('is emitted by the build under dist/showcase/ with all three fonts inlined', async () => {
+  it('is emitted by the build under dist/zoo/ with all three fonts inlined', async () => {
     const dist = tmpDir();
-    await runBuild({ tokensDir: join(root, 'tokens'), distDir: dist });
-    const out = join(dist, 'showcase', 'index.html');
+    await runBuild({ tokensDir: join(root, 'design-system', 'source', 'values'), distDir: dist });
+    const out = join(dist, 'zoo', 'index.html');
     expect(existsSync(out)).toBe(true);
     const page = readFileSync(out, 'utf8');
     expect((page.match(/@font-face/g) || []).length).toBe(3); // Archivo, JetBrains Mono, Caveat
