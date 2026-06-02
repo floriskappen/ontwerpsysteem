@@ -32,3 +32,21 @@ Before finishing any task or submitting a change, run through this checklist:
 - [ ] **Cross-Layer Integrity**: Does the recipe JSON file's `sourceModules` and `valueRefs` match existing, valid paths in the codebase?
 - [ ] **Baseline Check**: Does the new showcase output visually and behaviorally match the reference baseline in `design-system/reference/accepted-zoo/`?
 - [ ] **Tests & Validation**: Does `npm run test` and `npm run validate` pass?
+
+## Releasing to consumers
+
+Downstream applications consume a **pinned release** of this system (the consumer
+bundle on the `release` branch). Propagation to them is driven by `CHANGELOG.md`, not
+raw commit history.
+
+- A release is cut with `npm run release` (semver: MAJOR = breaking design/contract
+  change, MINOR = additive, PATCH = fixes). The version lives in `design-system/VERSION`.
+- **Agent drafts, human approves.** `npm run release` proposes the next version and a
+  draft changelog entry built from the recipe/language IDs whose source changed since
+  the last release. `--write` applies the draft; you then **edit `CHANGELOG.md`** to say
+  what actually changed (per ID) and the propagation note. `--publish` ships the bundle
+  to the `release` branch + tag. Nothing publishes automatically, and nothing is pushed
+  to a remote without you.
+- **Every changelog entry is keyed to recipe/language IDs** and carries a one-line
+  *propagation note* — what a consuming app must re-check. Exploratory changes get no
+  entry. Mark meaning-changing entries **BREAKING**.

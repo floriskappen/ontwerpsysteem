@@ -14,7 +14,7 @@ try {
     tokensDir: join(root, 'design-system', 'source', 'values'),
     distDir: join(root, 'design-system', 'dist')
   });
-  console.log('✓ Build complete → design-system/dist/ (css, js, tailwind, manifest, zoo).');
+  console.log('✓ Build complete → design-system/dist/ (css, js, tailwind, manifest, zoo, release).');
 } catch (err) {
   if (err instanceof BuildAborted) {
     console.error(`✖ ${err.message} Run "npm run validate" for details. dist/ left untouched.`);

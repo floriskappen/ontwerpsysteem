@@ -19,3 +19,9 @@ When onboarded to this repository or working on a task, you MUST read files in t
 - **Taste & Principles over Defaults**: Missing components, layouts, or transitions must be invented from recipes and design principles, not framework defaults.
 - **Durable vs. Experimental**: Explicitly separate exploratory experiments from durable, production-ready changes. Durable changes must update matching language documents, recipes, and value files.
 - **Verification against Baseline**: If you change the showcase or styles, ensure visual parity and correctness by verifying against the accepted baseline under `design-system/reference/accepted-zoo/generated/index.html`.
+
+## Releasing & Distribution
+
+- The build assembles a **consumer bundle** under `design-system/dist/release/` — a clean, agent-readable surface (built values, fonts, `language/`, `recipes/`, the zoo source + rendered `index.html`, a consumer `AGENTS.md`, `VERSION`, `CHANGELOG.md`). It excludes dev machinery and is the only thing downstream apps consume.
+- Cut releases with `npm run release` (semver). It is **agent-drafts / human-approves**: draft → `--write` → edit `CHANGELOG.md` → `--publish` to the `release` branch + tag. Never auto-publish; never push to a remote without the user. See `design-system/change-propagation.md` → "Releasing to consumers".
+- Consumer-facing templates live in `design-system/templates/` (`consumer-AGENTS.md`, `consumer-README.md`, `DESIGN.md` pin file). Keep the consumer reading order in sync with this file when the structure changes.

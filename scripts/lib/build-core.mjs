@@ -8,7 +8,7 @@
 // `--color-text-muted` in CSS/Tailwind) across all outputs. This mapping is part
 // of the public contract.
 
-import { mkdirSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, readdirSync, cpSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import StyleDictionary from 'style-dictionary';
@@ -163,6 +163,38 @@ function compileRecipes(recipesDir) {
   }
 }
 
+// Assemble the consumer bundle: a clean, self-contained, agent-readable surface
+// under <distDir>/release/, built from the freshly built outputs plus the durable
+// design surface. It deliberately excludes dev machinery (scripts, tests, openspec,
+// the accepted-zoo baseline). Cleared and rewritten each time so re-assembly from
+// unchanged inputs is deterministic.
+export function assembleBundle(root, distDir) {
+  const out = join(distDir, 'release');
+  rmSync(out, { recursive: true, force: true });
+  mkdirSync(out, { recursive: true });
+
+  const ds = (...p) => join(root, 'design-system', ...p);
+  const copy = (src, dest) => cpSync(src, join(out, dest), { recursive: true });
+
+  // built values (css / js / tailwind / manifest)
+  for (const d of ['css', 'js', 'tailwind', 'manifest']) copy(join(distDir, d), join('values', d));
+  // durable design surface
+  copy(ds('language'), 'language');
+  copy(ds('recipes'), 'recipes');
+  copy(ds('source', 'zoo'), join('zoo', 'source'));
+  copy(join(distDir, 'zoo', 'index.html'), join('zoo', 'index.html'));
+  copy(join(root, 'assets', 'fonts'), 'fonts');
+  // entry docs, pin-file template, version + changelog
+  copy(ds('brief.md'), 'brief.md');
+  copy(ds('templates', 'consumer-AGENTS.md'), 'AGENTS.md');
+  copy(ds('templates', 'consumer-README.md'), 'README.md');
+  copy(ds('templates', 'DESIGN.md'), join('templates', 'DESIGN.md'));
+  copy(ds('VERSION'), 'VERSION');
+  copy(join(root, 'CHANGELOG.md'), 'CHANGELOG.md');
+
+  return out;
+}
+
 /**
  * Validate then build. Throws BuildAborted (without writing output) if invalid.
  * @param {{tokensDir?: string, distDir?: string}} opts
@@ -186,6 +218,9 @@ export async function runBuild({ tokensDir = 'tokens', distDir = 'dist' } = {}) 
   const html = renderShowcase({ manifest, tokenCss, fontCss: fontCss() });
   mkdirSync(join(distDir, 'zoo'), { recursive: true });
   writeFileSync(join(distDir, 'zoo', 'index.html'), html);
+
+  // Assemble the consumer bundle from the built outputs + the durable surface.
+  assembleBundle(root, distDir);
 
   return { errors: [] };
 }
