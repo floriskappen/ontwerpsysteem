@@ -1,6 +1,6 @@
 <!--
   Pin file for an application that consumes the ontwerp design system.
-  Copy this to your app (e.g. .design/DESIGN.md) and keep it current.
+  Copy this to your app (e.g. docs/DESIGN.md) and keep it current.
   Record DECISIONS AND DEVIATIONS, not an exhaustive element catalogue —
   the design system's own recipes and zoo are the conformance reference.
   Your agent updates this whenever it advances the pin or propagates a change.
