@@ -27,7 +27,7 @@ CHANGELOG.md     per-release changes, keyed to recipe/language IDs
    git submodule add -b release <design-system-repo-url> vendor/ontwerp
    cd vendor/ontwerp && git checkout v<version>   # pin to an exact release
    ```
-2. Copy `templates/DESIGN.md` into your app (e.g. `.design/DESIGN.md`) and fill it in.
+2. Copy `templates/DESIGN.md` into your app (e.g. `docs/DESIGN.md`) and fill it in.
 3. Apply the system: consume `values/`, follow `recipes/` + `language/`, use `zoo/`
    as the reference for correct results.
 

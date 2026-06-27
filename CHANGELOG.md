@@ -17,6 +17,19 @@ Entry format:
 **Propagation:** <what a consumer must re-check after advancing the pin>
 ```
 
+## 0.1.1 — 2026-06-27
+
+### Changed
+- Distribution contract: the consumer pin-file location moved from
+  `.design/DESIGN.md` to `docs/DESIGN.md`. Updated `templates/DESIGN.md`,
+  `templates/consumer-README.md`, and the repo's integration guide (`README.md`).
+  No recipe, language, or value tokens changed.
+
+**Propagation:** existing consumers should move their pin file from
+`.design/DESIGN.md` to `docs/DESIGN.md` and update any references to it in their
+own `AGENTS.md` / `CLAUDE.md`. New consumers: copy `templates/DESIGN.md` to
+`docs/DESIGN.md` instead of `.design/`.
+
 ## 0.1.0 — 2026-06-02
 
 Initial release — the full accepted design language and its worked example (the zoo).

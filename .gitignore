@@ -8,3 +8,6 @@ design-system/dist/
 
 # Local agent tooling artifacts
 .antigravitycli/
+
+# macOS
+.DS_Store
