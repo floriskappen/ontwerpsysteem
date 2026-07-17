@@ -31,7 +31,7 @@
     "border": {
       "$type": "color",
       "default": { "$value": "{color.border.default}" },
-      "focus": { "$value": "{color.accent.base}", "$description": "focus turns the full border red" }
+      "focus": { "$value": "{color.focus-ring}", "$description": "focus turns the full border to the focus-ring role — the accent claiming the frame" }
     },
     "radius": { "$type": "dimension", "$value": "{radius.none}" },
     "padding": {

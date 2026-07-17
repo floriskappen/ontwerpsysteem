@@ -49,7 +49,21 @@ describe('token-format', () => {
   it('Semantic aliases a primitive', () => {
     const { errors } = validateEntries([
       { tier: 'primitive', file: 'p', data: { color: { $type: 'color', brand: { base: { $value: '#3b5bdb' } } } } },
-      { tier: 'semantic', file: 's', data: { color: { $type: 'color', text: { muted: { $value: '{color.brand.base}' } } } } },
+      {
+        tier: 'semantic',
+        file: 's',
+        data: {
+          color: {
+            $type: 'color',
+            text: {
+              muted: {
+                $value: '{color.brand.base}',
+                $extensions: { 'ontwerp.role': { provenance: 'supply' } },
+              },
+            },
+          },
+        },
+      },
     ]);
     expect(errors).toEqual([]);
   });
@@ -96,5 +110,106 @@ describe('token-format', () => {
     ]);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors.every((e) => e.path !== undefined)).toBe(true);
+  });
+
+  // Spec: Alpha-variant primitive names follow the alpha-ramp grammar
+  it('alpha-variant with existing base passes', () => {
+    const { errors } = validateEntries([
+      {
+        tier: 'primitive',
+        file: 'p',
+        data: {
+          color: {
+            $type: 'color',
+            ink: { $value: '#1F1B16' },
+            'ink-a65': { $value: 'rgba(31, 27, 22, 0.65)' },
+          },
+        },
+      },
+    ]);
+    expect(errors).toEqual([]);
+  });
+
+  it('alpha-variant with missing base fails naming the base', () => {
+    const { errors } = validateEntries([
+      { tier: 'primitive', file: 'p', data: { color: { $type: 'color', 'mist-a40': { $value: 'rgba(0, 0, 0, 0.4)' } } } },
+    ]);
+    const naming = errors.filter((e) => e.rule === 'naming');
+    expect(naming.length).toBe(1);
+    expect(naming[0].path).toBe('color.mist-a40');
+    expect(naming[0].message).toContain('color.mist');
+  });
+
+  it('alpha-variant suffix at semantic tier fails', () => {
+    const { errors } = validateEntries([
+      {
+        tier: 'semantic',
+        file: 's',
+        data: {
+          color: {
+            $type: 'color',
+            'wash-a20': {
+              $value: '#ddd',
+              $extensions: { 'ontwerp.role': { provenance: 'supply' } },
+            },
+          },
+        },
+      },
+    ]);
+    const naming = errors.filter((e) => e.rule === 'naming');
+    expect(naming.length).toBe(1);
+    expect(naming[0].path).toBe('color.wash-a20');
+    expect(naming[0].message).toMatch(/intent/);
+  });
+
+  // Spec: Semantic colour tokens declare skin provenance
+  it('semantic colour token without provenance fails', () => {
+    const { errors } = validateEntries([
+      { tier: 'semantic', file: 's', data: { color: { $type: 'color', text: { muted: { $value: '#888' } } } } },
+    ]);
+    const provenance = errors.filter((e) => e.rule === 'provenance');
+    expect(provenance.length).toBe(1);
+    expect(provenance[0].path).toBe('color.text.muted');
+  });
+
+  it('derive without derivation id fails', () => {
+    const { errors } = validateEntries([
+      {
+        tier: 'semantic',
+        file: 's',
+        data: {
+          color: {
+            $type: 'color',
+            text: { muted: { $value: '#888', $extensions: { 'ontwerp.role': { provenance: 'derive' } } } },
+          },
+        },
+      },
+    ]);
+    const provenance = errors.filter((e) => e.rule === 'provenance');
+    expect(provenance.length).toBe(1);
+    expect(provenance[0].message).toMatch(/names no\s+derivation rule/);
+  });
+
+  it('supply with derivation id fails', () => {
+    const { errors } = validateEntries([
+      {
+        tier: 'semantic',
+        file: 's',
+        data: {
+          color: {
+            $type: 'color',
+            text: {
+              muted: {
+                $value: '#888',
+                $extensions: { 'ontwerp.role': { provenance: 'supply', derivation: 'text-quiet' } },
+              },
+            },
+          },
+        },
+      },
+    ]);
+    const provenance = errors.filter((e) => e.rule === 'provenance');
+    expect(provenance.length).toBe(1);
+    expect(provenance[0].message).toMatch(/supplied value has no producing rule/);
   });
 });

@@ -42,3 +42,16 @@ describe('repo-structure', () => {
     }
   });
 });
+
+describe('design-language', () => {
+  // Spec: design-language / Scenario: Consumer finds the scoped-application
+  // rule. language/type.md must state the scope-root rule, the html/body
+  // prohibition, the boundary primitive by name, and the fonts.css wiring path.
+  it('type language documents scoped font application', () => {
+    const doc = readFileSync(join(root, 'design-system', 'language', 'type.md'), 'utf8');
+    expect(doc, 'the voice is applied at the scope root').toMatch(/scope root/i);
+    expect(doc, 'html/body application is prohibited').toMatch(/never on `html` or `body`/);
+    expect(doc, 'the boundary primitive is referenced by name').toContain('.ontwerp-boundary');
+    expect(doc, 'fonts are wired by importing the shipped fonts CSS').toContain('values/css/fonts.css');
+  });
+});

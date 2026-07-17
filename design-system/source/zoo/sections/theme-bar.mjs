@@ -21,7 +21,11 @@ export function renderThemeBar() {
         .join(' ');
       const bloom =
         '--wx-bloom-a: var(--color-surface-claim); --wx-bloom-b: var(--color-accent-soft); --wx-bloom-c: var(--color-accent-soft); --wx-pollen: var(--color-accent-soft);';
-      pieces.push(`body:has(#th-${s.id}:checked) { ${decls} ${bloom} }`);
+      // Overrides land on :root — the element that carries the built token
+      // declarations — because a custom property's var() resolves where it is
+      // declared: only a same-element (higher-specificity) override re-links
+      // the alias chain the built CSS keeps live.
+      pieces.push(`:root:has(#th-${s.id}:checked) { ${decls} ${bloom} }`);
     }
     pieces.push(`#th-${s.id}:checked + .th-tab { background: var(--color-text-default); color: var(--color-surface-page); }`);
     pieces.push(`#th-${s.id}:focus-visible + .th-tab { outline: 2px solid var(--color-accent-base); outline-offset: -2px; }`);

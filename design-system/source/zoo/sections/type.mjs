@@ -21,6 +21,6 @@ export function renderType() {
     `<div class="spec-row"><span class="spec-tag"><span class="spec-role">figures</span>` +
     `<span class="val">caveat</span></span>` +
     `<p class="spec-fig spec-line">0 1 2 3 4 5 6 7 8 9</p></div>`;
-  return `<div class="spec">${lines}${figures}<p class="spec-foot">archivo, lowercased · weights 500–700 · jetbrains mono for values · caveat for figures</p></div>`;
+  return `<div class="spec">${lines}${figures}<p class="spec-foot">archivo, lowercased · weights 400–700 · jetbrains mono for values · caveat for figures</p></div>`;
 }
 export const implementsRecipes = [];

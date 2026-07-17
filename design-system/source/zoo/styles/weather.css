@@ -3,52 +3,52 @@
    offsets the delay so the effect ripples across, like the grid's staggered cells.
    All four are STEPPED (steps()) — the system's low-FPS, stop-motion look. */
 .wxc { display: inline-block; will-change: transform; }
-.wx-wind .wxc { animation: wx-wind 2.6s steps(6) infinite; animation-delay: calc(var(--ci) * 0.08s); }
-@keyframes wx-wind {
+.wx-wind .wxc { animation: ontwerp-wx-wind 2.6s steps(6) infinite; animation-delay: calc(var(--ci) * 0.08s); }
+@keyframes ontwerp-wx-wind {
   0%, 100% { transform: translateX(0) rotate(0); }
   35% { transform: translateX(0.045em) rotate(1.6deg); }
   65% { transform: translateX(-0.02em) rotate(-0.9deg); }
 }
-.wx-rain .wxc { animation: wx-rain 2.1s steps(5) infinite; animation-delay: calc(var(--ci) * 0.07s); }
-@keyframes wx-rain {
+.wx-rain .wxc { animation: ontwerp-wx-rain 2.1s steps(5) infinite; animation-delay: calc(var(--ci) * 0.07s); }
+@keyframes ontwerp-wx-rain {
   0%, 72%, 100% { transform: translateY(0); opacity: 1; }
   10% { transform: translateY(0.16em); opacity: 0.78; }
   34% { transform: translateY(0); opacity: 1; }
 }
 /* leaves: each glyph drifts down a touch and tips, like a leaf catching air */
-.wx-leaves .wxc { animation: wx-leaves 3.4s steps(7) infinite; animation-delay: calc(var(--ci) * 0.1s); }
-@keyframes wx-leaves {
+.wx-leaves .wxc { animation: ontwerp-wx-leaves 3.4s steps(7) infinite; animation-delay: calc(var(--ci) * 0.1s); }
+@keyframes ontwerp-wx-leaves {
   0%, 100% { transform: translateY(0) rotate(0); }
   40% { transform: translateY(0.08em) rotate(-2.4deg); }
   70% { transform: translateY(0.03em) rotate(1.4deg); }
 }
 /* pollen/drift: each glyph lifts and settles, the way a thing rides warm air */
-.wx-drift .wxc { animation: wx-drift 4s steps(8) infinite; animation-delay: calc(var(--ci) * 0.12s); }
-@keyframes wx-drift {
+.wx-drift .wxc { animation: ontwerp-wx-drift 4s steps(8) infinite; animation-delay: calc(var(--ci) * 0.12s); }
+@keyframes ontwerp-wx-drift {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-0.05em); }
 }
 /* fireflies: the word glows a touch warmer as the swarm pulses — a soft amber breath */
-.wx-fireflies .wxc { animation: wx-fireflies 3s steps(6) infinite; animation-delay: calc(var(--ci) * 0.11s); }
-@keyframes wx-fireflies {
+.wx-fireflies .wxc { animation: ontwerp-wx-fireflies 3s steps(6) infinite; animation-delay: calc(var(--ci) * 0.11s); }
+@keyframes ontwerp-wx-fireflies {
   0%, 100% { transform: translateY(0); text-shadow: none; }
   50% { transform: translateY(-0.03em); text-shadow: 0 0 0.5em var(--wx-pollen); }
 }
 /* snow: each glyph settles — a slow, soft downward sink and recover */
-.wx-snow .wxc { animation: wx-snow 4.4s steps(8) infinite; animation-delay: calc(var(--ci) * 0.13s); }
-@keyframes wx-snow {
+.wx-snow .wxc { animation: ontwerp-wx-snow 4.4s steps(8) infinite; animation-delay: calc(var(--ci) * 0.13s); }
+@keyframes ontwerp-wx-snow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(0.05em); }
 }
 /* mist: glyphs soften, fading a little as a bank passes, as if seen through haze */
-.wx-mist .wxc { animation: wx-mist 5s steps(6) infinite; animation-delay: calc(var(--ci) * 0.09s); }
-@keyframes wx-mist {
+.wx-mist .wxc { animation: ontwerp-wx-mist 5s steps(6) infinite; animation-delay: calc(var(--ci) * 0.09s); }
+@keyframes ontwerp-wx-mist {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.62; }
 }
 /* light: glyphs warm and lift faintly as a sun-pool drifts over them */
-.wx-sun .wxc { animation: wx-sun 4.6s steps(7) infinite; animation-delay: calc(var(--ci) * 0.12s); }
-@keyframes wx-sun {
+.wx-sun .wxc { animation: ontwerp-wx-sun 4.6s steps(7) infinite; animation-delay: calc(var(--ci) * 0.12s); }
+@keyframes ontwerp-wx-sun {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.03); }
 }
@@ -74,8 +74,8 @@
    fade (drop-land), and the splashes flash open on the same line. */
 .wx-ground { position: absolute; left: 0; right: 0; bottom: var(--space-md); height: 1px; z-index: 1; pointer-events: none;
   background: linear-gradient(to right, transparent, var(--color-border-default) 7%, var(--color-border-default) 93%, transparent); }
-.is-rain .drop { animation-name: drop-land; }
-@keyframes drop-land { 0% { top: -16%; opacity: var(--o); } 84% { opacity: var(--o); } 100% { top: calc(100% - var(--space-md)); opacity: 0; } }
+.is-rain .drop { animation-name: ontwerp-drop-land; }
+@keyframes ontwerp-drop-land { 0% { top: -16%; opacity: var(--o); } 84% { opacity: var(--o); } 100% { top: calc(100% - var(--space-md)); opacity: 0; } }
 .is-rain .splash { bottom: var(--space-md); }
 
 /* wind: tapered hairline streaks blow left→right; a few square ink specks ride along,
@@ -83,31 +83,31 @@
    per-particle (var(--tf)) so they advance frame by frame. */
 .gust { position: absolute; top: var(--y); left: calc(-1 * var(--len)); width: var(--len); height: 1px;
   background: linear-gradient(90deg, transparent, rgb(31 27 22 / var(--o)) 35%, rgb(31 27 22 / var(--o)) 65%, transparent);
-  animation: gust var(--d) var(--tf) infinite; animation-delay: var(--dl); will-change: left; }
-@keyframes gust { to { left: 100%; } }
+  animation: ontwerp-gust var(--d) var(--tf) infinite; animation-delay: var(--dl); will-change: left; }
+@keyframes ontwerp-gust { to { left: 100%; } }
 .mote { position: absolute; top: var(--y); left: -4%; width: var(--sz); height: var(--sz);
   background: rgb(31 27 22 / var(--o)); will-change: left, transform;
-  animation: gust var(--d) var(--tf) infinite, bob var(--bd) var(--tf2) infinite;
+  animation: ontwerp-gust var(--d) var(--tf) infinite, ontwerp-bob var(--bd) var(--tf2) infinite;
   animation-delay: var(--dl), var(--dl); }
-@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes ontwerp-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
 /* rain: slanted hairline drops streak top→bottom; short splash ticks flash open along
    the floor to read as impacts. */
 .drop { position: absolute; top: -20%; left: var(--x); width: 1px; height: var(--len);
   background: linear-gradient(180deg, transparent, rgb(31 27 22 / var(--o)));
-  transform: rotate(9deg); transform-origin: top; animation: drop var(--d) var(--tf) infinite; animation-delay: var(--dl); will-change: top; }
-@keyframes drop { to { top: 120%; } }
+  transform: rotate(9deg); transform-origin: top; animation: ontwerp-drop var(--d) var(--tf) infinite; animation-delay: var(--dl); will-change: top; }
+@keyframes ontwerp-drop { to { top: 120%; } }
 .splash { position: absolute; bottom: 7%; left: var(--x); width: 7px; height: 1px; transform: scaleX(0);
-  background: rgb(31 27 22 / var(--o)); animation: splash var(--d) var(--tf) infinite; animation-delay: var(--dl); }
-@keyframes splash { 0%, 68% { transform: scaleX(0); opacity: 0; } 80% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1.8); opacity: 0; } }
+  background: rgb(31 27 22 / var(--o)); animation: ontwerp-splash var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-splash { 0%, 68% { transform: scaleX(0); opacity: 0; } 80% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1.8); opacity: 0; } }
 
 /* fall (abstract): a thin hairline sliver that falls while tumbling and drifting on a
    single graceful S — it fades in at the top and dissolves before it lands, so it never
    meets a hard edge. One animation, so the tumble and the descent stay in step. */
 .fleck { position: absolute; top: -14%; left: var(--x); width: var(--w); height: var(--h);
   background: var(--color-text-soft); will-change: top, transform, opacity;
-  animation: fleckfall var(--d) var(--tf) infinite; animation-delay: var(--dl); }
-@keyframes fleckfall {
+  animation: ontwerp-fleckfall var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-fleckfall {
   0% { top: -14%; transform: translateX(0) rotate(0deg); opacity: 0; }
   12% { opacity: var(--o); }
   50% { transform: translateX(calc(var(--drift) * -0.5)) rotate(calc(var(--spin) * 0.5)); }
@@ -119,8 +119,8 @@
    and out at the edges of sight — light made visible. */
 .pollen { position: absolute; left: var(--x); top: var(--y); width: var(--sz); height: var(--sz);
   background: var(--wx-pollen); will-change: transform, opacity;
-  animation: drift var(--d) var(--tf) infinite; animation-delay: var(--dl); }
-@keyframes drift {
+  animation: ontwerp-drift var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-drift {
   0% { transform: translate(0, 0); opacity: 0; }
   25%, 75% { opacity: var(--o); }
   100% { transform: translate(var(--dx), calc(-1 * var(--dy))); opacity: 0; }
@@ -131,17 +131,17 @@
    pulses, rather than fade. Each carries a small amber glow. */
 .firefly { position: absolute; left: var(--x); top: var(--y); width: var(--sz); height: var(--sz);
   background: var(--wx-pollen); box-shadow: 0 0 5px 1px var(--wx-pollen); opacity: 0; will-change: transform, opacity;
-  animation: firefly-wander var(--dw) var(--tf) infinite, firefly-blink var(--bd) var(--tf2) infinite;
+  animation: ontwerp-firefly-wander var(--dw) var(--tf) infinite, ontwerp-firefly-blink var(--bd) var(--tf2) infinite;
   animation-delay: var(--dl), var(--bl); }
-@keyframes firefly-wander { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(var(--dx), var(--dy)); } }
-@keyframes firefly-blink { 0%, 44%, 100% { opacity: 0; } 54%, 70% { opacity: var(--o); } }
+@keyframes ontwerp-firefly-wander { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(var(--dx), var(--dy)); } }
+@keyframes ontwerp-firefly-blink { 0%, 44%, 100% { opacity: 0; } 54%, 70% { opacity: var(--o); } }
 
 /* snow: small open (hairline-outlined) squares — snow as line-art — swaying down slow
    and fading before they reach the foot, so nothing piles at a hard edge. */
 .flake { position: absolute; top: -10%; left: var(--x); width: var(--sz); height: var(--sz);
   border: 1px solid rgb(31 27 22 / 0.55); opacity: 0; will-change: top, transform, opacity;
-  animation: snowfall var(--d) var(--tf) infinite; animation-delay: var(--dl); }
-@keyframes snowfall {
+  animation: ontwerp-snowfall var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-snowfall {
   0% { top: -10%; transform: translateX(0) rotate(0deg); opacity: 0; }
   12% { opacity: var(--o); }
   25% { transform: translateX(var(--sw)) rotate(calc(var(--rot) * 0.25)); }
@@ -156,8 +156,8 @@
 .haze { position: absolute; left: 10%; top: var(--y); width: 80%; height: var(--bh); opacity: 0;
   background: linear-gradient(90deg, transparent, var(--color-surface-page) 30%, var(--color-surface-page) 70%, transparent);
   filter: blur(6px); will-change: transform, opacity;
-  animation: haze-drift var(--d) var(--tf) infinite; animation-delay: var(--dl); }
-@keyframes haze-drift {
+  animation: ontwerp-haze-drift var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-haze-drift {
   0% { transform: translateX(calc(var(--dir) * -22%)); opacity: 0; }
   25%, 75% { opacity: var(--o); }
   100% { transform: translateX(calc(var(--dir) * 22%)); opacity: 0; }
@@ -168,8 +168,8 @@
 .sunpool { position: absolute; left: var(--x); top: var(--y); width: var(--sz); height: var(--sz);
   border-radius: 50%; background: radial-gradient(circle, var(--wx-pollen), transparent 70%);
   mix-blend-mode: multiply; filter: blur(10px); opacity: 0; will-change: transform, opacity;
-  animation: sunpool-breathe var(--d) var(--tf) infinite; animation-delay: var(--dl); }
-@keyframes sunpool-breathe {
+  animation: ontwerp-sunpool-breathe var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-sunpool-breathe {
   0%, 100% { transform: translate(0, 0) scale(0.85); opacity: 0; }
   50% { transform: translate(var(--dx), var(--dy)) scale(1.1); opacity: var(--o); }
 }

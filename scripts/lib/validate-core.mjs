@@ -12,6 +12,7 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+import { brotliDecompressSync } from 'node:zlib';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
@@ -38,6 +39,9 @@ const APPEARANCE_WORDS = new Set([
 
 const SEGMENT_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SCALE_RE = /^\d{2,4}$/; // numeric ramp step, e.g. 500, 600
+// Alpha-ramp production at the primitive tier: `<base>-a<step>` — an existing
+// base primitive at <step>% opacity (e.g. ink-a65). Step is 1–99.
+const ALPHA_VARIANT_RE = /^([a-z0-9]+(?:-[a-z0-9]+)*)-a(\d{1,2})$/;
 
 let _validateSchema;
 function getSchemaValidator() {
@@ -87,7 +91,7 @@ function collectReferences(value, acc = []) {
   return acc;
 }
 
-function checkName(path, tier, errors, file) {
+function checkName(path, tier, errors, file, byPath) {
   const segments = path.split('.');
   for (const seg of segments) {
     if (!SEGMENT_RE.test(seg)) {
@@ -99,7 +103,47 @@ function checkName(path, tier, errors, file) {
       });
     }
   }
+  // Alpha-variant grammar: `<base>-a<step>` is a primitive-tier production only.
+  if (tier === 'primitive') {
+    const alpha = segments[segments.length - 1].match(ALPHA_VARIANT_RE);
+    if (alpha) {
+      const step = Number(alpha[2]);
+      if (step < 1) {
+        errors.push({
+          file,
+          path,
+          rule: 'naming',
+          message: `Alpha variant "${path}" has step ${alpha[2]}; the opacity step must be an integer from 1 to 99.`,
+        });
+      }
+      const basePath = [...segments.slice(0, -1), alpha[1]].join('.');
+      const base = byPath?.get(basePath);
+      if (!base || base.tier !== 'primitive') {
+        errors.push({
+          file,
+          path,
+          rule: 'naming',
+          message:
+            `Alpha variant "${path}" has no base primitive "${basePath}" in its collection; ` +
+            `an -a<step> name must be an alpha-ramp step over an existing base.`,
+        });
+      }
+    }
+  }
   if (tier === 'semantic' || tier === 'component') {
+    for (const seg of segments) {
+      if (ALPHA_VARIANT_RE.test(seg)) {
+        errors.push({
+          file,
+          path,
+          rule: 'naming',
+          message:
+            `Name "${path}" carries the alpha-variant suffix ("${seg}"); ${tier} tokens must name ` +
+            `intent, not composition — alpha ramps live at the primitive tier.`,
+        });
+        break;
+      }
+    }
     for (const seg of segments) {
       for (const part of seg.split('-')) {
         if (APPEARANCE_WORDS.has(part) || SCALE_RE.test(part)) {
@@ -121,9 +165,15 @@ function checkName(path, tier, errors, file) {
 /**
  * Validate a set of already-parsed token entries.
  * @param {Array<{tier: string, file: string, data: object}>} entries
+ * @param {{derivations?: unknown, colourDoc?: string}} [options]
+ *   `derivations`: the parsed colour derivation registry
+ *   (design-system/language/colour.derivations.json) — when given, the registry
+ *   itself is validated and every token `derivation` reference must resolve.
+ *   `colourDoc`: the text of language/colour.md — when given, its roles table is
+ *   synced against the semantic colour tokens in both directions.
  * @returns {{errors: Array<{file?: string, path?: string, rule: string, message: string}>}}
  */
-export function validateEntries(entries) {
+export function validateEntries(entries, options = {}) {
   const errors = [];
   const validateSchema = getSchemaValidator();
 
@@ -159,6 +209,7 @@ export function validateEntries(entries) {
         file,
         type,
         refs: collectReferences(token.$value),
+        extensions: token.$extensions,
       });
     }
   }
@@ -175,7 +226,7 @@ export function validateEntries(entries) {
     }
 
     // Layer 2b: naming grammar.
-    checkName(entry.path, entry.tier, errors, entry.file);
+    checkName(entry.path, entry.tier, errors, entry.file, byPath);
 
     // Layer 2c: tier / reference direction + resolution.
     const allowed = ALLOWED_REFERENCE_TARGETS[entry.tier] ?? [];
@@ -213,7 +264,214 @@ export function validateEntries(entries) {
   // Layer 2d: no cyclic alias chains.
   detectCycles(byPath, errors);
 
+  // Layer 2e: skin provenance — every semantic colour token declares whether a
+  // skin supplies its value or a derivation rule computes it.
+  const roleProvenance = checkProvenance(byPath, errors);
+
+  // Layer 2f: the derivation registry (shape, unique IDs, supply-only inputs)
+  // and resolution of every token's `derivation` reference against it.
+  if (options.derivations !== undefined) {
+    checkDerivations(options.derivations, roleProvenance, errors);
+  }
+
+  // Layer 2g: the roles table in language/colour.md stays in sync with the
+  // semantic colour tokens, in both directions, including provenance.
+  if (typeof options.colourDoc === 'string') {
+    checkRolesTable(options.colourDoc, roleProvenance, errors);
+  }
+
   return { errors };
+}
+
+// Every semantic-tier token of type `color` must carry
+// $extensions["ontwerp.role"]: { provenance: "supply" | "derive", derivation? }.
+// "derive" names the registry rule that produces the value; "supply" must not.
+// Returns the map of conforming roles (path -> { provenance, derivation }).
+function checkProvenance(byPath, errors) {
+  const roleProvenance = new Map();
+  for (const entry of byPath.values()) {
+    if (entry.tier !== 'semantic' || entry.type !== 'color') continue;
+    const role = entry.extensions?.['ontwerp.role'];
+    if (
+      !role || typeof role !== 'object' || Array.isArray(role) ||
+      (role.provenance !== 'supply' && role.provenance !== 'derive')
+    ) {
+      errors.push({
+        file: entry.file,
+        path: entry.path,
+        rule: 'provenance',
+        message:
+          `Semantic colour token "${entry.path}" declares no skin provenance; add ` +
+          `$extensions["ontwerp.role"] with provenance "supply" or "derive".`,
+      });
+      continue;
+    }
+    if (role.provenance === 'derive' && typeof role.derivation !== 'string') {
+      errors.push({
+        file: entry.file,
+        path: entry.path,
+        rule: 'provenance',
+        message:
+          `Semantic colour token "${entry.path}" declares provenance "derive" but names no ` +
+          `derivation rule; add a "derivation" field with a registered rule ID.`,
+      });
+      continue;
+    }
+    if (role.provenance === 'supply' && role.derivation !== undefined) {
+      errors.push({
+        file: entry.file,
+        path: entry.path,
+        rule: 'provenance',
+        message:
+          `Semantic colour token "${entry.path}" declares provenance "supply" but carries a ` +
+          `"derivation" reference — a supplied value has no producing rule.`,
+      });
+      continue;
+    }
+    roleProvenance.set(entry.path, { provenance: role.provenance, derivation: role.derivation, file: entry.file });
+  }
+  return roleProvenance;
+}
+
+// The colour derivation registry: an array of { id, inputs, formula } rules.
+// IDs are unique; inputs reference existing skin-supplied semantic colour roles
+// only (a complete skin = the supplied set; everything else computes in one
+// pass); every token `derivation` reference resolves to a registered ID.
+function checkDerivations(derivations, roleProvenance, errors) {
+  const REGISTRY_FILE = 'design-system/language/colour.derivations.json';
+  if (!Array.isArray(derivations)) {
+    errors.push({
+      file: REGISTRY_FILE,
+      rule: 'derivation',
+      message: 'The colour derivation registry must be an array of { id, inputs, formula } rules.',
+    });
+    return;
+  }
+  const ids = new Set();
+  for (const [i, rule] of derivations.entries()) {
+    const label = rule && typeof rule === 'object' && typeof rule.id === 'string' ? `"${rule.id}"` : `at index ${i}`;
+    const complete =
+      rule && typeof rule === 'object' && !Array.isArray(rule) &&
+      typeof rule.id === 'string' &&
+      Array.isArray(rule.inputs) && rule.inputs.length > 0 && rule.inputs.every((x) => typeof x === 'string') &&
+      rule.formula && typeof rule.formula === 'object' && typeof rule.formula.kind === 'string';
+    if (!complete) {
+      errors.push({
+        file: REGISTRY_FILE,
+        path: rule?.id,
+        rule: 'derivation',
+        message: `Derivation rule ${label} is incomplete; each rule needs an "id", non-empty "inputs", and a "formula" naming its kind.`,
+      });
+      continue;
+    }
+    if (ids.has(rule.id)) {
+      errors.push({
+        file: REGISTRY_FILE,
+        path: rule.id,
+        rule: 'derivation',
+        message: `Duplicate derivation rule ID "${rule.id}".`,
+      });
+    }
+    ids.add(rule.id);
+    for (const input of rule.inputs) {
+      const p = roleProvenance.get(input);
+      if (!p || p.provenance !== 'supply') {
+        errors.push({
+          file: REGISTRY_FILE,
+          path: rule.id,
+          rule: 'derivation',
+          message:
+            `Derivation rule "${rule.id}" input "${input}" is not a skin-supplied semantic colour ` +
+            `role; derivations compute from supplied roles only (no chains).`,
+        });
+      }
+    }
+  }
+  for (const [path, role] of roleProvenance) {
+    if (role.provenance === 'derive' && !ids.has(role.derivation)) {
+      errors.push({
+        file: role.file,
+        path,
+        rule: 'derivation',
+        message: `Token "${path}" names unregistered derivation rule "${role.derivation}"; register it in ${REGISTRY_FILE}.`,
+      });
+    }
+  }
+}
+
+// The roles table in language/colour.md: one row per semantic colour role —
+// first cell the backticked token path, last cell the provenance, written
+// `supply` or `derive · \`rule-id\``. Checked in both directions against the
+// token source. The checked surface is deliberately minimal (path + provenance);
+// a malformed row fails loudly rather than passing silently.
+function checkRolesTable(colourDoc, roleProvenance, errors) {
+  const DOC_FILE = 'design-system/language/colour.md';
+  const rows = new Map();
+  for (const line of colourDoc.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith('|')) continue;
+    const cells = trimmed.replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+    const pathMatch = cells[0]?.match(/^`(color\.[a-z0-9.-]+)`$/);
+    if (!pathMatch) continue; // header / separator / prose tables
+    const path = pathMatch[1];
+    const provCell = cells[cells.length - 1] ?? '';
+    let provenance = null;
+    let derivation;
+    if (provCell === 'supply') {
+      provenance = 'supply';
+    } else {
+      const dm = provCell.match(/^derive\s*·\s*`([a-z0-9-]+)`$/);
+      if (dm) {
+        provenance = 'derive';
+        derivation = dm[1];
+      }
+    }
+    if (!provenance) {
+      errors.push({
+        file: DOC_FILE,
+        path,
+        rule: 'roles-table',
+        message:
+          `Roles-table row for "${path}" has a malformed provenance cell "${provCell}"; ` +
+          'expected "supply" or "derive · `rule-id`".',
+      });
+      continue;
+    }
+    rows.set(path, { provenance, derivation });
+  }
+  for (const [path, role] of roleProvenance) {
+    const row = rows.get(path);
+    if (!row) {
+      errors.push({
+        file: DOC_FILE,
+        path,
+        rule: 'roles-table',
+        message: `Semantic colour token "${path}" is missing from the roles table in ${DOC_FILE}.`,
+      });
+      continue;
+    }
+    if (row.provenance !== role.provenance || (role.provenance === 'derive' && row.derivation !== role.derivation)) {
+      const describe = (p, d) => (p === 'derive' ? `derive · ${d}` : p);
+      errors.push({
+        file: DOC_FILE,
+        path,
+        rule: 'roles-table',
+        message:
+          `Roles-table provenance for "${path}" (${describe(row.provenance, row.derivation)}) contradicts ` +
+          `the token's declared provenance (${describe(role.provenance, role.derivation)}).`,
+      });
+    }
+  }
+  for (const path of rows.keys()) {
+    if (!roleProvenance.has(path)) {
+      errors.push({
+        file: DOC_FILE,
+        path,
+        rule: 'roles-table',
+        message: `Roles-table row "${path}" has no backing semantic colour token.`,
+      });
+    }
+  }
 }
 
 function detectCycles(byPath, errors) {
@@ -247,6 +505,206 @@ function detectCycles(byPath, errors) {
   for (const path of byPath.keys()) {
     if (color.get(path) === WHITE) visit(path, [path]);
   }
+}
+
+// --- Font contract (weights vs. shipped faces) ---
+//
+// A minimal woff2 reader: enough of RFC 8478 brotli (Node built-in) + the WOFF2
+// table directory to locate the untransformed `fvar` / `OS/2` tables and report
+// a font file's REAL weight coverage. Deliberately no new dependency, and
+// deliberately read from the binary at validation time — a hand-recorded
+// coverage value would re-create exactly the drift these gates exist to catch.
+
+// The WOFF2 known-table-tag registry (flag values 0–62; 63 = arbitrary tag).
+const WOFF2_KNOWN_TAGS = [
+  'cmap', 'head', 'hhea', 'hmtx', 'maxp', 'name', 'OS/2', 'post', 'cvt ', 'fpgm',
+  'glyf', 'loca', 'prep', 'CFF ', 'VORG', 'EBDT', 'EBLC', 'gasp', 'hdmx', 'kern',
+  'LTSH', 'PCLT', 'VDMX', 'vhea', 'vmtx', 'BASE', 'GDEF', 'GPOS', 'GSUB', 'EBSC',
+  'JSTF', 'MATH', 'CBDT', 'CBLC', 'COLR', 'CPAL', 'SVG ', 'sbix', 'acnt', 'avar',
+  'bdat', 'bloc', 'bsln', 'cvar', 'fdsc', 'feat', 'fmtx', 'fvar', 'gvar', 'hsty',
+  'just', 'lcar', 'mort', 'morx', 'opbd', 'prop', 'trak', 'Zapf', 'Silf', 'Glat',
+  'Gloc', 'Feat', 'Sill',
+];
+
+function readUIntBase128(buf, pos) {
+  let value = 0;
+  for (let i = 0; i < 5; i += 1) {
+    const b = buf[pos + i];
+    if (i === 0 && b === 0x80) throw new Error('UIntBase128: leading zero byte');
+    if (value & 0xfe000000) throw new Error('UIntBase128: overflow');
+    value = (value << 7) | (b & 0x7f);
+    if ((b & 0x80) === 0) return { value: value >>> 0, next: pos + i + 1 };
+  }
+  throw new Error('UIntBase128: exceeds 5 bytes');
+}
+
+// Decompress a woff2 buffer's table stream and return { tag -> Buffer } for the
+// (untransformed) tables we care about. Transformed tables (glyf/loca/hmtx) are
+// located to keep offsets right but never parsed.
+function woff2Tables(buf) {
+  if (buf.length < 48 || buf.toString('latin1', 0, 4) !== 'wOF2') {
+    throw new Error('not a woff2 file (bad signature)');
+  }
+  const numTables = buf.readUInt16BE(12);
+  const totalCompressedSize = buf.readUInt32BE(20);
+  let pos = 48;
+  const entries = [];
+  for (let t = 0; t < numTables; t += 1) {
+    const flags = buf[pos];
+    pos += 1;
+    const tagIndex = flags & 0x3f;
+    const transformVersion = (flags >> 6) & 0x03;
+    let tag;
+    if (tagIndex === 63) {
+      tag = buf.toString('latin1', pos, pos + 4);
+      pos += 4;
+    } else {
+      tag = WOFF2_KNOWN_TAGS[tagIndex];
+    }
+    const orig = readUIntBase128(buf, pos);
+    pos = orig.next;
+    // The null transform is version 3 for glyf/loca, version 0 for every other
+    // table; a non-null transform stores its transformLength in the directory.
+    const nullVersion = tag === 'glyf' || tag === 'loca' ? 3 : 0;
+    let streamLength = orig.value;
+    if (transformVersion !== nullVersion) {
+      const tr = readUIntBase128(buf, pos);
+      pos = tr.next;
+      streamLength = tr.value;
+    }
+    entries.push({ tag, streamLength, transformed: transformVersion !== nullVersion });
+  }
+  const decompressed = brotliDecompressSync(buf.subarray(pos, pos + totalCompressedSize));
+  const tables = new Map();
+  let offset = 0;
+  for (const e of entries) {
+    if (!e.transformed) tables.set(e.tag, decompressed.subarray(offset, offset + e.streamLength));
+    offset += e.streamLength;
+  }
+  return tables;
+}
+
+/**
+ * Report a font file's REAL weight coverage, read from the woff2 binary itself:
+ * the `fvar` wght axis min/max for a variable face, `OS/2 usWeightClass` (a
+ * single-point range) for a static one.
+ * @returns {{min: number, max: number, variable: boolean}}
+ */
+export function readFontWeightCoverage(filePath) {
+  const tables = woff2Tables(readFileSync(filePath));
+  const fvar = tables.get('fvar');
+  if (fvar) {
+    const axesArrayOffset = fvar.readUInt16BE(4);
+    const axisCount = fvar.readUInt16BE(8);
+    const axisSize = fvar.readUInt16BE(10);
+    for (let i = 0; i < axisCount; i += 1) {
+      const at = axesArrayOffset + i * axisSize;
+      if (fvar.toString('latin1', at, at + 4) === 'wght') {
+        return {
+          min: fvar.readInt32BE(at + 4) / 65536,
+          max: fvar.readInt32BE(at + 12) / 65536,
+          variable: true,
+        };
+      }
+    }
+  }
+  const os2 = tables.get('OS/2');
+  if (!os2) throw new Error(`${filePath}: no fvar wght axis and no OS/2 table — cannot determine weight coverage`);
+  const w = os2.readUInt16BE(4);
+  return { min: w, max: w, variable: false };
+}
+
+/**
+ * The two font gates, both anchored on the canonical face definitions in
+ * `<fontsDir>/faces.json`:
+ *   Gate A — every `fontWeight` token value sits inside the declared weight
+ *   range of the token-bound face.
+ *   Gate B — every face's declared range is contained in the binary's real
+ *   coverage, read from the woff2 at validation time (a static face counts as
+ *   covering exactly its single weight).
+ * @param {string} fontsDir directory holding faces.json and the woff2 binaries
+ * @param {Array<{path: string, value: number, file?: string}>} weightTokens
+ * @returns {{errors: Array}}
+ */
+export function validateFonts(fontsDir, weightTokens = []) {
+  const errors = [];
+  const facesPath = join(fontsDir, 'faces.json');
+  if (!existsSync(facesPath)) {
+    return {
+      errors: [{ file: 'assets/fonts/faces.json', rule: 'font-face', message: 'The canonical face definition file (faces.json) is missing.' }],
+    };
+  }
+  let faces;
+  try {
+    faces = JSON.parse(readFileSync(facesPath, 'utf8')).faces;
+  } catch (err) {
+    return { errors: [{ file: 'assets/fonts/faces.json', rule: 'font-face', message: `Failed to parse faces.json: ${err.message}` }] };
+  }
+  if (!Array.isArray(faces)) {
+    return { errors: [{ file: 'assets/fonts/faces.json', rule: 'font-face', message: 'faces.json must carry a "faces" array.' }] };
+  }
+
+  // Gate A: fontWeight tokens vs. the token-bound face's declared range.
+  const bound = faces.find((f) => f.tokenBound);
+  if (!bound) {
+    errors.push({
+      file: 'assets/fonts/faces.json',
+      rule: 'font-weight',
+      message: 'No face in faces.json is marked tokenBound; the fontWeight tokens have no face to validate against.',
+    });
+  } else {
+    for (const t of weightTokens) {
+      if (typeof t.value !== 'number') continue; // aliases resolve to a numeric token checked here
+      if (t.value < bound.weight.min || t.value > bound.weight.max) {
+        errors.push({
+          file: t.file,
+          path: t.path,
+          rule: 'font-weight',
+          message:
+            `fontWeight token "${t.path}" is ${t.value}, outside the declared weight range ` +
+            `${bound.weight.min}–${bound.weight.max} of the token-bound face "${bound.family}" (${bound.file}).`,
+        });
+      }
+    }
+  }
+
+  // Gate B: declared ranges vs. the binaries' real coverage (read every run —
+  // replacing a font file is re-checked; no recorded coverage is trusted).
+  for (const face of faces) {
+    const filePath = join(fontsDir, face.file);
+    if (!existsSync(filePath)) {
+      errors.push({
+        file: face.file,
+        rule: 'font-face',
+        message: `Face "${face.family}" declares file "${face.file}", which does not exist in ${fontsDir}.`,
+      });
+      continue;
+    }
+    let real;
+    try {
+      real = readFontWeightCoverage(filePath);
+    } catch (err) {
+      errors.push({
+        file: face.file,
+        rule: 'font-face',
+        message: `Could not read weight coverage from "${face.file}": ${err.message}`,
+      });
+      continue;
+    }
+    if (face.weight.min < real.min || face.weight.max > real.max) {
+      errors.push({
+        file: face.file,
+        rule: 'font-face',
+        message:
+          `Face "${face.family}" (${face.file}) declares weight range ${face.weight.min}–${face.weight.max}, ` +
+          `but the binary's actual coverage is ${real.min}–${real.max}` +
+          `${real.variable ? ' (fvar wght axis)' : ' (static face, OS/2 usWeightClass)'}. ` +
+          'The declaration must not promise weights the shipped binary cannot render.',
+      });
+    }
+  }
+
+  return { errors };
 }
 
 // --- Filesystem helpers (used by the CLI; thin and separately testable) ---
@@ -380,8 +838,55 @@ function validateRecipesAndShowcase(root, tokenPaths, errors) {
 /** Run the full gate over a tokens directory on disk. */
 export function validateTokenDir(tokensDir) {
   const { entries, errors: structureErrors } = collectTokenFiles(tokensDir);
-  const { errors } = validateEntries(entries);
+
+  // The colour role contract lives next to the prose: the derivation registry
+  // and the roles table in language/colour.md, both synced against the tokens.
+  const languageDir = join(tokensDir, '..', '..', 'language');
+  const options = {};
+  const registryPath = join(languageDir, 'colour.derivations.json');
+  if (existsSync(registryPath)) {
+    try {
+      options.derivations = JSON.parse(readFileSync(registryPath, 'utf8'));
+    } catch (err) {
+      structureErrors.push({
+        file: 'design-system/language/colour.derivations.json',
+        rule: 'derivation',
+        message: `Failed to parse the colour derivation registry: ${err.message}`,
+      });
+    }
+  } else {
+    structureErrors.push({
+      file: 'design-system/language/colour.derivations.json',
+      rule: 'derivation',
+      message: 'The colour derivation registry is missing.',
+    });
+  }
+  const colourDocPath = join(languageDir, 'colour.md');
+  if (existsSync(colourDocPath)) {
+    options.colourDoc = readFileSync(colourDocPath, 'utf8');
+  } else {
+    structureErrors.push({
+      file: 'design-system/language/colour.md',
+      rule: 'roles-table',
+      message: 'language/colour.md is missing; the colour role contract must be documented there.',
+    });
+  }
+
+  const { errors } = validateEntries(entries, options);
   const allErrors = [...structureErrors, ...errors];
+
+  // The font contract: fontWeight tokens vs. the shipped faces (Gate A) and
+  // declared @font-face ranges vs. the binaries' real coverage (Gate B).
+  const weightTokens = [];
+  for (const entry of entries) {
+    for (const { path, token, type } of walkTokens(entry.data)) {
+      if (type === 'fontWeight' && typeof token.$value === 'number') {
+        weightTokens.push({ path, value: token.$value, file: entry.file });
+      }
+    }
+  }
+  const fontsDir = join(tokensDir, '..', '..', '..', 'assets', 'fonts');
+  allErrors.push(...validateFonts(fontsDir, weightTokens).errors);
 
   if (allErrors.length === 0) {
     // Collect all valid token paths

@@ -14,13 +14,17 @@ const BASELINE = join(root, 'design-system', 'reference', 'accepted-zoo', 'gener
 // CSS is one rule per line, so a selector is the text before the first `{` on a
 // line that hasn't already opened/closed a block. This is deliberately coarse —
 // it only needs to catch a whole rule (e.g. `.palette`, `.sw-chip`) going missing.
+// Keyframe identifiers are compared modulo the `ontwerp-` namespace prefix: the
+// scoped-distribution change renamed every shipped keyframe at source
+// (`germinate` → `ontwerp-germinate`), and the baseline predates that. Only the
+// identifier differs — the frames and their consumers are checked as usual.
 function selectors(html) {
   const style = html.match(/<style>([\s\S]*?)<\/style>/i)?.[1] ?? '';
   const set = new Set();
   for (const line of style.split('\n')) {
     const m = line.match(/^([^{}]*)\{/);
     const sel = m && m[1].trim();
-    if (sel) set.add(sel);
+    if (sel) set.add(sel.replace(/^@keyframes (?:ontwerp-)?/, '@keyframes '));
   }
   return set;
 }

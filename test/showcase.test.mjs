@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync, cpSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderShowcase } from '../scripts/lib/showcase-core.mjs';
 import { runBuild } from '../scripts/lib/build-core.mjs';
-import { tmpDir } from './helpers.mjs';
+import { tmpDir, customProps, computeVar } from './helpers.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -78,7 +78,7 @@ describe('showcase (the zoo)', () => {
     expect(h).toContain('class="fig">1'); // a section figure, not a Roman numeral
     expect(h).toContain('class="grid"'); // animated grid ambience
     expect(h).toContain('.btn::before'); // faint Ben-Day dot screen on every button
-    expect(h).toContain('radial-gradient(rgb(31 27 22) 1px'); // the halftone dots
+    expect(h).toContain('radial-gradient(var(--color-ink) 1px'); // the halftone dots, token-driven
     expect(h).toContain('border-bottom-width: 3px'); // heavier button bottom-edge
     expect(h).not.toMatch(/transition\s*:/); // interactions are instant — no CSS transitions (keyframe animations, incl. steps(), are fine)
   });
@@ -87,10 +87,10 @@ describe('showcase (the zoo)', () => {
     const h = html();
     expect(h).toContain('class="theme-bar"'); // a top-of-page switcher, not a contained preview
     expect(h).toContain('illustrative'); // not misrepresented as shipped tokens
-    expect(h).toContain('body:has(#th-lilac:checked)'); // CSS-only, whole-page switch
+    expect(h).toContain(':root:has(#th-lilac:checked)'); // CSS-only, whole-page switch, on the token scope root
     expect(h).not.toContain('th-stage'); // the old contained preview panel is gone
     // the skins override only colour roles — never type or spacing
-    const overrides = [...h.matchAll(/body:has\(#th-\w+:checked\) \{([^}]*)\}/g)].map((m) => m[1]).join(' ');
+    const overrides = [...h.matchAll(/:root:has\(#th-\w+:checked\) \{([^}]*)\}/g)].map((m) => m[1]).join(' ');
     expect(overrides).toContain('--color-surface-page');
     expect(overrides).not.toMatch(/--typography|--space-/);
     expect(h).not.toMatch(/<script\b/); // switching needs no JavaScript
@@ -121,5 +121,171 @@ describe('showcase (the zoo)', () => {
     const page = readFileSync(out, 'utf8');
     expect((page.match(/@font-face/g) || []).length).toBe(3); // Archivo, JetBrains Mono, Caveat
     expect(page).toContain("font-family: 'Caveat'");
+  });
+});
+
+// One shared build of the real tokens for the reskin-through-built-CSS checks.
+let _zooBuilt;
+function zooBuiltOnce() {
+  if (!_zooBuilt) {
+    const dist = tmpDir();
+    _zooBuilt = runBuild({ tokensDir: join(root, 'design-system', 'source', 'values'), distDir: dist }).then(() => ({
+      page: readFileSync(join(dist, 'zoo', 'index.html'), 'utf8'),
+      manifest: JSON.parse(readFileSync(join(dist, 'manifest', 'tokens.json'), 'utf8')),
+      componentsScoped: readFileSync(join(dist, 'css', 'components.scoped.css'), 'utf8'),
+      effectsScoped: readFileSync(join(dist, 'css', 'effects.scoped.css'), 'utf8'),
+    }));
+  }
+  return _zooBuilt;
+}
+
+// The plain :root blocks of the page (built tokens + the zoo's own effect vars),
+// in cascade order, as customProps maps.
+const rootBlocks = (page) => [...page.matchAll(/:root\s*\{([^}]*)\}/g)].map((m) => customProps(m[1]));
+// The per-skin :root:has(#th-…) override blocks, keyed by skin id.
+const skinBlocks = (page) =>
+  new Map([...page.matchAll(/:root:has\(#th-(\w+):checked\)\s*\{([^}]*)\}/g)].map((m) => [m[1], customProps(m[2])]));
+
+describe('showcase reskins through the built alias-preserving CSS', () => {
+  it('zoo source does not re-link built tokens', async () => {
+    const { manifest } = await zooBuiltOnce();
+    const tokenNames = new Set(manifest.map((e) => e.name));
+    const zooDir = join(root, 'design-system', 'source', 'zoo');
+    const files = [];
+    (function walk(d) {
+      for (const name of readdirSync(d).sort()) {
+        const p = join(d, name);
+        if (statSync(p).isDirectory()) walk(p);
+        else files.push(p);
+      }
+    })(zooDir);
+    // every custom property the zoo source declares, however it declares it
+    const declared = [];
+    for (const f of files) {
+      for (const m of readFileSync(f, 'utf8').matchAll(/--([a-z][a-z0-9-]*)\s*:/g)) {
+        declared.push({ file: f.slice(zooDir.length + 1), name: m[1] });
+      }
+    }
+    expect(declared.length).toBeGreaterThan(0);
+    // none may collide with a built token name; the zoo-local --wx-* effect vars
+    // are its own vocabulary, not built tokens.
+    const collisions = declared.filter((d) => !d.name.startsWith('wx-') && tokenNames.has(d.name));
+    expect(collisions, 'zoo source re-declares built token custom properties').toEqual([]);
+  });
+
+  it('component styles carry no hardcoded colour', () => {
+    const css = readFileSync(join(root, 'design-system', 'source', 'zoo', 'styles', 'components.css'), 'utf8');
+    // no rgb()/#hex colour literals at all (a var() fallback would be the only
+    // tolerated position, and components.css uses none)
+    expect(css).not.toMatch(/rgba?\(/);
+    expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+    // the halftone dot screen draws from the ink token
+    expect(css).toContain('radial-gradient(var(--color-ink)');
+  });
+
+  // Limitation: not a real browser — computeVar() hand-rolls var() substitution
+  // over the page's :root declarations (see helpers.mjs), which mirrors browser
+  // computation because the built tokens and the skin overrides are declared on
+  // the same scope root (:root); :root:has() outspecifies :root.
+  it('theme swap restyles components via built CSS', async () => {
+    const { page } = await zooBuiltOnce();
+    const base = rootBlocks(page);
+    const skins = skinBlocks(page);
+    expect(skins.size).toBeGreaterThanOrEqual(3);
+
+    // colour-carrying vars each named component paints with
+    const colour = {
+      'button text': '--button-text-default',
+      'button halftone': '--color-ink',
+      'field text': '--field-text',
+      'card surface': '--color-surface-claim',
+      'badge text': '--badge-text',
+      'link hover': '--link-text-hover',
+    };
+    const cream = Object.fromEntries(
+      Object.entries(colour).map(([k, v]) => [k, computeVar(v, ...base)]),
+    );
+    for (const v of Object.values(cream)) expect(v).toMatch(/^(#|rgb)/); // resolves to a concrete colour
+
+    for (const [id, override] of skins) {
+      for (const [what, name] of Object.entries(colour)) {
+        const swapped = computeVar(name, ...base, override);
+        expect(swapped, `${what} under skin "${id}"`).toMatch(/^(#|rgb)/);
+        expect(swapped, `${what} must change under skin "${id}"`).not.toBe(cream[what]);
+      }
+      // layout and typography stay identical: the skin declares no such override…
+      for (const declaredName of override.keys()) {
+        expect(declaredName).not.toMatch(/^--(typography|space|size|radius|font|button-padding|field-padding|badge-padding)/);
+      }
+      // …and the computed type/spacing is byte-identical to cream
+      for (const name of ['--typography-body', '--button-typography', '--space-lg', '--button-padding-inline']) {
+        expect(computeVar(name, ...base, override), `${name} under skin "${id}"`).toBe(computeVar(name, ...base));
+      }
+    }
+
+    // the demo remains labelled illustrative, not shipped tokens
+    expect(page).toContain('illustrative');
+  });
+
+  it('hover and focus states keep responding through the built chain', async () => {
+    const { page } = await zooBuiltOnce();
+    const base = rootBlocks(page);
+    const skins = skinBlocks(page);
+    // every var() a :hover / :focus rule reads must resolve through the built
+    // chain alone (the zoo's deleted re-link block must not be missed)
+    const stateVars = new Set();
+    for (const m of page.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+      if (!/:(hover|focus|focus-visible|focus-within)/.test(m[1])) continue;
+      for (const v of m[2].matchAll(/var\((--[a-zA-Z0-9-]+)\)/g)) stateVars.add(v[1]);
+    }
+    expect(stateVars.size).toBeGreaterThan(0);
+    expect([...stateVars]).toEqual(expect.arrayContaining(['--button-surface-hover', '--field-border-focus', '--link-underline-hover']));
+    for (const name of stateVars) {
+      const resolved = computeVar(name, ...base);
+      expect(resolved, `${name} read by a state rule`).toBeTruthy();
+      expect(resolved).not.toContain('var(');
+    }
+    // and the button hover state itself reskins with a demo skin (surface.ink → ink)
+    const [id, override] = [...skins.entries()][0];
+    expect(computeVar('--button-surface-hover', ...base, override), `hover surface under skin "${id}"`).not.toBe(
+      computeVar('--button-surface-hover', ...base),
+    );
+  });
+});
+
+describe('showcase consumes the shipped keyframe names', () => {
+  // Spec: showcase / Scenario: Showcase and shipped bundles share one set of
+  // keyframe names — the zoo declares only ontwerp-prefixed keyframes, and every
+  // one of them also appears in the shipped scoped bundles built from the same
+  // style sources. No second, unprefixed name set exists anywhere.
+  it('every zoo keyframe is ontwerp-prefixed and shipped', async () => {
+    const { page, componentsScoped, effectsScoped } = await zooBuiltOnce();
+    const names = [...page.matchAll(/@keyframes\s+([A-Za-z0-9_-]+)/g)].map((m) => m[1]);
+    expect(names.length).toBeGreaterThan(0);
+    const shipped = componentsScoped + effectsScoped;
+    for (const name of names) {
+      expect(name, `zoo @keyframes ${name}`).toMatch(/^ontwerp-/);
+      expect(shipped, `@keyframes ${name} must also ship in a scoped bundle`).toContain(`@keyframes ${name}`);
+    }
+  });
+
+  // Spec: Scenario: A keyframe edit propagates to both surfaces — one edited
+  // style source, one build, and the change lands in the zoo AND the shipped
+  // effects bundle (the no-drift guarantee that lets consumers delete copies).
+  it('a keyframe edit propagates to both surfaces', async () => {
+    const styles = tmpDir();
+    cpSync(join(root, 'design-system', 'source', 'zoo', 'styles'), styles, { recursive: true });
+    const weather = join(styles, 'weather.css');
+    const edited = readFileSync(weather, 'utf8').replace(
+      '@keyframes ontwerp-gust { to { left: 100%; } }',
+      '@keyframes ontwerp-gust { to { left: 97.531%; } }',
+    );
+    expect(edited).toContain('97.531%'); // the source line under edit still exists
+    writeFileSync(weather, edited);
+
+    const dist = tmpDir();
+    await runBuild({ tokensDir: join(root, 'design-system', 'source', 'values'), distDir: dist, stylesDir: styles });
+    expect(readFileSync(join(dist, 'zoo', 'index.html'), 'utf8')).toContain('left: 97.531%');
+    expect(readFileSync(join(dist, 'css', 'effects.scoped.css'), 'utf8')).toContain('left: 97.531%');
   });
 });

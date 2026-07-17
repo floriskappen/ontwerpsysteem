@@ -13,6 +13,9 @@ language/        concise prose per layer
 recipes/         reusable patterns (JSON) + index.json
 zoo/             worked example: index.html (rendered) + source/
 values/          built values: css/, js/, tailwind/, manifest/
+                 css/ carries tokens.css (:root, whole-app) and the scoped
+                 island targets: tokens.scoped.css, components.scoped.css,
+                 effects.scoped.css (all confined to the .ontwerp scope class)
 fonts/           self-hosted woff2 faces
 templates/       DESIGN.md — copy into your app as the pin file
 VERSION          this release's semver
@@ -30,6 +33,16 @@ CHANGELOG.md     per-release changes, keyed to recipe/language IDs
 2. Copy `templates/DESIGN.md` into your app (e.g. `docs/DESIGN.md`) and fill it in.
 3. Apply the system: consume `values/`, follow `recipes/` + `language/`, use `zoo/`
    as the reference for correct results.
+   - **Whole-app**: import `values/css/tokens.css` (tokens on `:root`, no scope
+     class needed).
+   - **Island in a shared DOM**: import `values/css/tokens.scoped.css` +
+     `components.scoped.css` + `effects.scoped.css` and put `class="ontwerp"` on
+     the island root — never copy or re-scope shipped files by hand.
+   - **Boundary**: `.ontwerp-boundary` on a descendant seam stops the system's
+     voice there; set `--ontwerp-boundary-font` to choose the bounded font.
+   - **Skins**: override colour roles on `.ontwerp[data-skin="<name>"]` (island)
+     or `:root[data-skin="<name>"]` (whole-app). A second bare `.ontwerp { … }`
+     rule is not a supported override mechanism — bundlers may dedupe it away.
 
 ## Update it (propagation)
 

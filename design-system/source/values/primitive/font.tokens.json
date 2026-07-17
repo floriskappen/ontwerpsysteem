@@ -3,7 +3,7 @@
     "sans": {
       "$type": "fontFamily",
       "$value": ["Archivo", "Helvetica Neue", "system-ui", "sans-serif"],
-      "$description": "display + ui, lowercased, weights 500–700"
+      "$description": "display + ui, lowercased, weights 400–700"
     },
     "mono": {
       "$type": "fontFamily",

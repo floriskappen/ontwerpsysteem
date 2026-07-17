@@ -2,29 +2,130 @@
   "color": {
     "$type": "color",
     "surface": {
-      "page": { "$value": "{color.paper}", "$description": "the base sheet" },
-      "warm": { "$value": "{color.paper-warm}" },
-      "deep": { "$value": "{color.paper-deep}", "$description": "margin / footer strips" },
-      "claim": { "$value": "{color.cream-bloom-a55}", "$description": "claimed-cell fill" },
-      "claim-hover": { "$value": "{color.cream-bloom-a85}" },
-      "ink": { "$value": "{color.ink}", "$description": "inverted ink cells / solid buttons" }
+      "page": {
+        "$value": "{color.paper}",
+        "$description": "the base sheet",
+        "$extensions": { "ontwerp.role": { "provenance": "supply" } }
+      },
+      "warm": {
+        "$value": "{color.paper-warm}",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "surface-warm" } }
+      },
+      "deep": {
+        "$value": "{color.paper-deep}",
+        "$description": "margin / footer strips",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "surface-deep" } }
+      },
+      "claim": {
+        "$value": "{color.cream-bloom-a55}",
+        "$description": "claimed-cell fill",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "surface-claim" } }
+      },
+      "claim-hover": {
+        "$value": "{color.cream-bloom-a85}",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "surface-claim-hover" } }
+      },
+      "ink": {
+        "$value": "{color.ink}",
+        "$description": "inverted ink cells / solid buttons",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "surface-ink" } }
+      },
+      "disabled": {
+        "$value": "{color.ink-a8}",
+        "$description": "inert control fills — the faintest ink wash",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "surface-disabled" } }
+      }
     },
     "text": {
-      "default": { "$value": "{color.ink}" },
-      "soft": { "$value": "{color.ink-soft}" },
-      "quiet": { "$value": "{color.ink-quiet}", "$description": "utility marks" },
-      "faint": { "$value": "{color.ink-faint}", "$description": "axis labels, placeholders" },
-      "on-ink": { "$value": "{color.paper}", "$description": "text on ink surfaces" }
+      "default": {
+        "$value": "{color.ink}",
+        "$extensions": { "ontwerp.role": { "provenance": "supply" } }
+      },
+      "soft": {
+        "$value": "{color.ink-soft}",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "text-soft" } }
+      },
+      "quiet": {
+        "$value": "{color.ink-quiet}",
+        "$description": "utility marks",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "text-quiet" } }
+      },
+      "muted": {
+        "$value": "{color.ink-quiet}",
+        "$description": "the borrowed word — same ink as quiet, for consumers arriving with muted vocabulary",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "text-quiet" } }
+      },
+      "faint": {
+        "$value": "{color.ink-faint}",
+        "$description": "axis labels, placeholders",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "text-faint" } }
+      },
+      "on-ink": {
+        "$value": "{color.paper}",
+        "$description": "text on ink surfaces",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "text-on-ink" } }
+      },
+      "disabled": {
+        "$value": "{color.ink-a45}",
+        "$description": "inert control text",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "text-disabled" } }
+      }
     },
     "accent": {
-      "base": { "$value": "{color.red}", "$description": "the single accent — margin rule, links on hover" },
-      "soft": { "$value": "{color.red-soft}" }
+      "base": {
+        "$value": "{color.red}",
+        "$description": "the single accent — margin rule, links on hover",
+        "$extensions": { "ontwerp.role": { "provenance": "supply" } }
+      },
+      "soft": {
+        "$value": "{color.red-soft}",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "accent-soft" } }
+      }
+    },
+    "focus-ring": {
+      "$value": "{color.red}",
+      "$description": "focus claims the full border in the accent — never a default blue ring",
+      "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "focus-ring" } }
+    },
+    "destructive": {
+      "base": {
+        "$value": "{color.oxblood}",
+        "$description": "irreversible actions — its own pigment, so the accent stops doubling as danger",
+        "$extensions": { "ontwerp.role": { "provenance": "supply" } }
+      },
+      "soft": {
+        "$value": "{color.oxblood-soft}",
+        "$description": "destructive, softened — hover washes and secondary danger",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "destructive-soft" } }
+      }
     },
     "border": {
-      "default": { "$value": "{color.ink-a65}" },
-      "quiet": { "$value": "{color.ink-a25}" },
-      "strong": { "$value": "{color.ink-a95}" },
-      "accent": { "$value": "{color.red-a85}" }
+      "default": {
+        "$value": "{color.ink-a65}",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "border-default" } }
+      },
+      "quiet": {
+        "$value": "{color.ink-a25}",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "border-quiet" } }
+      },
+      "muted": {
+        "$value": "{color.ink-a25}",
+        "$description": "the borrowed word — same rule weight as quiet",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "border-quiet" } }
+      },
+      "strong": {
+        "$value": "{color.ink-a95}",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "border-strong" } }
+      },
+      "accent": {
+        "$value": "{color.red-a85}",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "border-accent" } }
+      },
+      "disabled": {
+        "$value": "{color.ink-a15}",
+        "$description": "inert control borders",
+        "$extensions": { "ontwerp.role": { "provenance": "derive", "derivation": "border-disabled" } }
+      }
     }
   }
 }

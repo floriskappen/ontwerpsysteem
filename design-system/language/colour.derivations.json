@@ -1,0 +1,116 @@
+[
+  {
+    "id": "surface-warm",
+    "inputs": ["color.surface.page", "color.accent.base"],
+    "formula": { "kind": "mix", "ratio": 0.05 },
+    "note": "the sheet, faintly toasted: paper moved 5% toward the accent in sRGB"
+  },
+  {
+    "id": "surface-deep",
+    "inputs": ["color.surface.page", "color.accent.base"],
+    "formula": { "kind": "mix", "ratio": 0.1 },
+    "note": "margin / footer strips: paper moved 10% toward the accent"
+  },
+  {
+    "id": "surface-claim",
+    "inputs": ["color.accent.base", "color.surface.page"],
+    "formula": { "kind": "mix", "ratio": 0.75, "alpha": 55 },
+    "note": "the claim bloom: accent let down 75% toward paper, laid on at 55% opacity"
+  },
+  {
+    "id": "surface-claim-hover",
+    "inputs": ["color.accent.base", "color.surface.page"],
+    "formula": { "kind": "mix", "ratio": 0.75, "alpha": 85 },
+    "note": "the claim bloom deepened on hover: same pigment at 85% opacity"
+  },
+  {
+    "id": "surface-ink",
+    "inputs": ["color.text.default"],
+    "formula": { "kind": "identity" },
+    "note": "inverted cells and solid buttons are the ink itself"
+  },
+  {
+    "id": "surface-disabled",
+    "inputs": ["color.text.default"],
+    "formula": { "kind": "alpha", "step": 8 },
+    "note": "inert fills: the faintest ink wash over whatever lies beneath"
+  },
+  {
+    "id": "text-soft",
+    "inputs": ["color.text.default", "color.surface.page"],
+    "formula": { "kind": "mix", "ratio": 0.2 },
+    "note": "secondary text: ink stepped 20% toward paper"
+  },
+  {
+    "id": "text-quiet",
+    "inputs": ["color.text.default", "color.surface.page"],
+    "formula": { "kind": "mix", "ratio": 0.5 },
+    "note": "utility marks: ink stepped halfway to paper"
+  },
+  {
+    "id": "text-faint",
+    "inputs": ["color.text.default", "color.surface.page"],
+    "formula": { "kind": "mix", "ratio": 0.7 },
+    "note": "placeholders and axis labels: ink stepped 70% toward paper"
+  },
+  {
+    "id": "text-on-ink",
+    "inputs": ["color.surface.page"],
+    "formula": { "kind": "identity" },
+    "note": "text on ink surfaces is the paper showing through"
+  },
+  {
+    "id": "text-disabled",
+    "inputs": ["color.text.default"],
+    "formula": { "kind": "alpha", "step": 45 },
+    "note": "inert text: ink at 45%, between quiet and faint"
+  },
+  {
+    "id": "accent-soft",
+    "inputs": ["color.accent.base", "color.surface.page"],
+    "formula": { "kind": "mix", "ratio": 0.2 },
+    "note": "the accent softened: accent stepped 20% toward paper"
+  },
+  {
+    "id": "focus-ring",
+    "inputs": ["color.accent.base"],
+    "formula": { "kind": "identity" },
+    "note": "focus is the accent claiming the full border — never a default blue ring"
+  },
+  {
+    "id": "destructive-soft",
+    "inputs": ["color.destructive.base", "color.surface.page"],
+    "formula": { "kind": "mix", "ratio": 0.2 },
+    "note": "the destructive pigment let down 20% toward paper"
+  },
+  {
+    "id": "border-default",
+    "inputs": ["color.text.default"],
+    "formula": { "kind": "alpha", "step": 65 },
+    "note": "the default rule: ink at 65%"
+  },
+  {
+    "id": "border-quiet",
+    "inputs": ["color.text.default"],
+    "formula": { "kind": "alpha", "step": 25 },
+    "note": "inner rules: ink at 25%"
+  },
+  {
+    "id": "border-strong",
+    "inputs": ["color.text.default"],
+    "formula": { "kind": "alpha", "step": 95 },
+    "note": "emphasis rules: ink at 95%"
+  },
+  {
+    "id": "border-accent",
+    "inputs": ["color.accent.base"],
+    "formula": { "kind": "alpha", "step": 85 },
+    "note": "accent-weight rules: the accent at 85%"
+  },
+  {
+    "id": "border-disabled",
+    "inputs": ["color.text.default"],
+    "formula": { "kind": "alpha", "step": 15 },
+    "note": "inert control borders: ink at 15%"
+  }
+]

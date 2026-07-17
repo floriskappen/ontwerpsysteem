@@ -1,5 +1,6 @@
 /* theme switcher — top of page; selecting a skin reskins the whole page (the
-   generated body:has() rules override the colour roles). It is one segmented
+   generated :root:has() rules override the colour roles on the element that
+   carries the built token declarations). It is one segmented
    control (joined segments, a shared 3px plate edge) so it reads as a pick-one,
    each segment carrying a mini paper+accent swatch. */
 .theme-bar { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; padding-bottom: var(--space-lg); margin-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border-default); }

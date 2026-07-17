@@ -44,6 +44,37 @@ describe('build-pipeline: token manifest', () => {
     expect(['primitive', 'semantic', 'component']).toContain(target.tier);
   });
 
+  // Spec: "Aliased token records its full chain" + "Manifest carries per-token metadata".
+  it('manifest records full alias chain', async () => {
+    const manifest = await buildManifest();
+    const byPath = new Map(manifest.map((e) => [e.path, e]));
+
+    // the worked example: component → semantic → primitive
+    const btn = byPath.get('button.border.default');
+    expect(btn).toBeDefined();
+    expect(btn.ref).toBe('color.border.strong');
+    expect(btn.chain).toEqual(['color.border.strong', 'color.ink-a95']);
+    expect(byPath.get(btn.chain.at(-1)).tier).toBe('primitive');
+
+    for (const e of manifest) {
+      if (!e.ref) {
+        // non-alias tokens carry no chain
+        expect(e.chain, `${e.path} holds a raw value`).toBeUndefined();
+        continue;
+      }
+      // the chain starts at the immediate reference…
+      expect(e.chain[0], `${e.path} chain starts at its ref`).toBe(e.ref);
+      // …every member exists in the manifest with a determinable tier…
+      for (const p of e.chain) {
+        const member = byPath.get(p);
+        expect(member, `chain member ${p} of ${e.path} exists`).toBeDefined();
+        expect(['primitive', 'semantic', 'component']).toContain(member.tier);
+      }
+      // …and it ends at the token holding the raw value
+      expect(byPath.get(e.chain.at(-1)).ref, `${e.path} chain ends at a raw value`).toBeNull();
+    }
+  });
+
   it('is deterministic', async () => {
     const a = await buildManifest();
     const b = await buildManifest();

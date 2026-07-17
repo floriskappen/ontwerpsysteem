@@ -16,7 +16,7 @@
   border: 1px solid var(--button-border-default); border-bottom-width: 3px; padding: var(--button-padding-block) var(--button-padding-inline);
   position: relative; overflow: hidden; cursor: pointer; }
 .btn::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background-image: radial-gradient(rgb(31 27 22) 1px, transparent 1.4px); background-size: 5px 5px; background-position: center; opacity: 0.06; }
+  background-image: radial-gradient(var(--color-ink) 1px, transparent 1.4px); background-size: 5px 5px; background-position: center; opacity: 0.06; }
 .btn:hover { background: var(--button-surface-hover); color: var(--button-text-hover); border-color: var(--button-border-hover); }
 .btn:active { transform: translateY(2px); border-bottom-width: 1px; }
 .btn-red { color: var(--color-accent-base); border-color: var(--color-accent-base); }
