@@ -21,6 +21,15 @@
 @keyframes ontwerp-d2 { to { transform: translate(-10vmax, -5vmax) scale(0.95); } }
 @keyframes ontwerp-d3 { to { transform: translate(12vmax, -8vmax) scale(1.1); } }
 
+/* Fixed-behind-scope mounting (S23): the chrome root that hosts the ambient stack
+   is its own isolated stacking context, so fixed ambience can never paint over UI
+   outside the subtree it belongs to. The ambient layers stay descendants of the
+   scope (their tokens arrive through the tree) and content is lifted above them —
+   the layers paint at z-index 0, content sits at z-0 or higher. Scoped builds
+   prefix this rule (.ontwerp .ontwerp-root), so the chrome root mounts INSIDE the
+   scope subtree, one element below the token scope. */
+.ontwerp-root { isolation: isolate; }
+
 /* Reduced motion — a still atmosphere: the grid hairlines hold their base strength
    (the breathing cell custom property pinned back to its authored --a value) and the
    blooms sit at their authored positions instead of drifting. The warmth is structural,

@@ -12,7 +12,7 @@
 // namespace and can never silently redefine a consumer's own theme variables.
 // Both mappings are part of the public contract.
 
-import { mkdirSync, readFileSync, writeFileSync, readdirSync, cpSync, rmSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, readdirSync, cpSync, rmSync, renameSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import StyleDictionary from 'style-dictionary';
@@ -113,10 +113,11 @@ export function emitSkins(distDir, { skinsPath } = {}) {
     if (skin.base) continue; // the base skin renders from the base token CSS
     writeFileSync(join(skinsDir, `${skin.id}.css`), skinCss(skin));
   }
-  // The generated zoo skin-data module is regenerated into the source tree, the
-  // same way compileRecipes regenerates recipes/index.json, so the demonstrated
-  // skins and the shipped skin files come from one source and cannot diverge.
-  if (!skinsPath) writeFileSync(ZOO_SKINS_MODULE, skinsModule(skins));
+  // The generated zoo skin-data module is regenerated into the source tree,
+  // the same way compileRecipes regenerates recipes/index.json, so the
+  // demonstrated skins and the shipped skin files come from one source and
+  // cannot diverge.
+  if (!skinsPath) writeSourceFile(ZOO_SKINS_MODULE, skinsModule(skins));
   return skinsToData(skins);
 }
 
@@ -276,6 +277,18 @@ function makeConfig(tokensDir, distDir, scopeClass) {
   };
 }
 
+// Write a file that lives in the SHARED source tree (regenerated artifacts like
+// recipes/index.json and the zoo skin-data module). Replaced atomically — write
+// beside the target, then rename — because several builds can run concurrently
+// (test threads), and a reader assembling its bundle must never catch half of a
+// rewrite. Dist-internal writes stay plain writeFileSync; each build owns its
+// dist directory.
+function writeSourceFile(path, contents) {
+  const tmp = `${path}.tmp-${process.pid}`;
+  writeFileSync(tmp, contents);
+  renameSync(tmp, path); // atomic replace: readers see old or new bytes, never half
+}
+
 function compileRecipes(recipesDir) {
   try {
     const files = readdirSync(recipesDir).filter((f) => f.endsWith('.recipes.json'));
@@ -288,7 +301,7 @@ function compileRecipes(recipesDir) {
         allRecipes.push(content);
       }
     }
-    writeFileSync(join(recipesDir, 'index.json'), JSON.stringify(allRecipes, null, 2) + '\n');
+    writeSourceFile(join(recipesDir, 'index.json'), JSON.stringify(allRecipes, null, 2) + '\n');
   } catch (err) {
     console.warn('Warning: Failed to compile recipes:', err.message);
   }

@@ -110,6 +110,9 @@ describe('effects contract', () => {
         'fireflyParticlesData', 'flakeParticlesData', 'hazeParticlesData', 'sunpoolParticlesData',
         'weatherTextData',
       ],
+      // The atmosphere contract module: executable defaults (envelope, bloom
+      // count, weather opt-in) plus the field registry validation recounts.
+      'atmosphere.mjs': ['atmosphereContract', 'weatherFields', 'bloomData'],
     };
     // The contract enumerates every effects module by name: a newly added .mjs
     // must be added here (or named as a non-field helper) — never left to pass

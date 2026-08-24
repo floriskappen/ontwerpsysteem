@@ -6,6 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Import modular components
 import { renderGrid } from './effects/grid.mjs';
+import { ambientBlooms } from './effects/atmosphere.mjs';
 import { driftParticles, weatherText } from './effects/weather-particles.mjs';
 import { renderThemeBar } from './sections/theme-bar.mjs';
 import { renderMasthead } from './sections/masthead.mjs';
@@ -52,7 +53,7 @@ ${pageStyles}
 </head>
 <body>
 ${renderGrid()}
-<div class="bloom" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+<div class="bloom" aria-hidden="true">${ambientBlooms()}</div>
 <div class="sheet">
 
   ${renderThemeBar(skins)}

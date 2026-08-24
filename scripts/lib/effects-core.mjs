@@ -20,6 +20,9 @@ const EFFECTS_SOURCES = [
   'grid.mjs',
   'phyllotaxis.mjs',
   'weather-particles.mjs',
+  // Last: it derives its field costs by calling the primaries above, so their
+  // definitions must already stand in the concatenated module body.
+  'atmosphere.mjs',
 ];
 const EFFECTS_EXPORTS = [
   'seedHeadData',
@@ -34,6 +37,9 @@ const EFFECTS_EXPORTS = [
   'hazeParticlesData',
   'sunpoolParticlesData',
   'weatherTextData',
+  'bloomData',
+  'weatherFields',
+  'atmosphereContract',
 ];
 
 // Fold one effect source into the shipped module body: strip the local imports
@@ -72,7 +78,19 @@ function effectsDts() {
     '// custom properties — in render order — that the shipped effects CSS animates it by.\n' +
     'export interface WeatherParticle { cls: string; index: number; vars: Record<string, string> }\n' +
     '// One character of hand-set weather text: the glyph and its position in the phrase.\n' +
-    'export interface WeatherGlyph { char: string; index: number }\n\n' +
+    'export interface WeatherGlyph { char: string; index: number }\n' +
+    '// One shipped weather field with its default cost: the count its data primary yields.\n' +
+    'export interface AtmosphereFieldCost { id: string; particles: number }\n' +
+    '// The atmosphere operating contract: mount cardinality, the 6–51 particle\n' +
+    '// envelope per weather field, exactly three blooms, and weather off unless\n' +
+    '// explicitly opted in. The validation gate enforces these executable defaults.\n' +
+    'export interface AtmosphereContract {\n' +
+    '  mountCardinality: \'once-per-root\';\n' +
+    '  particlesPerField: { min: number; max: number };\n' +
+    '  bloomCount: number;\n' +
+    '  weatherEnabledByDefault: boolean;\n' +
+    '  fields: AtmosphereFieldCost[];\n' +
+    '}\n\n' +
     'export function seedHeadData(n?: number): SeedDot[];\n' +
     'export function growingSeedHeadData(n?: number): GrowingSeedDot[];\n' +
     'export function gridData(): GridField;\n' +
@@ -84,7 +102,10 @@ function effectsDts() {
     'export function flakeParticlesData(): WeatherParticle[];\n' +
     'export function hazeParticlesData(): WeatherParticle[];\n' +
     'export function sunpoolParticlesData(): WeatherParticle[];\n' +
-    'export function weatherTextData(str: string): WeatherGlyph[];\n'
+    'export function weatherTextData(str: string): WeatherGlyph[];\n' +
+    'export function bloomData(): { cls: string }[];\n' +
+    'export function weatherFields(): { id: string; data: () => unknown[] }[];\n' +
+    'export function atmosphereContract(): AtmosphereContract;\n'
   );
 }
 

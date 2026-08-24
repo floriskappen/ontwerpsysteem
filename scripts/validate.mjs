@@ -9,12 +9,18 @@
 // purpose — a rest frame in a stylesheet the build does not ship must not count —
 // so this entry point expects `npm run build` to have run; a missing bundle fails
 // loudly rather than skipping silently.
+//
+// It then runs the atmosphere cost-contract gate over the executable generator
+// defaults (source/zoo/effects/atmosphere.mjs), failing on any default weather
+// field outside the 6–51 particle envelope, a bloom default other than three,
+// weather enabled without opt-in, or a field no contract entry covers.
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { validateTokenDir } from './lib/validate-core.mjs';
 import { checkKeyframeCoverage, cssEntriesUnder } from './lib/keyframe-coverage.mjs';
+import { checkAtmosphereContract, collectAtmosphereInputs } from './lib/atmosphere-contract.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const tokensDir = join(root, 'design-system', 'source', 'values');
@@ -35,6 +41,17 @@ if (!existsSync(distCssDir)) {
   errors.push(...checkKeyframeCoverage(cssEntriesUnder(distCssDir)).errors);
 }
 
+// Atmosphere cost contract over the executable generator defaults.
+try {
+  errors.push(...checkAtmosphereContract(await collectAtmosphereInputs()).errors);
+} catch (err) {
+  errors.push({
+    file: 'design-system/source/zoo/effects/atmosphere.mjs',
+    rule: 'atmosphere-cost',
+    message: `The atmosphere contract could not be loaded: ${err.message}`,
+  });
+}
+
 if (errors.length > 0) {
   console.error(`✖ Validation failed (${errors.length} violation${errors.length === 1 ? '' : 's'}):\n`);
   for (const e of errors) {
@@ -47,3 +64,4 @@ if (errors.length > 0) {
 
 console.log('✓ Tokens valid.');
 console.log('✓ Reduced-motion keyframe coverage complete.');
+console.log('✓ Atmosphere cost contract enforced.');
