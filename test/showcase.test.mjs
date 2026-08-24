@@ -289,3 +289,63 @@ describe('showcase consumes the shipped keyframe names', () => {
     expect(readFileSync(join(dist, 'css', 'effects.scoped.css'), 'utf8')).toContain('left: 97.531%');
   });
 });
+
+// The accepted pre-effects-refactor zoo, frozen as the byte-level oracle for the
+// markup this change now derives from data functions.
+const BASELINE = join(root, 'design-system', 'reference', 'accepted-zoo', 'generated', 'index.html');
+
+// Every region of the page that carries effect markup, as [kind, bytes] pairs in
+// document order: the ambient grid, the seed-head dividers, the germinating
+// state art, and each weather field.
+function effectRegions(html) {
+  const grab = (kind, re) => [...html.matchAll(re)].map((m) => [kind, m[0]]);
+  return [
+    ...grab('grid', /<div class="grid"[^>]*>[\s\S]*?<\/div>/g),
+    ...grab('divider', /<div class="divider"[\s\S]*?<\/div>/g),
+    ...grab('gseedhead', /<svg class="gseedhead"[\s\S]*?<\/svg>/g),
+    ...grab('wx-field', /<div class="wx-field[^"]*"[^>]*>[\s\S]*?<\/div>/g),
+  ];
+}
+
+const EFFECTS_DIR = join(root, 'design-system', 'source', 'zoo', 'effects');
+
+// Effect element authoring: the particle/glyph class names and seed-head circles
+// only ever appear as template literals inside the effect modules. Returns the
+// offending [file, match] pairs found in any other zoo source file.
+function scanForEffectMarkup(file, src) {
+  const authored = /class="(?:gust|mote|drop|splash|fleck|pollen|firefly|flake|haze|sunpool|wxc)[ "]|<circle\b/g;
+  return [...src.matchAll(authored)].map((m) => [file, m[0]]);
+}
+
+describe('showcase effect markup through the data-derived wrappers', () => {
+  // Spec: showcase / Scenario: Effect output stays stable across rebuilds.
+  it('effect markup is byte-identical to the accepted baseline', async () => {
+    const { page } = await zooBuiltOnce();
+    const built = effectRegions(page);
+    const base = effectRegions(readFileSync(BASELINE, 'utf8'));
+    expect(built.map(([kind]) => kind), 'same regions in the same order').toEqual(base.map(([kind]) => kind));
+    for (let i = 0; i < base.length; i++) {
+      const [kind] = built[i];
+      expect(built[i][1], `${kind} region ${i} must be byte-identical`).toBe(base[i][1]);
+    }
+  });
+
+  // Spec: Scenario: Effect markup comes from the data-derived wrappers — no
+  // parallel path: outside the effect modules themselves, no zoo source authors
+  // effect elements; sections only place wrapper output into containers.
+  it('no effect element markup is authored outside the effect modules', async () => {
+    const { page } = await zooBuiltOnce();
+    expect(page.length).toBeGreaterThan(0); // the real build is what the other checks scan
+    const zooDir = join(root, 'design-system', 'source', 'zoo');
+    const offenders = [];
+    (function walk(dir) {
+      for (const name of readdirSync(dir).sort()) {
+        const p = join(dir, name);
+        if (p === EFFECTS_DIR) continue;
+        if (statSync(p).isDirectory()) walk(p);
+        else if (p.endsWith('.mjs')) offenders.push(...scanForEffectMarkup(p, readFileSync(p, 'utf8')));
+      }
+    })(zooDir);
+    expect(offenders, 'effect element templates must live only in effects/').toEqual([]);
+  });
+});

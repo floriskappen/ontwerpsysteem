@@ -7,7 +7,7 @@ runner. The handoff remains authoritative for scope, traps, task details, and th
   Complete the coverage gate and named automated checks. Task 5.10 remains unchecked because it is
   owner-verified in the live zoo; `V1_WORKER_HANDOFF.md` records that confirmation and explicitly
   permits archive once oversight recognises it.
-- [ ] **effects-as-pure-data-modules** — Implement C5 exactly from its existing approved change.
+- [x] **effects-as-pure-data-modules** (archived as `2026-08-24-effects-as-pure-data-modules`) — Implement C5 exactly from its existing approved change.
   Byte-identical zoo output and the accepted baseline are the oracle; never regenerate the baseline.
 - [ ] **reduced-motion-rest-frames-travel-with-states** — Implement C7 exactly from its existing
   approved change. Coverage is judged against shipped CSS, with the already-decided rest poses.

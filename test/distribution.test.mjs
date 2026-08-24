@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { runBuild, assembleBundle } from '../scripts/lib/build-core.mjs';
@@ -32,6 +33,7 @@ describe('consumer bundle (distribution)', () => {
       'AGENTS.md', 'README.md', 'brief.md', 'CHANGELOG.md', 'VERSION',
       'templates/DESIGN.md',
       'values/css/tokens.css', 'values/js/tokens.js', 'values/manifest/tokens.json', 'values/tailwind/theme.css',
+      'values/js/effects.js', 'values/js/effects.d.ts',
       'language/motion.md', 'language/anti-goals.md',
       'recipes/index.json',
       'zoo/index.html', 'zoo/source/index.mjs',
@@ -75,6 +77,52 @@ function releaseOnce() {
   }
   return _rel;
 }
+
+// Spec: distribution / Scenario: Effects module ships in the bundle;
+// Scenario: Effects module is consumable without tooling. The effects module is
+// generated from the very sources the zoo renders from, so its data functions
+// return the same data the showcase consumes — one source, no parallel copy.
+describe('effects module (consumer bundle)', () => {
+  it('bundle ships the effects module, consumable by a bare import', async () => {
+    const rel = await releaseOnce();
+    for (const f of ['values/js/effects.js', 'values/js/effects.d.ts']) {
+      expect(existsSync(join(rel, f)), `values/js/${f.split('/').pop()} must ship`).toBe(true);
+    }
+
+    // No framework, no build step: a plain ESM import of the shipped file.
+    const shipped = await import(pathToFileURL(join(rel, 'values', 'js', 'effects.js')).href);
+    const dataFns = [
+      'seedHeadData', 'growingSeedHeadData', 'gridData',
+      'windParticlesData', 'rainParticlesData', 'fleckParticlesData', 'driftParticlesData',
+      'fireflyParticlesData', 'flakeParticlesData', 'hazeParticlesData', 'sunpoolParticlesData',
+      'weatherTextData',
+    ];
+    for (const name of dataFns) {
+      expect(typeof shipped[name], `${name} is exported`).toBe('function');
+    }
+
+    // The type declaration matches the surface it ships beside: every exported
+    // data function is declared by name in the hand-authored effects.d.ts.
+    const dts = readFileSync(join(rel, 'values', 'js', 'effects.d.ts'), 'utf8');
+    for (const name of dataFns) {
+      expect(dts, `${name} declared in effects.d.ts`).toContain(`export function ${name}`);
+    }
+
+    // The same deterministic functions the zoo renders from: identical data.
+    const srcGrid = await import('../design-system/source/zoo/effects/grid.mjs');
+    const srcPhyllo = await import('../design-system/source/zoo/effects/phyllotaxis.mjs');
+    const srcWeather = await import('../design-system/source/zoo/effects/weather-particles.mjs');
+    expect(shipped.gridData()).toEqual(srcGrid.gridData());
+    expect(shipped.seedHeadData(24)).toEqual(srcPhyllo.seedHeadData(24));
+    expect(shipped.growingSeedHeadData()).toEqual(srcPhyllo.growingSeedHeadData());
+    expect(shipped.windParticlesData()).toEqual(srcWeather.windParticlesData());
+    expect(shipped.flakeParticlesData()).toEqual(srcWeather.flakeParticlesData());
+    expect(shipped.weatherTextData('motregen')).toEqual(srcWeather.weatherTextData('motregen'));
+
+    // And determinism holds in the shipped copy itself.
+    expect(shipped.gridData()).toBe(shipped.gridData());
+  });
+});
 
 describe('scoped css distribution (consumer bundle)', () => {
   // Spec: distribution / Scenarios: Island adoption is import-only; Whole-app

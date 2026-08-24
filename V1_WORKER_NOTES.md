@@ -7,3 +7,7 @@ Frontier pass: read this first. One short entry per thing hit; newest last.
   for the base skin. Pre-existing, left alone in C6 — but it is a second copy of the cream
   supply values and will silently drift if cream's canonical source ever changes. A
   generated base-skin swatch pair in `skinsToData()` would close it.
+- C5: the artifacts never pin the weather-particle datum shape; chose
+  `{ cls, index, vars }` (vars in render order) so one generic renderer keeps the bytes
+  stable — reasoning in `openspec/changes/effects-as-pure-data-modules/DECISIONS.md` §2.
+  Also spec-silent: `weatherText`'s spaces (same file §1). No visual values were invented.

@@ -19,6 +19,7 @@ import StyleDictionary from 'style-dictionary';
 import { validateTokenDir, TIERS } from './validate-core.mjs';
 import { renderShowcase } from './showcase-core.mjs';
 import { expandAllSkins, skinCss, skinsModule, skinsToData } from './skins-core.mjs';
+import { emitEffectsModule } from './effects-core.mjs';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const FONTS_DIR = join(REPO_ROOT, 'assets', 'fonts');
@@ -508,6 +509,10 @@ export async function runBuild({
   // canonical face definitions the zoo inlines; the release assembly copies it
   // into values/css/ where its relative urls resolve to the shipped fonts/.
   writeFileSync(join(distDir, 'css', 'fonts.css'), fontsCssRelative());
+
+  // Ship the effect generators' data primaries as a built value; the release
+  // assembly carries it into values/js/effects.js beside the token JS.
+  await emitEffectsModule(distDir);
 
   // Expand the canonical skin source into complete role sets: emit the importable
   // per-skin CSS (dist/css/skins/) and regenerate the zoo skin-data module. The
