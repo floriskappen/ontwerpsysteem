@@ -4,7 +4,7 @@ This phase completes the remaining V1 work before one bounded Sol coherence audi
 approval. Luna plans each change; Ox Alpha implements and independently reviews it. The resolved
 decisions and exact scopes in `V1_ROADMAP.md` are authoritative.
 
-- [ ] **add-status-mark-and-segmented-control** — C8: finish the already-open change through the
+- [x] **add-status-mark-and-segmented-control** (archived as `2026-08-24-add-status-mark-and-segmented-control`) — C8: finish the already-open change through the
   full language → recipe → zoo → shipped CSS pipeline. Preserve its organic status vocabulary and
   square, instant segmented-control contract; do not introduce generic icons or new visual values
   beyond the approved change.

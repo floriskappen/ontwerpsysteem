@@ -31,6 +31,27 @@ export function renderComponents() {
     </div>
   </div>
 
+  <div class="use-cell">
+    <span class="use-label">status marks</span>
+    <div class="use-row">
+      <span class="mark mark-pass"><i class="mk"></i>pass</span>
+      <span class="mark mark-warn"><i class="mk"></i>warn</span>
+      <span class="mark mark-fail"><i class="mk"></i>fail</span>
+    </div>
+  </div>
+
+  <div class="use-cell">
+    <span class="use-label">segmented</span>
+    <div class="seg">
+      <input class="seg-radio" type="radio" name="seg-demo" id="seg-grid" checked>
+      <label class="seg-cell" for="seg-grid">grid</label>
+      <input class="seg-radio" type="radio" name="seg-demo" id="seg-list">
+      <label class="seg-cell" for="seg-list">list</label>
+      <input class="seg-radio" type="radio" name="seg-demo" id="seg-map">
+      <label class="seg-cell" for="seg-map">map</label>
+    </div>
+  </div>
+
   <div class="use-cell card">
     <span class="use-label">a card</span>
     <h3 class="t-heading-md card-title">an atlas of good companies</h3>
@@ -39,5 +60,7 @@ export function renderComponents() {
 </div>`;
 }
 export const implementsRecipes = [
-  "component.button.ink-press"
+  "component.button.ink-press",
+  "state.mark.static",
+  "component.tabs.segmented"
 ];

@@ -18,5 +18,15 @@
     "valueRefs": ["color.accent.base"],
     "reducedMotion": "static fully-colored rest state",
     "notes": "shape deepens through stages"
+  },
+  {
+    "id": "state.mark.static",
+    "intent": "static pass/fail/warn status mark — a lifecycle state rendered inert",
+    "useWhen": "showing status where the animated lifecycle states cannot be mounted",
+    "avoid": "green check marks and checkbox glyphs",
+    "sourceModules": ["design-system/source/zoo/sections/components.mjs", "design-system/source/zoo/styles/components.css"],
+    "valueRefs": ["color.accent.base", "color.text.quiet", "color.destructive.base"],
+    "reducedMotion": "already at rest — the mark IS the reduced-motion rest frame of a lifecycle state (pass = ripe-at-rest, warn = quiet, fail = the destructive pigment confined to a rule), so no animation exists to suppress and no separate rest pose is needed",
+    "notes": "the compliant static fallback when the animated states cannot be mounted: a status mark is the inert rest frame of a lifecycle state, not a second status idiom — pass is ripe at its resting pose (accent), warn stays quiet (text-quiet), fail keeps the destructive role confined to a thin rule and never borrows the accent; dots and rules only, never a green tick or checkbox glyph"
   }
 ]
