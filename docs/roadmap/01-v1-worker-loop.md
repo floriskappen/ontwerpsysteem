@@ -3,7 +3,7 @@
 This file adapts the exact worker-owned sequence in `V1_WORKER_HANDOFF.md` to the DSH roadmap
 runner. The handoff remains authoritative for scope, traps, task details, and the frontier cutoff.
 
-- [ ] **ship-skins-as-complete-role-sets** — Finish C6. Do not redo its committed implementation.
+- [x] **ship-skins-as-complete-role-sets** (archived as `2026-08-24-ship-skins-as-complete-role-sets`) — Finish C6. Do not redo its committed implementation.
   Complete the coverage gate and named automated checks. Task 5.10 remains unchecked because it is
   owner-verified in the live zoo; `V1_WORKER_HANDOFF.md` records that confirmation and explicitly
   permits archive once oversight recognises it.

@@ -22,6 +22,12 @@ system's shipped token set.
 - **THEN** the whole colour surface changes — surfaces, ink, accent, borders, the tertiary greys, the disabled tier, blooms, and destructive — while the same layout, type and components remain
 - **AND** switching works with no server and no network request
 
+#### Scenario: The reskin is shown by swapping only colour roles
+
+- **WHEN** the viewer switches between the demo skins
+- **THEN** only the colour roles change while the same layout, type and components remain
+- **AND** switching works with no server and no network request
+
 #### Scenario: The swap cascades through the built output alone
 
 - **WHEN** the showcase source styles are inspected

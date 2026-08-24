@@ -2,7 +2,9 @@
 
 ## Purpose
 The showcase ("the zoo") is a single, self-contained page that presents the design system as a curated, on-brand artifact — colour, type, and components shown in use — rendered from the built tokens so what is shown is always what ships. The exhaustive token record lives in the build outputs; the zoo is the designed view.
+
 ## Requirements
+
 ### Requirement: Showcase draws its values only from built outputs
 
 The showcase SHALL draw the design system's *values* exclusively from built outputs located under `design-system/dist/` (such as CSS custom properties and the token manifest) and SHALL NOT read raw value/token sources directly. This governs values only; the zoo's own structure (markup, styles, and effects) is authored as modular source under `design-system/source/zoo/` — see "Showcase is generated from modular source files".
@@ -89,13 +91,24 @@ The showcase SHALL present a curated set of representative components (such as b
 ### Requirement: Showcase demonstrates theming by swapping colour roles
 
 The showcase SHALL demonstrate the system's "theme by swapping" principle by presenting
-alternate skins that change only colour roles (surface, ink, accent, border) while the
-structure, type and components stay identical, switchable in-page without a server or
-network. The reskin SHALL work through the built, alias-preserving token CSS: the
-showcase SHALL NOT re-declare or re-link built token custom properties to make the swap
-cascade — overriding the colour-role custom properties alone restyles the components.
-These demo skins are illustrative of the swap mechanism and SHALL be presented
-as a demonstration; they SHALL NOT be represented as the system's shipped token set.
+alternate skins that change only colour roles while the structure, type and components stay
+identical, switchable in-page without a server or network. Each demo skin SHALL apply a
+complete colour role set — the skin-supplied roles plus every derived role — so the full
+colour surface moves per theme: not only surfaces, ink, accent and borders, but the tertiary
+greys, the disabled tier, the blooms, and destructive. The demo skins SHALL be generated from
+the canonical skin source (never hand-authored partial overrides), so the theme bar exercises
+the same complete skins the bundle ships. The reskin SHALL work through the built,
+alias-preserving token CSS: the showcase SHALL NOT re-declare or re-link built component token
+custom properties to make the swap cascade — a skin declares the semantic colour roles and the
+component tokens follow their live aliases. These demo skins are illustrative of the swap
+mechanism and SHALL be presented as a demonstration; they SHALL NOT be represented as the
+system's shipped token set.
+
+#### Scenario: The reskin swaps the complete colour role set
+
+- **WHEN** the viewer switches between the demo skins
+- **THEN** the whole colour surface changes — surfaces, ink, accent, borders, the tertiary greys, the disabled tier, blooms, and destructive — while the same layout, type and components remain
+- **AND** switching works with no server and no network request
 
 #### Scenario: The reskin is shown by swapping only colour roles
 
@@ -106,14 +119,19 @@ as a demonstration; they SHALL NOT be represented as the system's shipped token 
 #### Scenario: The swap cascades through the built output alone
 
 - **WHEN** the showcase source styles are inspected
-- **THEN** they contain no re-declaration of built token custom properties whose purpose is to re-link component tokens to colour roles
-- **AND** a demo-skin override of the colour roles still restyles buttons, fields, cards, badges, and links
+- **THEN** they contain no re-declaration of built component token custom properties whose purpose is to re-link component tokens to colour roles
+- **AND** a demo skin's colour-role values restyle buttons, fields, cards, badges, links, and the ambient blooms
+
+#### Scenario: Demo skins are generated, not hand-authored partial overrides
+
+- **WHEN** the theme bar's skin data is inspected
+- **THEN** it is generated from the canonical skin source and carries each skin's complete role set
+- **AND** it is not a hand-authored subset that leaves derived roles on the base palette
 
 #### Scenario: Demo skins are not misrepresented as shipped tokens
 
 - **WHEN** the theming demo is shown
-- **THEN** it is presented as an illustrative demonstration of swapping, distinct from the
-  system's real palette drawn from the build outputs
+- **THEN** it is presented as an illustrative demonstration of swapping, distinct from the system's real palette drawn from the build outputs
 
 ### Requirement: Showcase is generated from modular source files
 
@@ -138,4 +156,3 @@ The showcase's animation CSS SHALL declare and reference its keyframes under the
 
 - **WHEN** a keyframe in a style source file is changed and the system is rebuilt
 - **THEN** the generated showcase and the shipped effects bundle both reflect the change
-

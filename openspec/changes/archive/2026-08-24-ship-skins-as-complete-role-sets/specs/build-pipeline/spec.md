@@ -4,7 +4,8 @@
 
 The build SHALL read a canonical skin source in which each skin declares only the
 skin-supplied colour roles (those whose semantic-token provenance is `supply`), and SHALL
-emit one importable skin CSS file per skin. For each skin the build SHALL compute every
+emit one importable skin CSS file per alternate skin (the base palette ships as the token
+CSS, so it takes no override file). For each skin the build SHALL compute every
 `derive`-provenance semantic colour role by evaluating its registered derivation rule from
 `design-system/language/colour.derivations.json` over that skin's supplied roles, and SHALL
 declare the supplied roles and computed roles together as custom properties under the

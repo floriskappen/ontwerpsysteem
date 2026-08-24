@@ -3,8 +3,9 @@
 ### Requirement: Bundle ships skins as complete, importable role sets
 
 The consumer bundle SHALL contain, as importable files under its built values, one skin
-file per shipped skin, authored under the dedupe-safe `.ontwerp[data-skin="<name>"]` slot
-(with the equivalent attribute form for whole-app adoption). Each skin file SHALL declare a
+file per shipped alternate skin (the base palette ships as the bundle's token CSS itself,
+so it takes no override file), authored under the dedupe-safe `.ontwerp[data-skin="<name>"]`
+slot (with the equivalent attribute form for whole-app adoption). Each skin file SHALL declare a
 value for every colour-carrying semantic role — the skin-supplied roles and every derived
 role — so that applying one skin file reskins the entire colour surface (surfaces, greys,
 borders, on-ink, blooms, the disabled tier, accent, and destructive) with no hand-derivation.

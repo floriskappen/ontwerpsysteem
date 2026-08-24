@@ -223,16 +223,20 @@ export function expandAllSkins({
  * One importable skin CSS file: the complete role set under the dedupe-safe
  * `.ontwerp[data-skin="<id>"]` slot (selector shape differs from the base token
  * block, so a bundler that merges same-selector custom-property rules cannot fold
- * the override into the base).
+ * the override into the base), PLUS the equivalent attribute form on `:root` —
+ * whole-app adoption sets data-skin on the root and imports no scope class, so
+ * without the second block the file would not apply there. With both, importing
+ * the file and setting the attribute are the only steps either way.
  */
 export function skinCss(skin, scopeClass = '.ontwerp') {
   const decls = skin.props.map(([name, value]) => `  --${name}: ${value};`).join('\n');
   return (
     `/* generated skin — ${skin.id}. Complete colour role set computed from the skin's\n` +
     `   four supplied roles (paper, ink, accent, destructive); do not edit by hand.\n` +
-    `   Import this file and set data-skin="${skin.id}" on a ${scopeClass} root\n` +
-    `   (whole-app: :root[data-skin="${skin.id}"]) to reskin the whole colour surface. */\n` +
-    `${scopeClass}[data-skin="${skin.id}"] {\n${decls}\n}\n`
+    `   Import this file and set data-skin="${skin.id}" on a ${scopeClass} root (island)\n` +
+    `   or on :root (whole-app) to reskin the whole colour surface. */\n` +
+    `${scopeClass}[data-skin="${skin.id}"] {\n${decls}\n}\n` +
+    `:root[data-skin="${skin.id}"] {\n${decls}\n}\n`
   );
 }
 

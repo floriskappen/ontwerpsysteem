@@ -15,6 +15,7 @@ import { dirname } from 'node:path';
 import { brotliDecompressSync } from 'node:zlib';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import { computeSkinRoles, roleVarName } from './skins-core.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -284,6 +285,14 @@ export function validateEntries(entries, options = {}) {
     checkRolesTable(options.colourDoc, roleProvenance, errors);
   }
 
+  // Layer 2h: the skin coverage gate — every skin's supply set is exactly the
+  // supply-provenance role set, and expanding it leaves no colour-carrying
+  // token without a supplied-or-derived value. Needs the registry to expand
+  // against (the same one the build uses).
+  if (options.skins !== undefined && options.derivations !== undefined) {
+    checkSkinCoverage(options.skins, roleProvenance, options.derivations, errors);
+  }
+
   return { errors };
 }
 
@@ -399,6 +408,102 @@ function checkDerivations(derivations, roleProvenance, errors) {
         rule: 'derivation',
         message: `Token "${path}" names unregistered derivation rule "${role.derivation}"; register it in ${REGISTRY_FILE}.`,
       });
+    }
+  }
+}
+
+// Repo-relative label of the canonical skin source, used on every skin-
+// coverage error; the on-disk path itself is resolved from tokensDir in
+// validateTokenDir.
+const SKINS_FILE = 'design-system/source/skins/skins.json';
+
+// The skin coverage gate. For every skin in the canonical source:
+//   1. its supply set is EXACTLY the supply-provenance role set — no omitted
+//      supply role, no supplied role whose provenance is derive, no key that
+//      is not a semantic colour role at all;
+//   2. expanding it through the derivation registry (the same computeSkinRoles
+//      the build uses, so gate and build cannot drift) leaves every
+//      colour-carrying token with a value — each either supplied or produced
+//      by its registered rule over the supplied roles.
+// Every failure names the skin and the offending role.
+function checkSkinCoverage(skins, roleProvenance, derivations, errors) {
+  if (!Array.isArray(skins)) {
+    errors.push({
+      file: SKINS_FILE,
+      rule: 'skin-coverage',
+      message: 'The canonical skin source must be an array of { id, label, supply } skins.',
+    });
+    return;
+  }
+  const roles = [...roleProvenance.entries()].map(([path, role]) => ({
+    path,
+    name: roleVarName(path),
+    provenance: role.provenance,
+    derivation: role.derivation,
+  }));
+  const rulesById = new Map(
+    (Array.isArray(derivations) ? derivations : [])
+      .filter((r) => r && typeof r === 'object' && !Array.isArray(r) && typeof r.id === 'string')
+      .map((r) => [r.id, r]),
+  );
+  for (const [i, skin] of skins.entries()) {
+    if (!skin || typeof skin !== 'object' || Array.isArray(skin) || typeof skin.id !== 'string') {
+      errors.push({
+        file: SKINS_FILE,
+        rule: 'skin-coverage',
+        message: `Skin at index ${i} is malformed; each skin needs a string "id" and a "supply" object.`,
+      });
+      continue;
+    }
+    const id = skin.id;
+    const supply = skin.supply && typeof skin.supply === 'object' && !Array.isArray(skin.supply) ? skin.supply : {};
+
+    // 1. exact supply-set match against the provenance contract.
+    const supplyPaths = new Set(Object.keys(supply));
+    for (const role of roles) {
+      if (role.provenance === 'supply' && !supplyPaths.has(role.path)) {
+        errors.push({
+          file: SKINS_FILE,
+          path: role.path,
+          rule: 'skin-coverage',
+          message: `Skin "${id}" omits supplied role "${role.path}"; a skin's supply set must contain exactly the supply-provenance roles.`,
+        });
+      }
+    }
+    for (const path of supplyPaths) {
+      const provenance = roleProvenance.get(path)?.provenance;
+      if (provenance === 'derive') {
+        errors.push({
+          file: SKINS_FILE,
+          path,
+          rule: 'skin-coverage',
+          message: `Skin "${id}" supplies "${path}", whose declared provenance is derived; a skin supplies only the supply-provenance roles — the rest compute.`,
+        });
+      } else if (provenance === undefined) {
+        errors.push({
+          file: SKINS_FILE,
+          path,
+          rule: 'skin-coverage',
+          message: `Skin "${id}" supplies "${path}", which is not a colour-carrying semantic role; a skin supplies only the supply-provenance roles.`,
+        });
+      }
+    }
+
+    // 2. expansion completeness: no stranded token. An omitted supply role is
+    // already reported above (and a supplied one always lands in props), so
+    // this pass only adds the derived gaps their absence causes.
+    const { props } = computeSkinRoles({ id, supply }, roles, rulesById);
+    const covered = new Set(props.map(([name]) => name));
+    for (const role of roles) {
+      if (role.provenance !== 'derive') continue;
+      if (!covered.has(role.name)) {
+        errors.push({
+          file: SKINS_FILE,
+          path: role.path,
+          rule: 'skin-coverage',
+          message: `Skin "${id}" strands colour token "${role.path}" — it is neither supplied nor produced by its derivation over the skin's supplied roles.`,
+        });
+      }
     }
   }
 }
@@ -873,6 +978,26 @@ export function validateTokenDir(tokensDir) {
       file: 'design-system/language/colour.md',
       rule: 'roles-table',
       message: 'language/colour.md is missing; the colour role contract must be documented there.',
+    });
+  }
+
+  // The canonical skin source, for the coverage gate (layer 2h).
+  const skinsPath = join(tokensDir, '..', '..', 'source', 'skins', 'skins.json');
+  if (existsSync(skinsPath)) {
+    try {
+      options.skins = JSON.parse(readFileSync(skinsPath, 'utf8'));
+    } catch (err) {
+      structureErrors.push({
+        file: SKINS_FILE,
+        rule: 'skin-coverage',
+        message: `Failed to parse the canonical skin source: ${err.message}`,
+      });
+    }
+  } else {
+    structureErrors.push({
+      file: SKINS_FILE,
+      rule: 'skin-coverage',
+      message: 'The canonical skin source is missing; shipped skins cannot be coverage-checked.',
     });
   }
 

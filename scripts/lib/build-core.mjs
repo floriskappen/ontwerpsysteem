@@ -97,8 +97,11 @@ export class BuildAborted extends Error {
 // Halts the build — naming the skin, role, and missing rule or input — if any
 // skin fails to expand (an unregistered rule or an input that is not a supplied
 // role), so a skin can never silently strand a colour role.
-export function emitSkins(distDir) {
-  const { skins } = expandAllSkins();
+// `skinsPath` injects a foreign skin source (tests exercise the halt); the
+// checked-in zoo module is then left alone — it is regenerated only from the
+// canonical source, never from a fixture.
+export function emitSkins(distDir, { skinsPath } = {}) {
+  const { skins } = expandAllSkins(skinsPath ? { skinsPath } : undefined);
   const failures = skins.flatMap((s) => s.errors.map((e) => e.message));
   if (failures.length > 0) {
     throw new Error(`Skin expansion failed:\n  - ${failures.join('\n  - ')}`);
@@ -112,7 +115,7 @@ export function emitSkins(distDir) {
   // The generated zoo skin-data module is regenerated into the source tree, the
   // same way compileRecipes regenerates recipes/index.json, so the demonstrated
   // skins and the shipped skin files come from one source and cannot diverge.
-  writeFileSync(ZOO_SKINS_MODULE, skinsModule(skins));
+  if (!skinsPath) writeFileSync(ZOO_SKINS_MODULE, skinsModule(skins));
   return skinsToData(skins);
 }
 
