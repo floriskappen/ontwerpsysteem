@@ -165,12 +165,16 @@ function checkName(path, tier, errors, file, byPath) {
 /**
  * Validate a set of already-parsed token entries.
  * @param {Array<{tier: string, file: string, data: object}>} entries
- * @param {{derivations?: unknown, colourDoc?: string}} [options]
+ * @param {{derivations?: unknown, colourDoc?: string, skins?: unknown}} [options]
  *   `derivations`: the parsed colour derivation registry
  *   (design-system/language/colour.derivations.json) — when given, the registry
  *   itself is validated and every token `derivation` reference must resolve.
  *   `colourDoc`: the text of language/colour.md — when given, its roles table is
  *   synced against the semantic colour tokens in both directions.
+ *   `skins`: the parsed canonical skin source
+ *   (design-system/source/skins/skins.json) — when given (with `derivations`),
+ *   the skin coverage gate asserts each skin supplies exactly the supply-provenance
+ *   roles and that expanding it yields a value for every colour-carrying token.
  * @returns {{errors: Array<{file?: string, path?: string, rule: string, message: string}>}}
  */
 export function validateEntries(entries, options = {}) {

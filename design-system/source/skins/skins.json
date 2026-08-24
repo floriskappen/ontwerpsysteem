@@ -1,0 +1,123 @@
+[
+  {
+    "id": "cream",
+    "label": "cream",
+    "base": true,
+    "supply": {
+      "color.surface.page": "#F1ECE0",
+      "color.text.default": "#1F1B16",
+      "color.accent.base": "#B84A39",
+      "color.destructive.base": "#8A2B1D"
+    }
+  },
+  {
+    "id": "lilac",
+    "label": "lilac",
+    "supply": {
+      "color.surface.page": "#ECE7F3",
+      "color.text.default": "#241D33",
+      "color.accent.base": "#7C5CBF",
+      "color.destructive.base": "#9A2C28"
+    }
+  },
+  {
+    "id": "sage",
+    "label": "sage",
+    "supply": {
+      "color.surface.page": "#E8EDE3",
+      "color.text.default": "#1E261C",
+      "color.accent.base": "#4F7A52",
+      "color.destructive.base": "#9A2C22"
+    }
+  },
+  {
+    "id": "clay",
+    "label": "clay",
+    "supply": {
+      "color.surface.page": "#F1E4DC",
+      "color.text.default": "#2A1C16",
+      "color.accent.base": "#A8412E",
+      "color.destructive.base": "#7A2018"
+    }
+  },
+  {
+    "id": "indigo",
+    "label": "indigo",
+    "supply": {
+      "color.surface.page": "#E6EAF2",
+      "color.text.default": "#1B2233",
+      "color.accent.base": "#3F5BA8",
+      "color.destructive.base": "#9A2C26"
+    }
+  },
+  {
+    "id": "plum",
+    "label": "plum",
+    "supply": {
+      "color.surface.page": "#F1E3EC",
+      "color.text.default": "#2C1B26",
+      "color.accent.base": "#9C3F77",
+      "color.destructive.base": "#9E2A2E"
+    }
+  },
+  {
+    "id": "slate",
+    "label": "slate",
+    "supply": {
+      "color.surface.page": "#E8EBF0",
+      "color.text.default": "#1B2028",
+      "color.accent.base": "#4D6483",
+      "color.destructive.base": "#97281F"
+    }
+  },
+  {
+    "id": "moss",
+    "label": "moss",
+    "supply": {
+      "color.surface.page": "#EAEBE0",
+      "color.text.default": "#21241A",
+      "color.accent.base": "#5E6B2C",
+      "color.destructive.base": "#9A2C20"
+    }
+  },
+  {
+    "id": "rose",
+    "label": "rose",
+    "supply": {
+      "color.surface.page": "#F4E8E9",
+      "color.text.default": "#2B1B1E",
+      "color.accent.base": "#B24A5A",
+      "color.destructive.base": "#7C2028"
+    }
+  },
+  {
+    "id": "ochre",
+    "label": "ochre",
+    "supply": {
+      "color.surface.page": "#F3ECDD",
+      "color.text.default": "#292210",
+      "color.accent.base": "#B07C20",
+      "color.destructive.base": "#9E2E1C"
+    }
+  },
+  {
+    "id": "teal",
+    "label": "teal",
+    "supply": {
+      "color.surface.page": "#E3EDEB",
+      "color.text.default": "#16241F",
+      "color.accent.base": "#2E7A70",
+      "color.destructive.base": "#9E2E24"
+    }
+  },
+  {
+    "id": "wine",
+    "label": "wine",
+    "supply": {
+      "color.surface.page": "#F2E7E7",
+      "color.text.default": "#2A1718",
+      "color.accent.base": "#8E3A3F",
+      "color.destructive.base": "#6E1D22"
+    }
+  }
+]

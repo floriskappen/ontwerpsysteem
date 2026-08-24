@@ -1,15 +1,18 @@
 * { box-sizing: border-box; border-radius: 0; }
 html, body { margin: 0; }
 :root {
-  /* bloom + pollen colours — the cream baseline (a warm amber + soft red glow, amber
-     motes). These are zoo-local effect vars, not built tokens. Declared on :root —
-     the element that carries the built token declarations — so the theming demo's
-     :root:has() skin overrides (see renderThemeBar) can restyle the atmosphere and
-     the pollen too; a custom property's var() resolves where it is declared. */
-  --wx-bloom-a: var(--color-cream-bloom);
-  --wx-bloom-b: var(--color-amber);
-  --wx-bloom-c: var(--color-red-soft);
-  --wx-pollen: var(--color-amber);
+  /* bloom + pollen colours — routed through the colour roles a complete skin sets
+     (the claim bloom and the softened accent), not through fixed cream primitives.
+     These are zoo-local effect vars, not built tokens. Declared on :root — the
+     element that carries the built token declarations — so a skin's :root:has()
+     role overrides (see renderThemeBar) reskin the atmosphere and the pollen with
+     the rest of the surface; a custom property's var() resolves where it is
+     declared. The skin sets surface-claim / accent-soft, so the blooms move with
+     the greys and destructive and the theme bar needs no hand-set bloom block. */
+  --wx-bloom-a: var(--color-surface-claim);
+  --wx-bloom-b: var(--color-accent-soft);
+  --wx-bloom-c: var(--color-accent-soft);
+  --wx-pollen: var(--color-accent-soft);
 }
 body {
   background: var(--color-surface-page);

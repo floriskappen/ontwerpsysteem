@@ -17,7 +17,7 @@ import { renderStates } from './sections/states.mjs';
 import { renderWeather } from './sections/weather.mjs';
 import { renderColophon } from './sections/colophon.mjs';
 
-export function renderShowcase({ manifest, tokenCss, fontCss = '', stylesDir = join(__dirname, 'styles') }) {
+export function renderShowcase({ manifest, tokenCss, fontCss = '', stylesDir = join(__dirname, 'styles'), skins }) {
   // Sync utility to read the modular CSS files. `stylesDir` defaults to the zoo's
   // own styles/ and exists so tests can point one build at an edited copy and
   // watch the edit land on both surfaces (zoo + shipped scoped bundles).
@@ -55,7 +55,7 @@ ${renderGrid()}
 <div class="bloom" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
 <div class="sheet">
 
-  ${renderThemeBar()}
+  ${renderThemeBar(skins)}
 
   ${renderMasthead()}
 

@@ -1,8 +1,15 @@
 import { escapeHtml } from '../effects/helpers.mjs';
 import { SKINS } from '../data/skins.mjs';
 
-export function renderThemeBar() {
-  const tabs = SKINS.map((s, i) => {
+// `skins` defaults to the generated data module; the build passes the freshly
+// expanded complete role sets so the rendered zoo can never lag the canonical
+// skin source. Each non-base skin's `vars` is its COMPLETE colour role set
+// (greys, disabled tier, blooms, borders, per-skin destructive — not a partial
+// override), so switching a skin reskins the whole colour surface. The blooms
+// follow because base.css points --wx-bloom-*/--wx-pollen at the surface-claim /
+// accent-soft roles the complete skin now sets — no hand-set bloom block here.
+export function renderThemeBar(skins = SKINS) {
+  const tabs = skins.map((s, i) => {
     const sw = s.vars
       ? { surface: s.vars['color-surface-page'], accent: s.vars['color-accent-base'] }
       : { surface: '#F1ECE0', accent: '#B84A39' };
@@ -13,19 +20,17 @@ export function renderThemeBar() {
     );
   }).join('');
 
-  const rules = SKINS.map((s) => {
+  const rules = skins.map((s) => {
     const pieces = [];
     if (s.vars) {
       const decls = Object.entries(s.vars)
         .map(([k, v]) => `--${k}: ${v};`)
         .join(' ');
-      const bloom =
-        '--wx-bloom-a: var(--color-surface-claim); --wx-bloom-b: var(--color-accent-soft); --wx-bloom-c: var(--color-accent-soft); --wx-pollen: var(--color-accent-soft);';
       // Overrides land on :root — the element that carries the built token
       // declarations — because a custom property's var() resolves where it is
       // declared: only a same-element (higher-specificity) override re-links
       // the alias chain the built CSS keeps live.
-      pieces.push(`:root:has(#th-${s.id}:checked) { ${decls} ${bloom} }`);
+      pieces.push(`:root:has(#th-${s.id}:checked) { ${decls} }`);
     }
     pieces.push(`#th-${s.id}:checked + .th-tab { background: var(--color-text-default); color: var(--color-surface-page); }`);
     pieces.push(`#th-${s.id}:focus-visible + .th-tab { outline: 2px solid var(--color-accent-base); outline-offset: -2px; }`);

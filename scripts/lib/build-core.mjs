@@ -18,10 +18,12 @@ import { fileURLToPath } from 'node:url';
 import StyleDictionary from 'style-dictionary';
 import { validateTokenDir, TIERS } from './validate-core.mjs';
 import { renderShowcase } from './showcase-core.mjs';
+import { expandAllSkins, skinCss, skinsModule, skinsToData } from './skins-core.mjs';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const FONTS_DIR = join(REPO_ROOT, 'assets', 'fonts');
 const ZOO_STYLES_DIR = join(REPO_ROOT, 'design-system', 'source', 'zoo', 'styles');
+const ZOO_SKINS_MODULE = join(REPO_ROOT, 'design-system', 'source', 'zoo', 'data', 'skins.mjs');
 
 // The shipped, scope-class-prefixed CSS bundles are generated from the very same
 // style sources the zoo compiles — never authored in parallel — so a consumer's
@@ -86,6 +88,32 @@ export class BuildAborted extends Error {
     this.name = 'BuildAborted';
     this.errors = errors;
   }
+}
+
+// Expand the canonical skin source through the derivation registry and emit one
+// importable skin CSS file per non-base skin under the dedupe-safe data-skin
+// slot, plus the generated zoo skin-data module. Returns the expanded skins so
+// the same complete role sets drive the zoo render (single source, no drift).
+// Halts the build — naming the skin, role, and missing rule or input — if any
+// skin fails to expand (an unregistered rule or an input that is not a supplied
+// role), so a skin can never silently strand a colour role.
+export function emitSkins(distDir) {
+  const { skins } = expandAllSkins();
+  const failures = skins.flatMap((s) => s.errors.map((e) => e.message));
+  if (failures.length > 0) {
+    throw new Error(`Skin expansion failed:\n  - ${failures.join('\n  - ')}`);
+  }
+  const skinsDir = join(distDir, 'css', 'skins');
+  mkdirSync(skinsDir, { recursive: true });
+  for (const skin of skins) {
+    if (skin.base) continue; // the base skin renders from the base token CSS
+    writeFileSync(join(skinsDir, `${skin.id}.css`), skinCss(skin));
+  }
+  // The generated zoo skin-data module is regenerated into the source tree, the
+  // same way compileRecipes regenerates recipes/index.json, so the demonstrated
+  // skins and the shipped skin files come from one source and cannot diverge.
+  writeFileSync(ZOO_SKINS_MODULE, skinsModule(skins));
+  return skinsToData(skins);
 }
 
 let _registered = false;
@@ -478,12 +506,18 @@ export async function runBuild({
   // into values/css/ where its relative urls resolve to the shipped fonts/.
   writeFileSync(join(distDir, 'css', 'fonts.css'), fontsCssRelative());
 
+  // Expand the canonical skin source into complete role sets: emit the importable
+  // per-skin CSS (dist/css/skins/) and regenerate the zoo skin-data module. The
+  // returned skins drive the zoo render below, so the demo and the shipped files
+  // are one and the same.
+  const skins = emitSkins(distDir);
+
   // Generate the zoo from the freshly built artifacts only (the manifest
   // and the token CSS) — never from the token sources — so it reflects exactly
   // what ships. Inputs are inlined into a single self-contained HTML file.
   const manifest = JSON.parse(readFileSync(join(distDir, 'manifest', 'tokens.json'), 'utf8'));
   const tokenCss = readFileSync(join(distDir, 'css', 'tokens.css'), 'utf8');
-  const html = renderShowcase({ manifest, tokenCss, fontCss: fontCss(), stylesDir });
+  const html = renderShowcase({ manifest, tokenCss, fontCss: fontCss(), stylesDir, skins });
   mkdirSync(join(distDir, 'zoo'), { recursive: true });
   writeFileSync(join(distDir, 'zoo', 'index.html'), html);
 
