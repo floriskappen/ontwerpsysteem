@@ -5,6 +5,7 @@
   "description": "A vendor-neutral, agent-readable design system. DTCG tokens → validated → built to CSS, JS/TS, and Tailwind v4.",
   "type": "module",
   "scripts": {
+    "check": "npm run build && npm run validate",
     "validate": "node scripts/validate.mjs",
     "build": "node scripts/build.mjs",
     "test": "vitest run",
