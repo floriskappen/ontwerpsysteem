@@ -8,7 +8,7 @@ decisions and exact scopes in `V1_ROADMAP.md` are authoritative.
   full language → recipe → zoo → shipped CSS pipeline. Preserve its organic status vocabulary and
   square, instant segmented-control contract; do not introduce generic icons or new visual values
   beyond the approved change.
-- [ ] **declare-light-only-theming** — C9: state the already-decided paper/light-only stance in the
+- [x] **declare-light-only-theming** (archived as `2026-08-24-declare-light-only-theming`) — C9: state the already-decided paper/light-only stance in the
   language and consumer guidance. This is documentation of a resolved decision, not a dark-mode
   implementation or new skin.
 - [ ] **add-shadcn-adapter** — C10: ship the values-only shadcn variable crosswalk in root and scoped

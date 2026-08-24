@@ -43,6 +43,10 @@ CHANGELOG.md     per-release changes, keyed to recipe/language IDs
    - **Skins**: override colour roles on `.ontwerp[data-skin="<name>"]` (island)
      or `:root[data-skin="<name>"]` (whole-app). A second bare `.ontwerp { … }`
      rule is not a supported override mechanism — bundlers may dedupe it away.
+   - **Theming is light-only**: every skin is a light paper; skins vary hue,
+     never lightness polarity, and there is no dark mode by design. If your app
+     has its own `.dark` theme, keep this system's chrome light or leave the
+     system off those surfaces (see `language/theming.md`).
 
 ## Update it (propagation)
 

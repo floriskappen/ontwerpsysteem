@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { runBuild, assembleBundle } from '../scripts/lib/build-core.mjs';
-import { tmpDir, fontFaces } from './helpers.mjs';
+import { tmpDir, fontFaces, releaseBundleOnce } from './helpers.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -67,16 +67,7 @@ describe('consumer bundle (distribution)', () => {
 });
 
 // One shared build for the scoped-distribution assertions.
-let _rel;
-function releaseOnce() {
-  if (!_rel) {
-    const dist = tmpDir();
-    _rel = runBuild({ tokensDir: join(root, 'design-system', 'source', 'values'), distDir: dist }).then(
-      () => join(dist, 'release'),
-    );
-  }
-  return _rel;
-}
+const releaseOnce = releaseBundleOnce(join(root, 'design-system', 'source', 'values'));
 
 // Spec: distribution / Scenario: Effects module ships in the bundle;
 // Scenario: Effects module is consumable without tooling. The effects module is

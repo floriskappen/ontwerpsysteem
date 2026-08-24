@@ -74,6 +74,16 @@ scope-class rule (another `.ontwerp { … }` block) is **not a supported overrid
 mechanism** — aggressive bundlers merge or drop same-selector custom-property
 rules, so such an override can silently disappear.
 
+### Theming is light-only
+
+Every skin is a light paper surface: skins vary hue and role assignment, never
+lightness polarity. There is no dark mode by design — the grain/multiply/ink
+material language needs a light ground (`language/theming.md`,
+`language/anti-goals.md`). If your application ships its own `.dark` theme,
+pick one of the two supported responses: keep this system's chrome on its
+light paper while your surfaces switch, or omit the system from those
+dark-mode surfaces. Do not author a dark skin, and do not wait for one.
+
 ### Tailwind v4
 
 `values/tailwind/theme.css` is an *alternative* consumption path to the plain CSS

@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync, mkdtempSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { tmpdir } from 'node:os';
+import { runBuild } from '../scripts/lib/build-core.mjs';
 
 export function tmpDir(prefix = 'ont-') {
   return mkdtempSync(join(tmpdir(), prefix));
@@ -166,4 +167,20 @@ export function treesEqual(a, b) {
     if (!other || !buf.equals(other)) return false;
   }
   return true;
+}
+
+/**
+ * Assemble the consumer release bundle once per process and hand back its
+ * `release/` dir. Test suites that only read the built output share this so
+ * each run pays for a single build.
+ */
+export function releaseBundleOnce(tokensDir) {
+  let rel;
+  return () => {
+    if (!rel) {
+      const dist = tmpDir();
+      rel = runBuild({ tokensDir, distDir: dist }).then(() => join(dist, 'release'));
+    }
+    return rel;
+  };
 }
