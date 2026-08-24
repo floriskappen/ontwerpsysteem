@@ -37,3 +37,15 @@
 .rising { width: 34px; height: 46px; border: 1px solid var(--color-border-default); background: var(--color-surface-page); position: relative; overflow: hidden; }
 .rising-fill { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; background: var(--color-accent-soft); opacity: 0.5; transform: translateY(100%); animation: ontwerp-rise 4.5s steps(9) infinite; }
 @keyframes ontwerp-rise { 0% { transform: translateY(100%); } 80%, 100% { transform: translateY(0); } }
+
+/* Reduced motion — each state settles into a deliberate, fully-formed rest pose, never
+   a frozen mid-cycle frame: the seed head grown in (every seed at its lit opacity), the
+   fruit ripe at full size, the vessel holding water part-way. The poses live beside
+   their keyframes so they ship with the effects bundle (an animated state without a
+   rest pose is incomplete; the keyframe-coverage gate enforces it). Selectors mirror
+   the animation rules exactly, so the pose wins the cascade it must. */
+@media (prefers-reduced-motion: reduce) {
+  .gseed { opacity: 0.9; animation: none; }
+  .ripe { animation: none; background: var(--color-accent-base); transform: scale(1); }
+  .rising-fill { animation: none; transform: translateY(45%); }
+}

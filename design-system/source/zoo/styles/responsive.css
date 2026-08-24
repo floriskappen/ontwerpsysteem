@@ -1,11 +1,8 @@
-@media (prefers-reduced-motion: reduce) {
-  .bloom i, .grid i, .wxc { animation: none; }
-  .wx-field { display: none; } /* drop the particle field entirely — a frozen mid-fall reads as broken */
-  /* the life-cycle states freeze in a fully-formed, legible rest pose (not mid-cycle) */
-  .gseed { opacity: 0.9; animation: none; }
-  .ripe { animation: none; background: var(--color-accent-base); }
-  .rising-fill { animation: none; transform: translateY(45%); }
-}
+/* Zoo layout breakpoints only. The reduced-motion rest frames used to live here,
+   which is exactly why they never reached consumers: this file styles the page, not
+   the system, and is not shipped as an effect bundle. Each rest frame now lives in
+   the effect-layer source beside the animation it neutralises (states.css,
+   atmosphere.css, weather.css), so it travels with the shipped scoped CSS. */
 @media (max-width: 720px) {
   .sheet { padding: var(--space-xl); }
   .use-grid { grid-template-columns: 1fr; }

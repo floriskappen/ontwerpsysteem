@@ -20,3 +20,14 @@
 @keyframes ontwerp-d1 { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
 @keyframes ontwerp-d2 { to { transform: translate(-10vmax, -5vmax) scale(0.95); } }
 @keyframes ontwerp-d3 { to { transform: translate(12vmax, -8vmax) scale(1.1); } }
+
+/* Reduced motion — a still atmosphere: the grid hairlines hold their base strength
+   (the breathing cell custom property pinned back to its authored --a value) and the
+   blooms sit at their authored positions instead of drifting. The warmth is structural,
+   so the layers settle rather than hide; the pose is declared beside the keyframes it
+   neutralises so it ships with the effects bundle, and each selector is named exactly
+   as its animation rule names it, so the rest wins the cascade. */
+@media (prefers-reduced-motion: reduce) {
+  .grid i { animation: none; --bo: var(--a); }
+  .bloom .b1, .bloom .b2, .bloom .b3 { animation: none; transform: none; }
+}

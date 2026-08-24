@@ -290,6 +290,34 @@ describe('showcase consumes the shipped keyframe names', () => {
   });
 });
 
+describe('showcase reduced-motion rest frames are co-located', () => {
+  const stylesDir = join(root, 'design-system', 'source', 'zoo', 'styles');
+  const readStyle = (f) => readFileSync(join(stylesDir, f), 'utf8');
+  const EFFECT_LAYERS = ['atmosphere.css', 'material.css', 'states.css', 'weather.css'];
+
+  // Spec: showcase / Scenario: Rest-pose rules are co-located with their animation —
+  // every effect layer that declares an animation carries its reduced-motion rest
+  // poses in the same module, so the fallback ships wherever the animation ships.
+  it('every effect layer declaring animations carries its reduced-motion block in-module', () => {
+    for (const file of EFFECT_LAYERS) {
+      const css = readStyle(file);
+      if (!css.includes('@keyframes')) continue;
+      expect(css.includes('@media (prefers-reduced-motion: reduce)'), `${file} declares keyframes`).toBe(true);
+    }
+    // material ships no keyframes today; recorded here so the claim is checked,
+    // not assumed (if one appears, the block above demands its rest poses).
+    expect(readStyle('material.css').includes('@keyframes')).toBe(false);
+  });
+
+  it('no reduced-motion rule remains outside the effect layers', () => {
+    for (const name of readdirSync(stylesDir).sort()) {
+      const css = readStyle(name);
+      const isEffectLayer = EFFECT_LAYERS.includes(name);
+      expect(css.includes('prefers-reduced-motion') && !isEffectLayer, `${name} holds reduced-motion rules`).toBe(false);
+    }
+  });
+});
+
 // The accepted pre-effects-refactor zoo, frozen as the byte-level oracle for the
 // markup this change now derives from data functions.
 const BASELINE = join(root, 'design-system', 'reference', 'accepted-zoo', 'generated', 'index.html');

@@ -2,7 +2,9 @@
 
 ## Purpose
 Captures the system's durable design language so agents can understand and reuse it without reverse-engineering the zoo: human-readable principles in Markdown under `design-system/language/` and machine-readable recipes in JSON under `design-system/recipes/`. Recipes carry stable IDs, intent, usage rules, and references to the source modules and values that implement them, and are compiled into a single index for external consumption.
+
 ## Requirements
+
 ### Requirement: Structured design language principles and recipes
 
 The design system SHALL define a durable design language comprising human-readable principles in Markdown files under `design-system/language/` and machine-readable recipes in JSON files under `design-system/recipes/`. Recipes SHALL define stable, unique IDs and specify their intent, usage rules, source modules, and value references.
@@ -82,3 +84,12 @@ The type language documentation under `design-system/language/` SHALL document f
 - **WHEN** a consumer reads the type language documentation
 - **THEN** it states that the voice is applied at the scope root, states that `html`/`body` application is not the supported path, and points to the boundary primitive for neutral descendant subtrees
 
+### Requirement: Motion language documents the reduced-motion rest-pose rule
+
+The motion language documentation under `design-system/language/` SHALL state, normatively, that every animated state or effect requires a deliberate reduced-motion rest pose — a settled, legible frame the surface holds when `prefers-reduced-motion` is requested — and that an animated state shipped without one is incomplete rather than optional polish. The documentation SHALL describe the rest pose as a stopped animation together with an explicit rest frame (or the removal of an ambient field), distinct from a frozen mid-cycle frame.
+
+#### Scenario: Reader finds the rest-pose rule stated normatively
+
+- **WHEN** a reader consults the motion language documentation
+- **THEN** it states that every animated state or effect requires a deliberate reduced-motion rest pose
+- **AND** it states that an animated state without one is incomplete, not optional polish

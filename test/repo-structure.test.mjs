@@ -54,4 +54,24 @@ describe('design-language', () => {
     expect(doc, 'the boundary primitive is referenced by name').toContain('.ontwerp-boundary');
     expect(doc, 'fonts are wired by importing the shipped fonts CSS').toContain('values/css/fonts.css');
   });
+
+  // Spec: design-language / Scenario: Reader finds the rest-pose rule stated
+  // normatively — every animated state/effect requires a deliberate reduced-motion
+  // rest pose; missing one is incomplete, not polish; the pose is a stopped
+  // animation plus an explicit rest frame (or ambient-field removal), never a
+  // frozen mid-cycle frame.
+  it('motion language documents the reduced-motion rest-pose rule', () => {
+    const doc = readFileSync(join(root, 'design-system', 'language', 'motion.md'), 'utf8');
+    expect(doc, 'the rule is stated as a requirement for every animated surface').toMatch(
+      /every animated state or effect requires a deliberate reduced-motion rest pose/i,
+    );
+    expect(doc, 'incomplete, not optional polish').toMatch(/incomplete,\s+not optional polish/i);
+    expect(doc, 'a stopped animation with an explicit rest frame').toMatch(
+      /stopped animation together with an explicitly declared rest frame/i,
+    );
+    expect(doc, 'ambient fields may be removed instead of posed').toMatch(
+      /removed from the layout instead/i,
+    );
+    expect(doc, 'distinct from a frozen mid-cycle frame').toMatch(/never a frozen mid-cycle frame/i);
+  });
 });

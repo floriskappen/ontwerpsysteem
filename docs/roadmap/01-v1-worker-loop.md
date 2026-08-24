@@ -9,7 +9,7 @@ runner. The handoff remains authoritative for scope, traps, task details, and th
   permits archive once oversight recognises it.
 - [x] **effects-as-pure-data-modules** (archived as `2026-08-24-effects-as-pure-data-modules`) — Implement C5 exactly from its existing approved change.
   Byte-identical zoo output and the accepted baseline are the oracle; never regenerate the baseline.
-- [ ] **reduced-motion-rest-frames-travel-with-states** — Implement C7 exactly from its existing
+- [x] **reduced-motion-rest-frames-travel-with-states** (archived as `2026-08-24-reduced-motion-rest-frames-travel-with-states`) — Implement C7 exactly from its existing
   approved change. Coverage is judged against shipped CSS, with the already-decided rest poses.
 - [ ] **document-atmosphere-mount-and-cost-contract** — Create and implement C11 from
   `V1_ROADMAP.md` and the handoff. Encode the decided counts, opt-in default, cardinality, and

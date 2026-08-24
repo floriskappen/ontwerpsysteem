@@ -10,6 +10,11 @@ The showcase SHALL honour `prefers-reduced-motion`: when reduced motion is reque
 - **THEN** every animated state and effect — including the per-glyph header weather — has its animation stopped and holds a deliberate rest pose, or is removed if it is an ambient field
 - **AND** none continues animating or holds a frozen mid-cycle frame
 
+#### Scenario: Reduced motion is respected
+
+- **WHEN** the viewer has `prefers-reduced-motion` set
+- **THEN** ambient animation does not play
+
 #### Scenario: Rest-pose rules are co-located with their animation
 
 - **WHEN** a style source module that declares an animation is inspected
