@@ -5,6 +5,19 @@ Type standards:
 2. **Faces**: Archivo (weights 400–700) is the primary typographic voice, JetBrains Mono is reserved for numbers/values, and Caveat is used for handwritten numerals and marks.
 3. **Hierarchy**: Displays are large and bold, body scales read with comfortable line heights.
 
+## The utility mark is reserved for data
+
+The one sanctioned mono-uppercase treatment — JetBrains Mono, uppercase, letter-spaced — is the
+**utility mark**, and it is for **data**: numerals and counts (a zoom percentage, a row count),
+measurements, machine identifiers, and coded events — strings where the monospaced face genuinely
+encodes "measured value / code". If the string could be handed to a machine or a chart axis as-is,
+it may carry the mark.
+
+Prose labels, subtitles, section headers, taxonomy tags, and eyebrows are NOT utility marks: they
+render in the Archivo lowercase voice like all prose. Reaching for mono-uppercase because a label
+is *small* is out of system — smallness is hierarchy's job, not the mark's. A human-written phrase
+stays lowercase Archivo no matter its size or station.
+
 ## Wiring the fonts
 
 Fonts are wired by importing `values/css/fonts.css` from its shipped location — one

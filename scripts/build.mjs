@@ -6,6 +6,7 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { runBuild, BuildAborted } from './lib/build-core.mjs';
+import { AdapterGateError } from './lib/shadcn-adapter.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -18,6 +19,13 @@ try {
 } catch (err) {
   if (err instanceof BuildAborted) {
     console.error(`✖ ${err.message} Run "npm run validate" for details. dist/ left untouched.`);
+    process.exit(1);
+  }
+  if (err instanceof AdapterGateError) {
+    console.error(`✖ ${err.message}`);
+    for (const e of err.errors) {
+      console.error(`  [${e.rule}] ${e.path ? `${e.file} @ ${e.path}` : e.file}\n    ${e.message}`);
+    }
     process.exit(1);
   }
   throw err;

@@ -1,0 +1,87 @@
+/* ============================================================================
+   ontwerp ⇄ shadcn variable adapter — a values-only crosswalk.
+   ============================================================================
+   Generated forms live under dist/css/shadcn/ (adapter.css on :root,
+   adapter.scoped.css under .ontwerp) and ship in the consumer bundle at
+   values/shadcn/. This file is the single hand-authored mapping both are
+   generated from — edit THIS file, never the generated outputs.
+
+   Import it beside the token CSS (values/css/tokens.css or
+   values/css/tokens.scoped.css). Every declaration resolves through an
+   ontwerp SEMANTIC role custom property, so skins and scoped role overrides
+   cascade straight through the adapter: re-skin the system and the shadcn
+   variables follow. It requires those role declarations to exist — import a
+   token file first; importing this file alone defines nothing usable.
+
+   This adapter ships VALUES ONLY: no component CSS, no markup, no scripts, no
+   runtime loader, no package dependency — importing CSS is the entire
+   integration. There is deliberately no `.dark` block: the system is
+   light-only by design (paper is the material thesis; see language/theming.md).
+   ========================================================================== */
+
+:root {
+  /* --- sheet and ink ------------------------------------------------------ */
+  --background: var(--color-surface-page);
+  --foreground: var(--color-text-default);
+
+  /* --- claimed cells and floating sheets ----------------------------------
+     A card is the claimed-cell fill the zoo renders (`color.surface.claim`);
+     a popover is another toasted panel laid over the sheet. Both carry
+     default ink. */
+  --card: var(--color-surface-claim);
+  --card-foreground: var(--color-text-default);
+  --popover: var(--color-surface-warm);
+  --popover-foreground: var(--color-text-default);
+
+  /* --- primary action = the solid ink button ------------------------------
+     Buttons invert on hover into full ink with paper text; that inversion is
+     the system's "primary" posture. */
+  --primary: var(--color-surface-ink);
+  --primary-foreground: var(--color-text-on-ink);
+
+  /* --- secondary control = a margin strip of deeper paper ----------------- */
+  --secondary: var(--color-surface-deep);
+  --secondary-foreground: var(--color-text-default);
+
+  /* --- muted → the system's quiet roles -----------------------------------
+     shadcn treats "muted" as a grey ramp; this system has no greys —
+     quietness is ink diluted onto paper. So --muted-foreground takes
+     color.text.muted (the quiet ink, the system's own borrowed-word role for
+     exactly this arrival path) and --muted takes the faintest ink wash the
+     contract ships (color.surface.disabled, the inert-control fill): the
+     quiet end of one ink scale, not a second palette. */
+  --muted: var(--color-surface-disabled);
+  --muted-foreground: var(--color-text-muted);
+
+  /* --- accent hover = the soft accent wash -------------------------------- */
+  --accent: var(--color-accent-soft);
+  --accent-foreground: var(--color-text-default);
+
+  /* --- destructive → its own pigment, not the accent ----------------------
+     color.destructive.base is a separately supplied danger colour (oxblood on
+     the reference sheet), so a shadcn destructive button never reads as
+     merely "loud brand", and skins tune danger independently of the accent. */
+  --destructive: var(--color-destructive-base);
+  --destructive-foreground: var(--color-text-on-ink);
+
+  /* --- lines ----------------------------------------------------------------
+     Fields share the system's single rule weight (--input and --border are
+     the same role); focus claims the whole border through the focus-ring,
+     exactly as field.border.focus does. */
+  --border: var(--color-border-default);
+  --input: var(--color-border-default);
+
+  /* --- ring → the dedicated focus-ring role, NOT the accent -----------------
+     shadcn derives focus from the accent by convention; here focus is its own
+     semantic role (color.focus-ring) so a skin can tune focus independently
+     of links and highlights. Mapping --ring anywhere else would silently
+     give that independence up. */
+  --ring: var(--color-focus-ring);
+
+  /* --- radius → square corners, always --------------------------------------
+     Maps shadcn's whole rounded scale onto the system's square-corner
+     contract: rounded-md/lg/xl resolve to zero rather than inventing
+     curvature the material language forbids. (Utility chips use the rare
+     1–2px radius.chip scale, which is not what shadcn's --radius drives.) */
+  --radius: var(--radius-none);
+}

@@ -57,7 +57,13 @@ npm run test
 
 Consuming apps do **not** clone or vendor this whole dev repo. They consume a **pinned release**: a self-contained, agent-readable bundle published to the **`release` branch** (and version tags). The bundle contains built values + fonts, `language/`, `recipes/`, the zoo as a worked example, a consumer `AGENTS.md`, a `DESIGN.md` pin-file template, `VERSION`, and `CHANGELOG.md` — and nothing else (no build tooling, tests, or openspec).
 
-The bundle is the source of truth once vendored: start from `vendor/ontwerp/AGENTS.md` inside it.
+The bundle is the source of truth once vendored: start from `vendor/ontwerp/AGENTS.md` inside it. Its **"Adopting the system"** section is the integration guide, built around three cases:
+
+- **Case A — whole-app**: the system owns the document; import `values/css/tokens.css`, no scope class.
+- **Case B — island / partial adoption** (the system mounts inside a shared DOM): scoped imports, scope class on your chrome roots only — never on an ancestor of a subtree that must stay neutral — `.ontwerp-boundary` at inner seams, scoped font wiring, `values/shadcn/adapter.css` for shadcn-shaped chrome.
+- **Case C — retrofit of an existing app**: importing tokens alone restyles nothing; rewrite component-by-component per the migration checklist (shadows → none, radius → 0, palette utilities → semantic roles, font → Archivo, status glyphs → marks/states).
+
+The guide also carries the operational notes: the CSS-reset (Preflight) counter-rule, role-based testing guidance, skin slotting, and light-only theming.
 
 ### Case 1 — Set it up in an existing repo (one-time)
 
@@ -73,15 +79,16 @@ This is what to do when asked to "integrate this design system into our repo".
    ```bash
    mkdir -p docs && cp vendor/ontwerp/templates/DESIGN.md docs/DESIGN.md
    ```
-   Fill in the pinned version + submodule commit. You will keep this current.
-3. **Wire the value layer** into your build (pick what fits your stack):
-   - CSS variables: import `vendor/ontwerp/values/css/tokens.css`
+   Fill in the pinned version + submodule commit and record your adoption case. You will keep this current.
+3. **Choose the adoption mode** (A/B/C above) and wire it per the bundle guide:
+   - Whole-app CSS variables: import `vendor/ontwerp/values/css/tokens.css`
+   - Island: import the `*.scoped.css` targets, scope class on chrome roots only
    - Tailwind v4: `@import "vendor/ontwerp/values/tailwind/theme.css";`
    - JS/TS: import tokens from `vendor/ontwerp/values/js/tokens.js`
-   - Fonts: serve `vendor/ontwerp/fonts/*.woff2` (or lift the `@font-face` rules from `vendor/ontwerp/zoo/index.html`)
+   - Fonts: import `vendor/ontwerp/values/css/fonts.css` (urls resolve to the bundle's fonts/)
 4. **Tell your app's agents about it.** Add this to your repo's own `AGENTS.md` / `CLAUDE.md`:
-   > **Design authority:** `vendor/ontwerp/` (pinned — see `docs/DESIGN.md`). For ANY UI work, read `vendor/ontwerp/AGENTS.md` first, then its `language/` and `recipes/`, and use `vendor/ontwerp/zoo/` as the worked example. Consume `vendor/ontwerp/values/` — never hardcode colours/spacing/type/motion. Record adopted parts and any deviations in `docs/DESIGN.md`.
-5. **Apply the system to existing UI:** read the bundle, reskin the app's components from its values/recipes/principles, and record what you adopted / adapted / omitted in `docs/DESIGN.md`.
+   > **Design authority:** `vendor/ontwerp/` (pinned — see `docs/DESIGN.md`). For ANY UI work, read `vendor/ontwerp/AGENTS.md` first, then its `language/` and `recipes/`, and use `vendor/ontwerp/zoo/` as the worked example. Follow its "Adopting the system" case for how the system enters the DOM. Consume `vendor/ontwerp/values/` — never hardcode colours/spacing/type/motion. Record adopted parts and any deviations in `docs/DESIGN.md`.
+5. **Apply the system to existing UI:** for a retrofit (Case C), work through the checklist in the bundle guide component-by-component, and record what you adopted / adapted / omitted in `docs/DESIGN.md`.
 
 ### Case 2 — Build new UI in the consuming repo
 

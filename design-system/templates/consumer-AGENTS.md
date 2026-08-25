@@ -18,7 +18,8 @@ consumed: everything you need to apply it, and nothing of its development machin
    like" — read it before inventing UI.
 5. **`values/`** — the built design values: CSS custom properties (`values/css/`,
    both `:root` and `.ontwerp`-scoped variants plus the scoped component/effects
-   bundles), JS/TS (`values/js/`), a Tailwind theme, and the token manifest.
+   bundles), the shadcn crosswalk (`values/shadcn/`, root + scoped), JS/TS
+   (`values/js/`), a Tailwind theme, and the token manifest.
    Consume these; do not hardcode raw values.
 6. **`fonts/`** — the self-hosted woff2 faces (also inlined in `zoo/index.html`).
    Wire them by importing `values/css/fonts.css` — its `@font-face` `src` urls
@@ -27,36 +28,90 @@ consumed: everything you need to apply it, and nothing of its development machin
    `language/type.md`. `fonts/faces.json` records each face's declared weight
    range and provenance.
 
-## Adopting the CSS: whole-app or as an island
+## Adopting the system — three cases
 
-**Whole-app** (the system owns the document): import `values/css/tokens.css` — the
-token custom properties land on `:root` and apply document-wide, no scope class
-needed.
+Pick the case that matches how the system enters your DOM. All three consume the same shipped
+files — nothing is ever copied or re-scoped by hand.
 
-**Island** (the system mounts inside a shared DOM): import the scoped targets and
-apply the scope class to the island's root element. Never copy or re-scope a
-shipped file by hand — the scoped files are generated from the same sources as
-everything else and stay in sync on every pin advance.
+### Case A — whole-app
+
+The system owns the document. Import `values/css/tokens.css`: token custom properties land on
+`:root` and apply document-wide, no scope class needed. If the page also hosts content outside the
+system, keep the voice off `html`/`body` (set it on your app's root container instead) and use the
+boundary primitive below on the seams — same rules as Case B, just one scope.
+
+### Case B — island / partial adoption
+
+The system mounts inside a shared DOM (tool chrome inside someone else's app). Import the scoped
+targets and put the scope class on your chrome's root elements:
 
 ```css
 @import "vendor/ontwerp/values/css/tokens.scoped.css";      /* tokens under .ontwerp */
 @import "vendor/ontwerp/values/css/components.scoped.css";  /* component classes, scoped */
 @import "vendor/ontwerp/values/css/effects.scoped.css";     /* states, atmosphere, material, weather — scoped */
+@import "vendor/ontwerp/values/css/fonts.css";              /* @font-face wiring for the faces */
 ```
 
 ```html
 <div class="ontwerp"> …the system applies in here, and only in here… </div>
 ```
 
-### The boundary primitive — `.ontwerp-boundary`
+The seam rules that make islands safe:
 
-To stop the system's inherited voice at a seam *inside* a system subtree (an
-embedded third-party widget, a host-styled region), put `.ontwerp-boundary` on the
-seam element. It ships in both token CSS files. It re-points the font slots
-(`--font-sans`, `--font-heading`) to the consumer slot `--ontwerp-boundary-font`
-(neutral system stack by default) and pins `font-family`, `text-transform`, and
-`letter-spacing`. Set `--ontwerp-boundary-font` on or above the boundary element
-to render the bounded subtree in your own stack instead.
+- **Scope on your chrome roots only — never on an ancestor of a subtree that must stay neutral.**
+  A scope class on `<body>` or a top-of-page wrapper cascades tokens and voice into embedded
+  widgets, host-styled regions, everything. Scope tightly enough that excluded subtrees are *not*
+  descendants of a scope root.
+- **Set the voice at the scope root** — families and inherited properties (`text-transform`,
+  `letter-spacing`) there, never on `html` or `body`. See `language/type.md`.
+- **`.ontwerp-boundary` stops the voice at inner seams.** An embedded third-party widget inside an
+  otherwise-scoped region gets `.ontwerp-boundary` on its seam element: it re-points the font slots
+  (`--font-sans`, `--font-heading`) to the consumer slot `--ontwerp-boundary-font` (neutral system
+  stack by default) and pins `font-family`, `text-transform`, and `letter-spacing`.
+- **Skins apply through the reserved slot**: `.ontwerp[data-skin="<name>"]` (see below).
+- **shadcn/Tailwind chrome?** Import `values/shadcn/adapter.css` (or `adapter.scoped.css` for the
+  scoped form) beside the token CSS — the standard shadcn variables map onto ontwerp roles with no
+  hand-written crosswalk.
+
+### Case C — retrofit of an existing app
+
+Be honest about what this is: **importing tokens alone changes nothing about existing UI.** There
+is no global switch that reskins hardcoded utilities; adoption is a component-by-component rewrite
+of your chrome onto the system's values. The migration checklist, applied per component:
+
+| From (typical legacy styling) | To (system equivalent) |
+|---|---|
+| shadows → none | elevation is ink-on-paper; depth comes from borders and fills |
+| radius → 0 (`--radius-none`) | square corners everywhere; chips may use `--radius-chip` |
+| palette utilities → semantic roles | `bg-stone-100` → `var(--color-surface-warm)`-class roles, never raw hex |
+| font stack → Archivo | wire `values/css/fonts.css`, set the voice at the scope root |
+| status glyphs → marks/states | ✓/✗/spinners become status marks and lifecycle states (`state.mark.*`) |
+
+Transitions follow the motion language: stepped timings with reduced-motion rest states, not
+smooth easings. If your existing chrome is shadcn-shaped, the adapter (Case B's last bullet) does
+most of the palette mapping for you — start there, then rewrite component classes.
+
+### CSS resets (Tailwind Preflight and friends)
+
+The system's typographic voice assumes CSS inheritance on a no-reset baseline — that is how the
+lowercase voice reaches buttons and labels at all. A reset breaks the chain: Preflight pins
+`button, select { text-transform: none }`, so every control outside the `.btn` class renders its
+label in source casing. Inside a scope, restore inheritance with the counter-rule:
+
+```css
+.ontwerp button, .ontwerp select { text-transform: inherit }
+```
+
+(Whole-app: same selectors against your root.) Anything else a reset flattens — list markers,
+border styles — re-asserts the same way, scoped inside the system's region.
+
+### Testing the system in your app
+
+Write consumer tests against **semantic roles and structure, never raw presentation**: assert that
+a status mark exists, that danger renders as a rule of the destructive role, that focus claims the
+border — not that an element carries `bg-stone-800` or prints `✓`. Palette class names and glyphs
+are implementation details the system is free to change (a skin swap changes both); role-level
+assertions survive reskins untouched.
 
 ### Skin overrides — the `data-skin` slot
 

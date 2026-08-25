@@ -194,3 +194,115 @@ The consumer bundle SHALL contain, under its built values, a framework-neutral J
 - **WHEN** a consumer imports the effects module from the bundle
 - **THEN** it can call the data functions and receive the effect data with no framework dependency and no build step
 - **AND** the returned data is the same as the data the showcase renders from
+
+### Requirement: Consumer bundle ships an optional shadcn values adapter
+
+The consumer bundle SHALL include an optional shadcn variable crosswalk under `values/shadcn/` in both whole-document and scoped forms. The crosswalk SHALL map the shadcn semantic contract to ontwerp semantic roles, including background, foreground, primary, card, border, ring, destructive, muted, and their foreground roles, without requiring consumers to hand-author those mappings.
+
+#### Scenario: Whole-app consumer imports the adapter
+
+- **WHEN** a consumer imports the adapter's root form alongside the root ontwerp token CSS
+- **THEN** shadcn semantic variables resolve to the corresponding ontwerp semantic roles at the document root
+- **AND** the focus ring resolves through `color.focus-ring` and destructive actions resolve through `color.destructive.base`
+
+#### Scenario: Island consumer imports the adapter
+
+- **WHEN** a consumer imports the adapter's scoped form and applies the `.ontwerp` scope to an island
+- **THEN** the same shadcn variables resolve within that island
+- **AND** the adapter does not establish those variables outside the island
+
+### Requirement: Shadcn adapter is values-only
+
+The shadcn adapter SHALL contain only custom-property declarations and explanatory comments for the crosswalk. It SHALL NOT reimplement components, define component selectors, add runtime JavaScript, load a runtime dependency, or require a consumer-side loader beyond importing CSS.
+
+#### Scenario: Adapter stays a thin crosswalk
+
+- **WHEN** the shipped adapter files are inspected
+- **THEN** they contain no component selectors, component markup, scripts, package dependency metadata, or runtime loader
+- **AND** the adapter can be consumed by importing CSS alone
+
+### Requirement: Adapter mapping decisions are documented
+
+The shipped adapter SHALL document the semantic judgment calls that affect interoperability, including that muted variables use the system's quiet roles, focus uses the dedicated focus-ring role rather than the accent by convention, and the radius mapping preserves the system's square-corner contract.
+
+#### Scenario: Consumer can identify non-obvious mappings
+
+- **WHEN** a consumer reads the adapter source
+- **THEN** the meaning of muted, ring, destructive, and radius mappings is stated next to the crosswalk
+- **AND** the documentation does not imply that the adapter supplies shadcn component implementations
+
+### Requirement: Integration guide documents three adoption cases
+
+The bundle's consumer documentation SHALL document three adoption cases as first-class, complete
+paths: whole-app adoption (importing the `:root` token CSS with no scope class), island / partial
+adoption (importing the scoped token, component, and effects CSS and applying the scope class to
+the consuming chrome's root elements only — never to an ancestor of a subtree that must stay
+neutral — with the boundary primitive at descendant seams inside the scope), and retrofit of an
+existing application (stated honestly as a component-by-component reskin). The island case SHALL
+carry the font wiring (scoped voice at the scope root, fonts CSS import) and the boundary recipe;
+the retrofit case SHALL carry the migration checklist (shadows→none, radius→0, palette→semantic
+roles, font→Archivo, status glyphs→status marks/states) and name the shadcn adapter as the
+accelerator for shadcn-shaped chrome.
+
+#### Scenario: A scoped consumer follows Case B start-to-finish
+
+- **WHEN** a consumer adopting an island reads the guide and follows it top to bottom
+- **THEN** they find the scope-on-chrome-roots-only rule with the ancestor trap named, the scoped
+  imports, the font wiring, the boundary primitive for inner seams, and where skins apply
+- **AND** no step requires copying or hand-re-scoping a shipped file
+
+#### Scenario: A retrofitting consumer gets the honest checklist
+
+- **WHEN** a consumer with an existing styled app reads the guide
+- **THEN** the guide states that importing tokens alone restyles nothing and that adoption is a
+  per-component rewrite
+- **AND** the migration checklist names the concrete substitutions (shadows→none, radius→0,
+  palette→semantic roles, font→Archivo, status glyphs→marks/states)
+
+### Requirement: Consumer docs state the CSS-reset interaction
+
+The bundle's consumer documentation SHALL state that the system's typographic voice assumes CSS
+inheritance on a no-reset baseline, and SHALL provide the counter-rule recipe for reset-heavy
+environments (Tailwind Preflight): re-assert `text-transform: inherit` on form controls inside the
+scope (e.g. `.ontwerp button, .ontwerp select { text-transform: inherit }`), so the lowercase voice
+survives a reset that pins `text-transform: none`.
+
+#### Scenario: A Preflight consumer finds the counter-rule
+
+- **WHEN** a consumer whose app ships Tailwind Preflight reads the guide
+- **THEN** they find why buttons/labels revert to source casing under a reset and the scoped
+  counter-rule that restores the voice
+
+### Requirement: Consumer docs carry role-based testing guidance
+
+The bundle's consumer documentation SHALL state how consumer tests should assert the system:
+tests assert semantic roles and structure (a status mark exists, danger renders as a rule of the
+destructive role, focus claims the border), never raw presentation utilities, palette class names,
+or specific glyphs — so a skin swap or role reskin does not break the consumer's test suite.
+
+#### Scenario: Consumer tests survive a reskin
+
+- **WHEN** a consumer follows the documented testing guidance
+- **THEN** their assertions reference roles and semantics rather than palette utilities or glyphs
+- **AND** applying a different shipped skin does not require editing those tests
+
+### Requirement: A release is published only against a readiness report
+
+The repository SHALL produce, before any release is drafted for publication, a durable
+release-readiness report recording: the result of every quality gate (build, validation, test
+suite, strict spec validation) at the state proposed for release, the drafted changelog entry
+with its BREAKING marks and per-ID migration notes, and the explicit list of steps that remain
+human-approved. The report lives in the development repository's documentation (not the consumer
+bundle), so a human approving a publish can verify the evidence without re-deriving it.
+
+#### Scenario: An approver finds the evidence
+
+- **WHEN** a human reviews a proposed release
+- **THEN** a readiness report exists in the repo docs recording gate results and the drafted
+  entry with migration notes
+- **AND** it names the steps that still require human approval and have not been performed
+
+#### Scenario: The report is not shipped to consumers
+
+- **WHEN** the consumer bundle is assembled
+- **THEN** it contains no readiness report — the report is development-side governance material

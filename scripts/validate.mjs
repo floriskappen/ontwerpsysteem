@@ -17,10 +17,11 @@
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { validateTokenDir } from './lib/validate-core.mjs';
 import { checkKeyframeCoverage, cssEntriesUnder } from './lib/keyframe-coverage.mjs';
 import { checkAtmosphereContract, collectAtmosphereInputs } from './lib/atmosphere-contract.mjs';
+import { checkAdapterOutputs, tiersFromManifest } from './lib/shadcn-adapter.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const tokensDir = join(root, 'design-system', 'source', 'values');
@@ -50,6 +51,43 @@ try {
     rule: 'atmosphere-cost',
     message: `The atmosphere contract could not be loaded: ${err.message}`,
   });
+}
+
+// Shadcn crosswalk gate over what actually shipped under dist/css/shadcn —
+// keyed to built output like the keyframe gate, so a stale or hand-edited
+// bundle cannot slip past validation. Role references resolve against the
+// built manifest of the same dist.
+if (existsSync(distCssDir)) {
+  const adapterDir = join(distCssDir, 'shadcn');
+  const forms = ['adapter.css', 'adapter.scoped.css'];
+  if (forms.some((f) => !existsSync(join(adapterDir, f)))) {
+    errors.push({
+      file: 'design-system/dist/css/shadcn',
+      rule: 'shadcn-adapter',
+      message:
+        'The shadcn crosswalk artifacts are missing; run "npm run build" — ' +
+        'the shipped CSS must carry both the root and scoped adapters.',
+    });
+  } else {
+    let tiers;
+    const manifestPath = join(root, 'design-system', 'dist', 'manifest', 'tokens.json');
+    if (existsSync(manifestPath)) {
+      try {
+        tiers = tiersFromManifest(JSON.parse(readFileSync(manifestPath, 'utf8')));
+      } catch {
+        // unreadable manifest: parity/confinement still checked below
+      }
+    }
+    errors.push(
+      ...checkAdapterOutputs(
+        {
+          root: readFileSync(join(adapterDir, 'adapter.css'), 'utf8'),
+          scoped: readFileSync(join(adapterDir, 'adapter.scoped.css'), 'utf8'),
+        },
+        { tiers },
+      ).map((e) => ({ ...e, file: e.file.startsWith('dist/') ? `design-system/${e.file}` : e.file })),
+    );
+  }
 }
 
 if (errors.length > 0) {

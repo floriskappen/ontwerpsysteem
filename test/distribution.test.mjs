@@ -34,6 +34,7 @@ describe('consumer bundle (distribution)', () => {
       'templates/DESIGN.md',
       'values/css/tokens.css', 'values/js/tokens.js', 'values/manifest/tokens.json', 'values/tailwind/theme.css',
       'values/js/effects.js', 'values/js/effects.d.ts',
+      'values/shadcn/adapter.css', 'values/shadcn/adapter.scoped.css',
       'language/motion.md', 'language/anti-goals.md',
       'recipes/index.json',
       'zoo/index.html', 'zoo/source/index.mjs',
@@ -51,7 +52,7 @@ describe('consumer bundle (distribution)', () => {
     await runBuild({ tokensDir: join(root, 'design-system', 'source', 'values'), distDir: dist });
     const rel = join(dist, 'release');
 
-    for (const junk of ['scripts', 'test', 'openspec', 'reference', 'package.json', 'node_modules', 'design-system']) {
+    for (const junk of ['scripts', 'test', 'openspec', 'reference', 'package.json', 'node_modules', 'design-system', 'docs']) {
       expect(existsSync(join(rel, junk)), `bundle should not contain ${junk}`).toBe(false);
     }
   });
@@ -238,5 +239,74 @@ describe('scoped css distribution (consumer bundle)', () => {
     const baseSelector = readFileSync(join(rel, 'values', 'css', 'tokens.scoped.css'), 'utf8').match(/^([^{]+)\{/)[1].trim();
     expect(baseSelector).toBe('.ontwerp');
     expect('.ontwerp[data-skin="name"]').not.toBe(baseSelector);
+  });
+});
+
+// Spec: distribution / Requirements: Integration guide documents three adoption
+// cases; Consumer docs state the CSS-reset interaction; Consumer docs carry
+// role-based testing guidance. Asserted on the SHIPPED copies, so the docs
+// cannot silently regress on a pin advance.
+describe('integration guide (consumer bundle)', () => {
+  const releaseOnceGuide = async () => {
+    const rel = await releaseOnce();
+    return {
+      agents: readFileSync(join(rel, 'AGENTS.md'), 'utf8'),
+      readme: readFileSync(join(rel, 'README.md'), 'utf8'),
+      pinTemplate: readFileSync(join(rel, 'templates', 'DESIGN.md'), 'utf8'),
+    };
+  };
+
+  it('documents the three adoption cases as first-class paths', async () => {
+    const { agents } = await releaseOnceGuide();
+    expect(agents).toMatch(/### Case A — whole-app/);
+    expect(agents).toMatch(/### Case B — island \/ partial adoption/);
+    expect(agents).toMatch(/### Case C — retrofit/);
+  });
+
+  // Scenario: A scoped consumer follows Case B start-to-finish.
+  it('carries the island seam rules end-to-end', async () => {
+    const { agents } = await releaseOnceGuide();
+    expect(agents, 'the ancestor trap is named').toMatch(/never on an ancestor of/i);
+    expect(agents, 'the scoped font wiring is part of the case').toContain('values/css/fonts.css');
+    expect(agents, 'the boundary primitive is in the case').toContain('.ontwerp-boundary');
+    expect(agents, 'the skin slot is reachable from the case').toContain('.ontwerp[data-skin=');
+    expect(agents, 'the shadcn adapter accelerates shadcn-shaped chrome').toContain('values/shadcn/adapter.css');
+  });
+
+  // Scenario: A retrofitting consumer gets the honest checklist.
+  it('states the retrofit honestly with the migration checklist', async () => {
+    const { agents } = await releaseOnceGuide();
+    expect(agents, 'importing tokens alone restyles nothing').toMatch(/changes nothing about existing UI/i);
+    for (const pair of [
+      /shadows → none/i,
+      /radius → 0/i,
+      /palette utilities → semantic roles/i,
+      /font.*→ Archivo/i,
+      /status glyphs → marks\/states/i,
+    ]) {
+      expect(agents, `checklist pair ${pair}`).toMatch(pair);
+    }
+  });
+
+  // Scenario: A Preflight consumer finds the counter-rule.
+  it('states the voice-assumes-inheritance rule and the Preflight counter-rule', async () => {
+    const { agents } = await releaseOnceGuide();
+    expect(agents).toMatch(/assumes CSS inheritance/i);
+    expect(agents).toContain('.ontwerp button, .ontwerp select { text-transform: inherit }');
+  });
+
+  // Scenario: Consumer tests survive a reskin.
+  it('carries role-based testing guidance', async () => {
+    const { agents } = await releaseOnceGuide();
+    expect(agents, 'roles and semantics, never raw presentation').toMatch(/never raw presentation/i);
+    expect(agents, 'reskins do not break role-level assertions').toMatch(/survive reskins/i);
+  });
+
+  it('the README steps and pin-file template match the three cases', async () => {
+    const { readme, pinTemplate } = await releaseOnceGuide();
+    expect(readme).toMatch(/Case A — whole-app/);
+    expect(readme).toMatch(/Case B — island/);
+    expect(readme).toMatch(/Case C — retrofit/);
+    expect(pinTemplate).toMatch(/Adoption case:/);
   });
 });

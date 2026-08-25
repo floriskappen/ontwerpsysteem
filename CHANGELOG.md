@@ -50,6 +50,38 @@ Entry format:
   be contained in the binary's real weight-axis coverage, read from the woff2
   itself at validation time (`fvar` wght axis for variable faces,
   `OS/2 usWeightClass` for statics; no recorded coverage is trusted).
+- Recipes (`state.mark.static`, `component.tabs.segmented`): two chrome
+  primitives ship with worked examples in the zoo, recipe metadata, and scoped
+  CSS in `values/css/components.scoped.css`. The status mark is the static,
+  non-animated answer to pass/fail/warn (pass = ripe-at-rest, fail = red
+  confined to a rule of the destructive role, warn = quiet ink); the segmented
+  control is square hairline cells sharing an ink rule with an instant,
+  solid-ink selected state. Consumers reaching for pass/fail marks or a mode
+  switcher use these instead of inventing one.
+- Language (`theming`, `anti-goals`): the theming stance is now stated
+  explicitly — light-only by design. Skins vary hue, never lightness polarity;
+  there is no dark mode and none is owed. Consumers with their own `.dark`
+  theme get two supported responses: keep this system's chrome light while
+  their surfaces switch, or keep the system off those surfaces.
+- Values (`values/shadcn/`): an optional ontwerp⇄shadcn variable crosswalk
+  ships in root (`adapter.css`) and scoped (`adapter.scoped.css`) forms. It is
+  a values-only layer: every shadcn semantic variable (background/foreground,
+  card, popover, primary, secondary, muted, accent, destructive, border,
+  input, ring, radius) maps onto an ontwerp semantic role, so skins cascade
+  through it. The mapping's judgment calls (muted → quiet roles, ring → the
+  dedicated focus-ring role rather than the accent, destructive keeps its own
+  pigment, radius → square corners) are documented next to the declarations.
+  No components, scripts, or dependencies ship with it; importing it beside
+  the token CSS is the whole integration.
+- Consumer documentation: the integration guide now covers three adoption
+  cases end-to-end — whole-app (`values/css/tokens.css`), island (scoped
+  imports, scope class on chrome roots only, never on an ancestor of a subtree
+  that must stay neutral, `.ontwerp-boundary` at inner seams, fonts via
+  `values/css/fonts.css`), and retrofit (honest per-component checklist:
+  shadows→none, radius→0, palette utilities→semantic roles, font→Archivo,
+  status glyphs→marks/states). It also carries the CSS-reset counter-rule
+  (`.ontwerp button, .ontwerp select { text-transform: inherit }`) and testing
+  guidance: assert roles and semantics, never palette utilities or glyphs.
 
 ### Changed
 - Shipped CSS keyframes: **BREAKING** — every `@keyframes` name in shipped CSS
@@ -273,6 +305,12 @@ Entry format:
   application — the voice is set on the consumer's scope root, never on
   `html`/`body`, with `.ontwerp-boundary` as the escape hatch for neutral
   descendant subtrees.
+- `type` language: **BREAKING** — the mono-uppercase utility mark is now
+  explicitly reserved for data: numerals, counts, measurements, machine
+  identifiers, and coded events. Prose labels, subtitles, section headers,
+  taxonomy tags, and eyebrows are NOT utility marks; they render in the
+  Archivo lowercase voice. Mono-uppercase applied to prose was always outside
+  the system's intent and is now ruled out normatively.
 
 **Propagation:** consumers that parsed literal values out of
 `values/css/tokens.css` or `values/tailwind/theme.css` must read
@@ -299,6 +337,17 @@ instead (relative urls resolve to the bundle's `fonts/`). Text at
 `--weight-regular` (400) in Archivo was previously faux-synthesized and now
 renders the true face — re-check any UI tuned around the synthesized rendering.
 Apply the voice at the scope root per `language/type.md`, never on `html`/`body`.
+
+New chrome primitives, theming stance, adapter, and guide: consumers should
+replace invented pass/fail glyphs and mode switchers with `state.mark.static`
+and `component.tabs.segmented`; read the light-only stance before planning any
+dark palette; shadcn-shaped chrome imports `values/shadcn/adapter.css` beside
+the token CSS instead of hand-authoring a crosswalk; and re-read the bundle's
+`AGENTS.md` → "Adopting the system" — it now documents all three adoption
+modes, the Preflight counter-rule, and role-based testing guidance. Any label,
+subtitle, or eyebrow styled in mono-uppercase must move to the Archivo
+lowercase voice (BREAKING note above); mono-uppercase remains correct only on
+data — numerals, counts, machine identifiers, coded events.
 
 ## 0.1.1 — 2026-06-27
 

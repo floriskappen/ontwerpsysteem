@@ -55,6 +55,21 @@ describe('design-language', () => {
     expect(doc, 'fonts are wired by importing the shipped fonts CSS').toContain('values/css/fonts.css');
   });
 
+  // Spec: design-language / Requirement: The utility mark is reserved for data.
+  // Scenario: A reader can tell data marks from prose labels.
+  it('type language reserves the utility mark for data, not prose', () => {
+    const doc = readFileSync(join(root, 'design-system', 'language', 'type.md'), 'utf8');
+    expect(doc, 'the mark is named and reserved for data').toMatch(/utility mark.*for \*\*data\*\*/is);
+    for (const datum of ['numerals', 'counts', 'machine identifiers', 'coded events']) {
+      expect(doc.toLowerCase(), `data example: ${datum}`).toContain(datum);
+    }
+    for (const prose of ['labels', 'subtitles', 'eyebrows']) {
+      expect(doc.toLowerCase(), `prose example: ${prose}`).toContain(prose);
+    }
+    expect(doc, 'prose stays in the Archivo lowercase voice').toMatch(/lowercase Archivo/i);
+    expect(doc, 'mono-uppercase on prose is out of system').toMatch(/out of system/i);
+  });
+
   // Spec: design-language / Scenario: Reader finds the rest-pose rule stated
   // normatively — every animated state/effect requires a deliberate reduced-motion
   // rest pose; missing one is incomplete, not polish; the pose is a stopped

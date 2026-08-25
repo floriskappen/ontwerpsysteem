@@ -12,6 +12,7 @@
 - **Pinned version:** <e.g. 0.1.0>
 - **Pinned commit:** <release-branch SHA the submodule points at>
 - **Submodule path:** <e.g. vendor/ontwerp>
+- **Adoption case:** <whole-app | island | retrofit — see the bundle's AGENTS.md, "Adopting the system">
 - **Last synced:** <date>
 
 ## Adopted

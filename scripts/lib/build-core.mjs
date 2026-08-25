@@ -12,7 +12,7 @@
 // namespace and can never silently redefine a consumer's own theme variables.
 // Both mappings are part of the public contract.
 
-import { mkdirSync, readFileSync, writeFileSync, readdirSync, cpSync, rmSync, renameSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, readdirSync, cpSync, rmSync, renameSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import StyleDictionary from 'style-dictionary';
@@ -20,6 +20,13 @@ import { validateTokenDir, TIERS } from './validate-core.mjs';
 import { renderShowcase } from './showcase-core.mjs';
 import { expandAllSkins, skinCss, skinsModule, skinsToData } from './skins-core.mjs';
 import { emitEffectsModule } from './effects-core.mjs';
+import {
+  lintAdapterSource,
+  renderAdapterVariants,
+  checkAdapterOutputs,
+  tiersFromManifest,
+  AdapterGateError,
+} from './shadcn-adapter.mjs';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const FONTS_DIR = join(REPO_ROOT, 'assets', 'fonts');
@@ -447,6 +454,35 @@ function buildScopedBundles(stylesDir, distDir, scopeClass) {
   writeFileSync(join(distDir, 'css', 'effects.scoped.css'), bundle(SHIPPED_EFFECTS_SOURCES) + '\n');
 }
 
+// Emit the shadcn crosswalk in BOTH selector forms (:root and scope class) from
+// one canonical source under <tokensDir>/shadcn/adapter.css. The source is a
+// value source like any other, so token trees without it (tests, foreign forks)
+// simply skip emission. Role references are resolved against the manifest of
+// THIS build — an unresolved role or missing required shadcn variable halts the
+// build naming the mapping, before the bundle can assemble a broken crosswalk.
+function emitShadcnAdapter(tokensDir, distDir, scopeClass, { sourcePath } = {}) {
+  const canonical = join(tokensDir, 'shadcn', 'adapter.css');
+  const path = sourcePath ?? canonical;
+  if (!existsSync(path)) return;
+  const source = readFileSync(path, 'utf8');
+  const manifest = JSON.parse(readFileSync(join(distDir, 'manifest', 'tokens.json'), 'utf8'));
+  const tiers = tiersFromManifest(manifest);
+
+  const errors = lintAdapterSource(source, { tiers });
+  let variants = null;
+  try {
+    variants = renderAdapterVariants(source, { scopeClass });
+  } catch (err) {
+    errors.push({ file: 'values/shadcn/adapter.css', rule: 'structure', message: err.message });
+  }
+  if (variants) errors.push(...checkAdapterOutputs(variants, { scopeClass }));
+  if (errors.length > 0) throw new AdapterGateError(errors);
+
+  mkdirSync(join(distDir, 'css', 'shadcn'), { recursive: true });
+  writeFileSync(join(distDir, 'css', 'shadcn', 'adapter.css'), variants.root);
+  writeFileSync(join(distDir, 'css', 'shadcn', 'adapter.scoped.css'), variants.scoped);
+}
+
 // Assemble the consumer bundle: a clean, self-contained, agent-readable surface
 // under <distDir>/release/, built from the freshly built outputs plus the durable
 // design surface. It deliberately excludes dev machinery (scripts, tests, openspec,
@@ -462,6 +498,11 @@ export function assembleBundle(root, distDir) {
 
   // built values (css / js / tailwind / manifest)
   for (const d of ['css', 'js', 'tailwind', 'manifest']) copy(join(distDir, d), join('values', d));
+  // the optional shadcn crosswalk ships as its own values directory (root +
+  // scoped forms side by side), not buried inside values/css/
+  if (existsSync(join(distDir, 'css', 'shadcn'))) {
+    copy(join(distDir, 'css', 'shadcn'), join('values', 'shadcn'));
+  }
   // durable design surface
   copy(ds('language'), 'language');
   copy(ds('recipes'), 'recipes');
@@ -486,13 +527,17 @@ export function assembleBundle(root, distDir) {
  * parameter exists so a fork can rebrand the scope). `stylesDir` points at the
  * zoo style sources the scoped bundles AND the showcase are generated from
  * (default: the repo's own zoo styles; tests may point it at an edited copy).
- * @param {{tokensDir?: string, distDir?: string, scopeClass?: string, stylesDir?: string}} opts
+ * `adapterSourcePath` injects a foreign shadcn crosswalk source so tests can
+ * exercise the adapter gate's halt without touching the canonical file (the
+ * same injection pattern as emitSkins' skinsPath).
+ * @param {{tokensDir?: string, distDir?: string, scopeClass?: string, stylesDir?: string, adapterSourcePath?: string}} opts
  */
 export async function runBuild({
   tokensDir = 'tokens',
   distDir = 'dist',
   scopeClass = '.ontwerp',
   stylesDir = ZOO_STYLES_DIR,
+  adapterSourcePath,
 } = {}) {
   const root = REPO_ROOT;
   if (!/^\.[A-Za-z_][A-Za-z0-9_-]*$/.test(scopeClass)) {
@@ -532,6 +577,11 @@ export async function runBuild({
   // returned skins drive the zoo render below, so the demo and the shipped files
   // are one and the same.
   const skins = emitSkins(distDir);
+
+  // Emit the shadcn crosswalk in both selector forms from its canonical source
+  // (a no-op for token trees that carry none). Gated on role resolution against
+  // this build's manifest; a violation halts the build before assembly.
+  emitShadcnAdapter(tokensDir, distDir, scopeClass, { sourcePath: adapterSourcePath });
 
   // Generate the zoo from the freshly built artifacts only (the manifest
   // and the token CSS) — never from the token sources — so it reflects exactly

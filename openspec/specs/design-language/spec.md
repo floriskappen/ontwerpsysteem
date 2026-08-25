@@ -84,6 +84,16 @@ The type language documentation under `design-system/language/` SHALL document f
 - **WHEN** a consumer reads the type language documentation
 - **THEN** it states that the voice is applied at the scope root, states that `html`/`body` application is not the supported path, and points to the boundary primitive for neutral descendant subtrees
 
+### Requirement: The utility mark is reserved for data
+
+The type language documentation SHALL state, normatively, the scope of the mono-uppercase utility mark: it is for **data** — numerals, counts, measurements, machine identifiers, and coded events, where a monospaced face genuinely encodes "measured value / code". Prose labels, subtitles, section headers, taxonomy tags, and eyebrows are NOT utility marks: they stay in the Archivo lowercase voice. The documentation SHALL name this split explicitly enough that a consumer reaching for a small label style does not default to mono-uppercase.
+
+#### Scenario: A reader can tell data marks from prose labels
+
+- **WHEN** a reader consults the type language documentation to style a small label
+- **THEN** they find mono-uppercase reserved for data/identifiers/coded values with examples of each
+- **AND** they find prose labels, subtitles, and eyebrows assigned to the Archivo lowercase voice, with the statement that mono-uppercase on prose is out of system
+
 ### Requirement: Motion language documents the reduced-motion rest-pose rule
 
 The motion language documentation under `design-system/language/` SHALL state, normatively, that every animated state or effect requires a deliberate reduced-motion rest pose — a settled, legible frame the surface holds when `prefers-reduced-motion` is requested — and that an animated state shipped without one is incomplete rather than optional polish. The documentation SHALL describe the rest pose as a stopped animation together with an explicit rest frame (or the removal of an ambient field), distinct from a frozen mid-cycle frame.
