@@ -13,8 +13,10 @@
 @property --bo { syntax: '<number>'; initial-value: 0.08; inherits: false; }
 .grid i {
   --bo: var(--a);
-  border-right: 1px solid rgb(31 27 22 / var(--bo));
-  border-bottom: 1px solid rgb(31 27 22 / var(--bo));
+  /* ink comes from the ink colour role, so a skin recolours the breathing grid;
+     only the hue is role-driven — the animated alpha (--bo) is unchanged */
+  border-right: 1px solid rgb(from var(--color-ink) r g b / var(--bo));
+  border-bottom: 1px solid rgb(from var(--color-ink) r g b / var(--bo));
   animation: ontwerp-bo var(--d) var(--tf, steps(64)) infinite; animation-delay: var(--dl);
 }
 @keyframes ontwerp-bo { 0%, 100% { --bo: var(--a); } 50% { --bo: var(--b); } }

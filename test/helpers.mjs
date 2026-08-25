@@ -169,6 +169,147 @@ export function treesEqual(a, b) {
   return true;
 }
 
+// --- Effect ink contract (skin-aware-effects-ink) ---
+
+/**
+ * The shipped effect families that paint ink, the declarations that do the
+ * painting, and the exact selector each CSS form uses (root = the zoo page's
+ * inlined sheet; scoped = effects.scoped.css, which prefixes `.ontwerp `).
+ * A family not listed here is outside the gate; a listed declaration that
+ * paints anything but the `--color-ink` role is a violation.
+ */
+export const EFFECT_INK_FAMILIES = [
+  { family: 'grid', props: ['border-right', 'border-bottom'], selectors: ['.grid i', '.ontwerp .grid i'] },
+  { family: 'wind streaks', props: ['background'], selectors: ['.gust', '.ontwerp .gust'] },
+  { family: 'motes', props: ['background'], selectors: ['.mote', '.ontwerp .mote'] },
+  { family: 'rain drops', props: ['background'], selectors: ['.drop', '.ontwerp .drop'] },
+  { family: 'splashes', props: ['background'], selectors: ['.splash', '.ontwerp .splash'] },
+  { family: 'snow outlines', props: ['border'], selectors: ['.flake', '.ontwerp .flake'] },
+];
+
+const CREAM_LITERAL = /31\s+27\s+22/;
+const INK_ROLE = 'var(--color-ink)';
+
+/**
+ * Walk every style rule (including inside @media/@supports) WITH its body as
+ * { selector, body }. At-rule bodies that cannot contain effect rules
+ * (@keyframes/@property/@font-face) are skipped. Comment-stripped,
+ * brace-matched — enough structure to assert on declarations without a real
+ * CSS parser.
+ */
+function* rulesWithBodies(cssText) {
+  const text = cssText.replace(/\/\*[\s\S]*?\*\//g, '');
+  const walk = function* (s) {
+    let i = 0;
+    while (i < s.length) {
+      const brace = s.indexOf('{', i);
+      if (brace === -1) return;
+      const prelude = s.slice(i, brace).trim();
+      let depth = 0;
+      let end = -1;
+      for (let j = brace; j < s.length; j += 1) {
+        if (s[j] === '{') depth += 1;
+        else if (s[j] === '}') {
+          depth -= 1;
+          if (depth === 0) {
+            end = j + 1;
+            break;
+          }
+        }
+      }
+      if (end === -1) throw new Error('unbalanced braces');
+      const body = s.slice(brace + 1, end - 1);
+      if (prelude.startsWith('@')) {
+        const name = prelude.slice(1).split(/[\s(]/)[0];
+        if (name === 'media' || name === 'supports') yield* walk(body);
+        // @keyframes/@property/@font-face carry no effect rules
+      } else {
+        for (const sel of splitCssList(prelude)) yield { selector: sel, body };
+      }
+      i = end;
+    }
+  };
+  yield* walk(text);
+}
+
+/**
+ * Every effect-ink declaration found in `cssText`, as
+ * { family, selector, property, value }. A rule whose body hides the element
+ * (`display: none` — the reduced-motion rest frame removes particle fields)
+ * paints no ink and is skipped.
+ */
+export function collectEffectInk(cssText) {
+  const found = [];
+  for (const { selector, body } of rulesWithBodies(cssText)) {
+    if (/display\s*:\s*none/.test(body)) continue;
+    for (const fam of EFFECT_INK_FAMILIES) {
+      if (!fam.selectors.includes(selector)) continue;
+      for (const prop of fam.props) {
+        const m = body.match(new RegExp(`(?:^|;)\\s*${prop}\\s*:\\s*([^;}]+)`, 'i'));
+        if (m) found.push({ family: fam.family, selector, property: prop, value: m[1].trim() });
+      }
+    }
+  }
+  return found;
+}
+
+/**
+ * The effect-ink violations in one CSS form: an inspected declaration still on
+ * the known base cream literal, or on ANY hardcoded colour instead of the
+ * skin-overridable ink role. Each violation names the effect family, the
+ * selector and the offending declaration.
+ */
+export function effectInkViolations(cssText) {
+  const violations = [];
+  for (const entry of collectEffectInk(cssText)) {
+    if (CREAM_LITERAL.test(entry.value)) {
+      violations.push({
+        family: entry.family,
+        kind: 'literal',
+        message: `${entry.family} (${entry.selector}) ${entry.property} paints with the base cream ink literal "${entry.value}" instead of the skin-overridable --color-ink role`,
+      });
+    } else if (!entry.value.includes(INK_ROLE)) {
+      violations.push({
+        family: entry.family,
+        kind: 'role-missing',
+        message: `${entry.family} (${entry.selector}) ${entry.property} does not resolve through the --color-ink role (value "${entry.value}")`,
+      });
+    }
+  }
+  return violations;
+}
+
+/**
+ * Coverage gaps: family/property pairs the gate expects but this CSS form did
+ * not offer up for inspection. Checked separately from violations so a fixture
+ * can exercise a single family while a full output must carry them all.
+ */
+export function effectInkCoverageGaps(cssText) {
+  const covered = new Set(collectEffectInk(cssText).map((e) => `${e.family}::${e.property}`));
+  const gaps = [];
+  for (const fam of EFFECT_INK_FAMILIES) {
+    for (const prop of fam.props) {
+      if (!covered.has(`${fam.family}::${prop}`)) {
+        gaps.push({
+          family: fam.family,
+          property: prop,
+          message: `${fam.family} declares no ${prop} ink to inspect — the gate expected this declaration to exist`,
+        });
+      }
+    }
+  }
+  return gaps;
+}
+
+/**
+ * Resolve the ink role inside one collected declaration value against a
+ * skin's `--color-ink`. Only the role is substituted — alpha variables stay
+ * symbolic — lower-cased so hex cases compare equal.
+ */
+export function resolveInk(value, skinInk) {
+  return value.replaceAll('var(--color-ink)', skinInk).toLowerCase();
+}
+
 /**
  * Assemble the consumer release bundle once per process and hand back its
  * `release/` dir. Test suites that only read the built output share this so

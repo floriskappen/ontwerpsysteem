@@ -81,13 +81,15 @@
 
 /* wind: tapered hairline streaks blow left→right; a few square ink specks ride along,
    bobbing on the same wind. Both cross the plate on the shared gust keyframe, stepped
-   per-particle (var(--tf)) so they advance frame by frame. */
+   per-particle (var(--tf)) so they advance frame by frame. Particle ink reads the
+   ink colour role (--color-ink) through relative-colour syntax, so skins recolour
+   every effect here; only the hue moves — each declaration's alpha stays as authored. */
 .gust { position: absolute; top: var(--y); left: calc(-1 * var(--len)); width: var(--len); height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(31 27 22 / var(--o)) 35%, rgb(31 27 22 / var(--o)) 65%, transparent);
+  background: linear-gradient(90deg, transparent, rgb(from var(--color-ink) r g b / var(--o)) 35%, rgb(from var(--color-ink) r g b / var(--o)) 65%, transparent);
   animation: ontwerp-gust var(--d) var(--tf) infinite; animation-delay: var(--dl); will-change: left; }
 @keyframes ontwerp-gust { to { left: 100%; } }
 .mote { position: absolute; top: var(--y); left: -4%; width: var(--sz); height: var(--sz);
-  background: rgb(31 27 22 / var(--o)); will-change: left, transform;
+  background: rgb(from var(--color-ink) r g b / var(--o)); will-change: left, transform;
   animation: ontwerp-gust var(--d) var(--tf) infinite, ontwerp-bob var(--bd) var(--tf2) infinite;
   animation-delay: var(--dl), var(--dl); }
 @keyframes ontwerp-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
@@ -95,11 +97,11 @@
 /* rain: slanted hairline drops streak top→bottom; short splash ticks flash open along
    the floor to read as impacts. */
 .drop { position: absolute; top: -20%; left: var(--x); width: 1px; height: var(--len);
-  background: linear-gradient(180deg, transparent, rgb(31 27 22 / var(--o)));
+  background: linear-gradient(180deg, transparent, rgb(from var(--color-ink) r g b / var(--o)));
   transform: rotate(9deg); transform-origin: top; animation: ontwerp-drop var(--d) var(--tf) infinite; animation-delay: var(--dl); will-change: top; }
 @keyframes ontwerp-drop { to { top: 120%; } }
 .splash { position: absolute; bottom: 7%; left: var(--x); width: 7px; height: 1px; transform: scaleX(0);
-  background: rgb(31 27 22 / var(--o)); animation: ontwerp-splash var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+  background: rgb(from var(--color-ink) r g b / var(--o)); animation: ontwerp-splash var(--d) var(--tf) infinite; animation-delay: var(--dl); }
 @keyframes ontwerp-splash { 0%, 68% { transform: scaleX(0); opacity: 0; } 80% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1.8); opacity: 0; } }
 
 /* fall (abstract): a thin hairline sliver that falls while tumbling and drifting on a
@@ -140,7 +142,7 @@
 /* snow: small open (hairline-outlined) squares — snow as line-art — swaying down slow
    and fading before they reach the foot, so nothing piles at a hard edge. */
 .flake { position: absolute; top: -10%; left: var(--x); width: var(--sz); height: var(--sz);
-  border: 1px solid rgb(31 27 22 / 0.55); opacity: 0; will-change: top, transform, opacity;
+  border: 1px solid rgb(from var(--color-ink) r g b / 0.55); opacity: 0; will-change: top, transform, opacity;
   animation: ontwerp-snowfall var(--d) var(--tf) infinite; animation-delay: var(--dl); }
 @keyframes ontwerp-snowfall {
   0% { top: -10%; transform: translateX(0) rotate(0deg); opacity: 0; }
