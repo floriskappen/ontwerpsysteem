@@ -195,9 +195,9 @@ const INK_ROLE = 'var(--color-ink)';
  * { selector, body }. At-rule bodies that cannot contain effect rules
  * (@keyframes/@property/@font-face) are skipped. Comment-stripped,
  * brace-matched — enough structure to assert on declarations without a real
- * CSS parser.
+ * CSS parser. Selector lists are yielded per individual selector.
  */
-function* rulesWithBodies(cssText) {
+export function* rulesWithBodies(cssText) {
   const text = cssText.replace(/\/\*[\s\S]*?\*\//g, '');
   const walk = function* (s) {
     let i = 0;

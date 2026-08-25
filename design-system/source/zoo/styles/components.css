@@ -27,7 +27,7 @@
 /* fields — label as gutter */
 .field { display: grid; grid-template-columns: 104px 1fr; align-items: stretch; border: 1px solid var(--field-border-default); width: 100%; max-width: 360px; }
 .field + .field { margin-top: -1px; }
-.field-label { font: var(--typography-mark); text-transform: uppercase; color: var(--color-text-quiet); padding: 0 var(--space-md); display: flex; align-items: center;
+.field-label { font: var(--typography-label); text-transform: lowercase; color: var(--color-text-quiet); padding: 0 var(--space-md); display: flex; align-items: center;
   background: var(--color-surface-deep); border-right: 1px solid var(--color-border-quiet); }
 .field input { border: 0; background: transparent; font: var(--field-typography); color: var(--field-text); padding: var(--field-padding-block) var(--field-padding-inline); outline: none; text-transform: lowercase; width: 100%; }
 .field input::placeholder { color: var(--field-placeholder); }
