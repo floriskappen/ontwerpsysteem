@@ -23,9 +23,12 @@ Frontier pass: read this first. One short entry per thing hit; newest last.
 - Frontier/visual pass: the three fluid type ranges were documented in `$description`
   prose only (`"source is fluid: clamp(72px, 11vw, 168px)"`) while the composite shipped
   the ceiling, so display type never scaled and the zoo scrolled sideways at 375px
-  (document 773px wide in a 375px window). Moved each documented range into the token
-  value — the CSS `font` shorthand accepts `clamp()`, verified in Chromium — so one
-  source now serves the showcase and consumers. Residual, and deliberately not decided
+  (document 773px wide in a 375px window). Each range now lives in
+  `$extensions["ontwerp.fluid"]` and a build transform substitutes it into the CSS and
+  Tailwind outputs only: putting the clamp in `$value` directly did work in the browser
+  (the `font` shorthand accepts `clamp()`, verified in Chromium) but pushed a CSS
+  expression into `values/js` and the manifest, where a consumer has to parse a number —
+  against principle 2. Residual, and deliberately not decided
   here: at the 72px floor the masthead still exceeds a 375px viewport by ~48px and breaks
   "de ontwer/p". Lowering the floor is a new visual value, so it is the owner's call.
 - Frontier/visual pass: keyboard focus for buttons lived only in `base.css`, which is
@@ -41,3 +44,9 @@ Frontier pass: read this first. One short entry per thing hit; newest last.
   cream faithfully) and the system states no contrast bar, but v1 propagates it to
   consumers. Ochre's accent is the floor at 3.10:1. Changing any of it is a visual
   decision, so it is recorded rather than taken.
+- Frontier/visual pass: `writeSourceFile()` keyed its scratch file on `process.pid`,
+  but vitest runs test files as threads sharing one pid, so two concurrent builds could
+  choose the same scratch path and rename each other's file away. Latent until the extra
+  transform shifted build timing, then reproducible (2 of 4 runs red, different failures
+  each time). Scratch names are now per-write (`randomUUID`), and the zoo source walk in
+  `showcase.test.mjs` skips in-flight `.tmp-` files. Six consecutive clean runs after.

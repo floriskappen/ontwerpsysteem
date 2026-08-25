@@ -105,6 +105,21 @@ Every CSS custom-property output the build emits — the baseline `:root` file, 
 - **WHEN** the JS/TS ESM module is emitted
 - **THEN** every exported token value is a fully resolved literal, with no `var(--…)` references
 
+### Requirement: Fluid type ranges are substituted into CSS outputs only
+
+A typography token MAY declare a fluid size range in `$extensions["ontwerp.fluid"]`. Where it does, the CSS-family outputs (the token CSS, its scoped variant, and the Tailwind theme) SHALL substitute that range for the token's font-size slot, while the token's `$value` SHALL continue to carry a plain dimension. The JS/TS and manifest outputs SHALL publish that plain dimension unchanged, so a consumer that must parse a value never receives a CSS expression in its place.
+
+#### Scenario: CSS outputs carry the fluid range
+
+- **WHEN** a typography token declaring `ontwerp.fluid` is built
+- **THEN** its custom property in the token CSS, the scoped token CSS, and the Tailwind theme uses the declared range as its font-size
+- **AND** the remaining slots of the composite are unchanged
+
+#### Scenario: Portable outputs keep a plain dimension
+
+- **WHEN** the same token is read from the JS output or the token manifest
+- **THEN** its font size is the plain dimension carried in `$value`, not a CSS expression
+
 ### Requirement: Scoped token CSS output
 
 The build SHALL emit a scoped variant of the token CSS alongside the `:root` variant: a file declaring every token as a custom property under a scope-class selector instead of `:root`. The scope class SHALL be a build parameter; the default build SHALL use `.ontwerp`. The scoped variant SHALL be generated in the same build from the same token sources as the `:root` variant, never authored or copied by hand.

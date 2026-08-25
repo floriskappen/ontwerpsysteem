@@ -15,6 +15,7 @@
 import { mkdirSync, readFileSync, writeFileSync, readdirSync, cpSync, rmSync, renameSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
 import StyleDictionary from 'style-dictionary';
 import { validateTokenDir, TIERS } from './validate-core.mjs';
 import { renderShowcase } from './showcase-core.mjs';
@@ -156,6 +157,35 @@ function registerOnce() {
     },
   });
 
+  // Fluid type is a CSS capability, not a portable value: a clamp() cannot be read
+  // as a dimension by a native consumer. So the token's $value keeps the ceiling as a
+  // real dimension — what values/js and the manifest publish — and the fluid range
+  // lives in $extensions["ontwerp.fluid"]. This transform substitutes the range for
+  // the fontSize on the CSS-family platforms only, which is why display and heading
+  // type scale in the browser while the token stays vendor-neutral.
+  const fluidRange = (token) =>
+    (token.$extensions ?? token.original?.$extensions ?? {})['ontwerp.fluid'];
+
+  StyleDictionary.registerTransform({
+    name: 'value/ontwerp/fluid-size',
+    type: 'value',
+    transitive: true,
+    filter: (token) => Boolean(fluidRange(token)),
+    transform: (token) => {
+      const range = fluidRange(token);
+      const value = token.$value ?? token.value;
+      // The composite may still be an object, or the CSS group's shorthand transform
+      // may already have folded it into `<weight> <size>/<line-height> <family>`.
+      if (value && typeof value === 'object') return { ...value, fontSize: range };
+      const ceiling = (token.original?.$value ?? token.original?.value ?? {}).fontSize;
+      if (typeof value !== 'string' || !ceiling) return value;
+      // Only the size slot — the one occurrence sitting immediately before the
+      // line-height slash — is replaced, never a coincidentally equal length.
+      const sizeSlot = new RegExp(`(^|\\s)${ceiling.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=/)`);
+      return value.replace(sizeSlot, `$1${range}`);
+    },
+  });
+
   // ESM object: keys are the derived (kebab) names, values are resolved. Typed
   // via a sibling .d.ts. No file header → deterministic output.
   StyleDictionary.registerFormat({
@@ -238,6 +268,7 @@ function makeConfig(tokensDir, distDir, scopeClass) {
     platforms: {
       css: {
         transformGroup: 'css',
+        transforms: ['value/ontwerp/fluid-size'],
         buildPath: `${distDir}/css/`,
         files: [
           {
@@ -257,7 +288,7 @@ function makeConfig(tokensDir, distDir, scopeClass) {
       },
       tailwind: {
         transformGroup: 'css',
-        transforms: ['name/ontwerp/tailwind'],
+        transforms: ['name/ontwerp/tailwind', 'value/ontwerp/fluid-size'],
         buildPath: `${distDir}/tailwind/`,
         files: [
           {
@@ -290,8 +321,13 @@ function makeConfig(tokensDir, distDir, scopeClass) {
 // (test threads), and a reader assembling its bundle must never catch half of a
 // rewrite. Dist-internal writes stay plain writeFileSync; each build owns its
 // dist directory.
+//
+// The scratch name must be unique per write, not per process: vitest runs test
+// files as threads sharing one pid, so keying the temp file on the pid alone let
+// two concurrent builds pick the same scratch path and rename each other's file
+// out from under themselves.
 function writeSourceFile(path, contents) {
-  const tmp = `${path}.tmp-${process.pid}`;
+  const tmp = `${path}.tmp-${randomUUID()}`;
   writeFileSync(tmp, contents);
   renameSync(tmp, path); // atomic replace: readers see old or new bytes, never half
 }

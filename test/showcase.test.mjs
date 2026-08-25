@@ -152,8 +152,12 @@ describe('showcase reskins through the built alias-preserving CSS', () => {
     const tokenNames = new Set(manifest.map((e) => e.name));
     const zooDir = join(root, 'design-system', 'source', 'zoo');
     const files = [];
+    // Skip the scratch files a concurrent build leaves beside a regenerated source
+    // artifact for the instant before it renames them into place: this assertion is
+    // about authored zoo source, and stat-ing one that has just been renamed throws.
     (function walk(d) {
       for (const name of readdirSync(d).sort()) {
+        if (name.includes('.tmp-')) continue;
         const p = join(d, name);
         if (statSync(p).isDirectory()) walk(p);
         else files.push(p);

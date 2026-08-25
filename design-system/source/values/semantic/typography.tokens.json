@@ -2,16 +2,19 @@
   "typography": {
     "$type": "typography",
     "display": {
-      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.bold}", "fontSize": "clamp(72px, 11vw, 168px)", "lineHeight": 0.92, "letterSpacing": "-0.04em" },
-      "$description": "fluid: 72px floor, 11vw, 168px ceiling"
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.bold}", "fontSize": "168px", "lineHeight": 0.92, "letterSpacing": "-0.04em" },
+      "$extensions": { "ontwerp.fluid": "clamp(72px, 11vw, 168px)" },
+      "$description": "fluid: 72px floor, 11vw, 168px ceiling — $value carries the ceiling as a portable dimension"
     },
     "heading-xl": {
-      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.bold}", "fontSize": "clamp(48px, 6vw, 88px)", "lineHeight": 0.95, "letterSpacing": "-0.035em" },
-      "$description": "h1 — fluid: 48px floor, 6vw, 88px ceiling"
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.bold}", "fontSize": "88px", "lineHeight": 0.95, "letterSpacing": "-0.035em" },
+      "$extensions": { "ontwerp.fluid": "clamp(48px, 6vw, 88px)" },
+      "$description": "h1 — fluid: 48px floor, 6vw, 88px ceiling — $value carries the ceiling as a portable dimension"
     },
     "heading-lg": {
-      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.semibold}", "fontSize": "clamp(28px, 3vw, 40px)", "lineHeight": 1.02, "letterSpacing": "-0.028em" },
-      "$description": "h2 — fluid: 28px floor, 3vw, 40px ceiling"
+      "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.semibold}", "fontSize": "40px", "lineHeight": 1.02, "letterSpacing": "-0.028em" },
+      "$extensions": { "ontwerp.fluid": "clamp(28px, 3vw, 40px)" },
+      "$description": "h2 — fluid: 28px floor, 3vw, 40px ceiling — $value carries the ceiling as a portable dimension"
     },
     "heading-md": {
       "$value": { "fontFamily": "{font.sans}", "fontWeight": "{weight.semibold}", "fontSize": "20px", "lineHeight": 1.1, "letterSpacing": "-0.022em" },

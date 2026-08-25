@@ -313,12 +313,14 @@ Entry format:
   the system's intent and is now ruled out normatively.
 
 - `typography.display`, `typography.heading-xl`, `typography.heading-lg`: the fluid
-  ranges these tokens described in prose are now carried in the values themselves —
-  `clamp(72px, 11vw, 168px)`, `clamp(48px, 6vw, 88px)` and `clamp(28px, 3vw, 40px)`.
-  Each previously shipped only its ceiling, so display and heading type never scaled
-  down and narrow viewports overflowed horizontally. The CSS `font` shorthand carries
-  the clamp, so `--typography-*` is fluid everywhere it is consumed; rendering at or
-  above the ceiling width is unchanged.
+  ranges these tokens described in prose are now real. Each range moves into
+  `$extensions["ontwerp.fluid"]` — `clamp(72px, 11vw, 168px)`, `clamp(48px, 6vw, 88px)`
+  and `clamp(28px, 3vw, 40px)` — and the CSS and Tailwind builds substitute it for the
+  font-size slot. Previously only the ceiling shipped, so display and heading type never
+  scaled down and a narrow viewport overflowed horizontally. `$value` still carries the
+  ceiling as a plain dimension, so `values/js` and the manifest stay portable and
+  machine-readable; a clamp is a CSS capability and is confined to the CSS outputs.
+  Rendering at or above the ceiling width is unchanged.
 - `component.button.ink-press`, `components` language: the keyboard focus indicator
   now ships with the component. `.btn:focus-visible` draws a 2px outline in the
   focus-ring role, offset off the edge, from `values/css/components.scoped.css`. It
@@ -336,8 +338,9 @@ property's `var()` resolves where the property is declared, so overrides on a
 descendant element no longer re-link the chain. Consumers who hand-wrote a focus
 style for `.btn`, or who re-declared display/heading sizes to get responsive type,
 should delete those local copies: both now ship. Anything that pinned a literal
-`168px`/`88px`/`40px` off `--typography-*` should re-measure — those values are now
-the ceilings of a clamp, not constants.
+`168px`/`88px`/`40px` off `--typography-*` in CSS should re-measure — in the CSS and
+Tailwind outputs those values are now the ceilings of a clamp rather than constants.
+The JS and manifest outputs are unchanged.
 
 Scoped distribution: island consumers should delete hand-maintained re-scoped
 copies of the tokens/components/effects CSS and import

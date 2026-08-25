@@ -286,6 +286,45 @@ describe('scoped css distribution (build outputs)', () => {
     expect(refs).toBeGreaterThan(0);
   });
 
+  // Spec: Requirement: Fluid type ranges are substituted into CSS outputs only.
+  // The regression this guards is the one that shipped: the ranges were recorded in
+  // prose while every output carried the ceiling, so type never scaled.
+  it('substitutes ontwerp.fluid ranges into CSS outputs and leaves portable outputs plain', async () => {
+    const { css, scoped, theme, js, manifest } = await builtOnce();
+    const sources = JSON.parse(
+      readFileSync(join(realTokens, 'semantic', 'typography.tokens.json'), 'utf8'),
+    ).typography;
+
+    const fluid = Object.entries(sources).filter(([, t]) => t?.$extensions?.['ontwerp.fluid']);
+    expect(fluid.length, 'some typography token declares a fluid range').toBeGreaterThan(0);
+
+    for (const [name, token] of fluid) {
+      const range = token.$extensions['ontwerp.fluid'];
+      const ceiling = token.$value.fontSize;
+
+      for (const [label, out, prop] of [
+        ['tokens.css', css, `--typography-${name}`],
+        ['tokens.scoped.css', scoped, `--typography-${name}`],
+        ['theme.css', theme, `--typography-ontwerp-${name}`],
+      ]) {
+        const decl = out.split('\n').find((l) => l.includes(`${prop}:`));
+        expect(decl, `${label} declares ${prop}`).toBeDefined();
+        expect(decl, `${label}: ${prop} carries the fluid range`).toContain(range);
+        expect(decl, `${label}: ${prop} does not fall back to the bare ceiling`).not.toContain(`${ceiling}/`);
+      }
+
+      // Portable outputs must stay parseable: a clamp() is a CSS capability.
+      const jsDecl = js.split('\n').find((l) => l.includes(`"typography-${name}"`));
+      expect(jsDecl, `tokens.js declares typography-${name}`).toBeDefined();
+      expect(jsDecl, `tokens.js: typography-${name} keeps a plain dimension`).toContain(`"fontSize":"${ceiling}"`);
+      expect(jsDecl).not.toContain('clamp(');
+
+      const entry = manifest.find((e) => e.path === `typography.${name}`);
+      expect(entry, `manifest carries typography.${name}`).toBeDefined();
+      expect(entry.value.fontSize, `manifest: typography.${name} keeps a plain dimension`).toBe(ceiling);
+    }
+  });
+
   // Spec: Scenario: Tailwind theme is emitted with namespaced variables.
   it('tailwind names carry the ontwerp segment', async () => {
     const { theme } = await builtOnce();
