@@ -85,12 +85,17 @@ describe('motion-contract scope guard — the correction stays a correction', ()
     expect(Object.keys(pkg.devDependencies).sort()).toEqual(FROZEN.devDependencies);
   });
 
-  it('the version was not bumped and no release artifact was added', () => {
-    expect(readFileSync(join(root, 'design-system', 'VERSION'), 'utf8').trim()).toBe('0.1.1');
+  // The version pin this guard originally carried (VERSION === '0.1.1') was a
+  // point-in-time scope check: it proved the correction did not smuggle a release
+  // in with it. The deliberate 1.0.0 release retires that pin — leaving it would
+  // make every future release fail a guard about a change already archived. What
+  // stays enforceable is that the release history it was protecting is not
+  // rewritten, and that the correction added no dependency.
+  it('leaves the release history it was written against intact', () => {
+    expect(readFileSync(join(root, 'design-system', 'VERSION'), 'utf8').trim()).toMatch(/^\d+\.\d+\.\d+$/);
     const changelog = readFileSync(join(root, 'CHANGELOG.md'), 'utf8');
     const released = [...changelog.matchAll(/^## (\d+\.\d+\.\d+) — /gm)].map((m) => m[1]);
-    expect(released[0], 'a release entry newer than 0.1.1 appeared').toBe('0.1.1');
-    expect(new Set(released)).toEqual(new Set(['0.1.0', '0.1.1']));
+    expect(new Set(released).has('0.1.0') && new Set(released).has('0.1.1')).toBe(true);
   });
 
   it('no new effect module, style module, or skin was introduced', () => {

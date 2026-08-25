@@ -17,7 +17,7 @@ Entry format:
 **Propagation:** <what a consumer must re-check after advancing the pin>
 ```
 
-## Unreleased
+## 1.0.0 — 2026-08-25
 
 ### Added
 - Built values (scoped CSS distribution): the bundle now ships scope-aware CSS

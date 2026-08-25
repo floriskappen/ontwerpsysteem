@@ -272,7 +272,8 @@ describe('showcase surface preservation (utility-mark-canonical-examples)', () =
     const pkg = JSON.parse(read(join(root, 'package.json')));
     expect(Object.keys(pkg.dependencies ?? {}), 'runtime dependencies appeared').toEqual([]);
     expect(Object.keys(pkg.devDependencies).sort()).toEqual(['ajv', 'ajv-formats', 'style-dictionary', 'vitest']);
-    expect(read(join(root, 'design-system', 'VERSION')).trim()).toBe('0.1.1');
+    // Version pin retired at the deliberate 1.0.0 release; see motion-scope.test.mjs.
+    expect(read(join(root, 'design-system', 'VERSION')).trim()).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
   it('the component vocabulary is unchanged by the correction', () => {
