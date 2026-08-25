@@ -37,13 +37,19 @@ CHANGELOG.md     per-release changes, keyed to recipe/language IDs
 3. Apply the system: consume `values/`, follow `recipes/` + `language/`, use `zoo/`
    as the reference for correct results. `AGENTS.md` → "Adopting the system" is
    the full guide; the three cases in brief:
-   - **Case A — whole-app**: import `values/css/tokens.css` (tokens on `:root`,
-     no scope class needed).
+   - **Case A — whole-app**: import `values/css/tokens.css` (all token custom
+     properties on `:root`) plus `values/css/components.scoped.css`,
+     `values/css/effects.scoped.css`, and `values/css/fonts.css`, and put
+     `class="ontwerp"` on your app's root container — the component/effect classes
+     ship only in `.ontwerp`-scoped form, so tokens alone style nothing.
    - **Case B — island in a shared DOM**: import `values/css/tokens.scoped.css` +
-     `components.scoped.css` + `effects.scoped.css` + `fonts.css` and put
-     `class="ontwerp"` on your chrome roots only — never on an ancestor of a
-     subtree that must stay neutral; `.ontwerp-boundary` at inner seams.
-     shadcn-shaped chrome also imports `values/shadcn/adapter.css`.
+     `values/css/components.scoped.css` + `values/css/effects.scoped.css` +
+     `values/css/fonts.css` and put `class="ontwerp"` on your chrome roots only —
+     never on an ancestor of a subtree that must stay neutral;
+     `.ontwerp-boundary` at inner seams. shadcn-shaped chrome also imports
+     `values/shadcn/adapter.scoped.css`, declared under the same `.ontwerp`
+     root — never the `:root`-declared `values/shadcn/adapter.css` inside an
+     island, which leaks shadcn variables into the shared document.
    - **Case C — retrofit**: importing tokens alone restyles nothing; rewrite
      component-by-component per the checklist in `AGENTS.md` (shadows → none,
      radius → 0, palette utilities → semantic roles, font → Archivo, status

@@ -59,8 +59,8 @@ Consuming apps do **not** clone or vendor this whole dev repo. They consume a **
 
 The bundle is the source of truth once vendored: start from `vendor/ontwerp/AGENTS.md` inside it. Its **"Adopting the system"** section is the integration guide, built around three cases:
 
-- **Case A — whole-app**: the system owns the document; import `values/css/tokens.css`, no scope class.
-- **Case B — island / partial adoption** (the system mounts inside a shared DOM): scoped imports, scope class on your chrome roots only — never on an ancestor of a subtree that must stay neutral — `.ontwerp-boundary` at inner seams, scoped font wiring, `values/shadcn/adapter.css` for shadcn-shaped chrome.
+- **Case A — whole-app**: import the complete surface, not tokens alone: `values/css/tokens.css` (all token custom properties on `:root`), plus the shipped component/effect targets `values/css/components.scoped.css` and `values/css/effects.scoped.css`, and `values/css/fonts.css`. Those component/effect files are `.ontwerp`-scoped, so put `class="ontwerp"` on your app's root container — the whole app then receives the system styles while the voice still stays off `html`/`body`.
+- **Case B — island / partial adoption** (the system mounts inside a shared DOM): scoped imports — `values/css/tokens.scoped.css`, `values/css/components.scoped.css`, `values/css/effects.scoped.css`, `values/css/fonts.css` — with the scope class on your chrome roots only — never on an ancestor of a subtree that must stay neutral — `.ontwerp-boundary` at inner seams, and for shadcn-shaped chrome `values/shadcn/adapter.scoped.css`, mounted under the same `.ontwerp` root. Never the `:root`-declared `values/shadcn/adapter.css` inside an island: it leaks shadcn variables into the shared document.
 - **Case C — retrofit of an existing app**: importing tokens alone restyles nothing; rewrite component-by-component per the migration checklist (shadows → none, radius → 0, palette utilities → semantic roles, font → Archivo, status glyphs → marks/states).
 
 The guide also carries the operational notes: the CSS-reset (Preflight) counter-rule, role-based testing guidance, skin slotting, and light-only theming.
@@ -81,8 +81,8 @@ This is what to do when asked to "integrate this design system into our repo".
    ```
    Fill in the pinned version + submodule commit and record your adoption case. You will keep this current.
 3. **Choose the adoption mode** (A/B/C above) and wire it per the bundle guide:
-   - Whole-app CSS variables: import `vendor/ontwerp/values/css/tokens.css`
-   - Island: import the `*.scoped.css` targets, scope class on chrome roots only
+   - Whole-app: import `vendor/ontwerp/values/css/tokens.css` plus `values/css/components.scoped.css`, `values/css/effects.scoped.css`, and `values/css/fonts.css`; put `class="ontwerp"` on your app's root container so the scoped component/effect classes apply
+   - Island: import the `*.scoped.css` targets (`tokens.scoped.css`, `components.scoped.css`, `effects.scoped.css`) + `fonts.css`, scope class on chrome roots only; shadcn-shaped chrome adds `values/shadcn/adapter.scoped.css` under the same `.ontwerp` root
    - Tailwind v4: `@import "vendor/ontwerp/values/tailwind/theme.css";`
    - JS/TS: import tokens from `vendor/ontwerp/values/js/tokens.js`
    - Fonts: import `vendor/ontwerp/values/css/fonts.css` (urls resolve to the bundle's fonts/)

@@ -35,10 +35,30 @@ files — nothing is ever copied or re-scoped by hand.
 
 ### Case A — whole-app
 
-The system owns the document. Import `values/css/tokens.css`: token custom properties land on
-`:root` and apply document-wide, no scope class needed. If the page also hosts content outside the
-system, keep the voice off `html`/`body` (set it on your app's root container instead) and use the
-boundary primitive below on the seams — same rules as Case B, just one scope.
+The system owns the document. Import the complete surface — tokens alone mount no
+component or effect styling:
+
+```css
+@import "vendor/ontwerp/values/css/tokens.css";            /* all token custom properties on :root */
+@import "vendor/ontwerp/values/css/components.scoped.css"; /* component classes — apply under .ontwerp */
+@import "vendor/ontwerp/values/css/effects.scoped.css";    /* states, atmosphere, material, weather — under .ontwerp */
+@import "vendor/ontwerp/values/css/fonts.css";             /* @font-face wiring for the faces */
+```
+
+The component/effect targets ship only in their `.ontwerp`-scoped form, so put the scope
+class on your application's root container:
+
+```html
+<body>
+  <div id="app" class="ontwerp"> …the entire application… </div>
+</body>
+```
+
+Tokens land document-wide from `:root`; every shipped class applies beneath that one
+`.ontwerp` root. shadcn-shaped whole-app chrome also imports
+`values/shadcn/adapter.css` (its `:root` form). If the page hosts content outside the
+system, keep it out of the scoped container and use the boundary primitive below on the
+seams — same rules as Case B, just one scope.
 
 ### Case B — island / partial adoption
 
@@ -69,9 +89,11 @@ The seam rules that make islands safe:
   (`--font-sans`, `--font-heading`) to the consumer slot `--ontwerp-boundary-font` (neutral system
   stack by default) and pins `font-family`, `text-transform`, and `letter-spacing`.
 - **Skins apply through the reserved slot**: `.ontwerp[data-skin="<name>"]` (see below).
-- **shadcn/Tailwind chrome?** Import `values/shadcn/adapter.css` (or `adapter.scoped.css` for the
-  scoped form) beside the token CSS — the standard shadcn variables map onto ontwerp roles with no
-  hand-written crosswalk.
+- **shadcn/Tailwind chrome?** Import `values/shadcn/adapter.scoped.css` beside the scoped
+  token CSS — the standard shadcn variables are declared under your existing `.ontwerp`
+  root and map onto ontwerp roles with no hand-written crosswalk. The unscoped
+  `values/shadcn/adapter.css` declares on `:root`: it is for whole-app documents (Case A)
+  only — inside an island it leaks shadcn variables into the shared document.
 
 ### Case C — retrofit of an existing app
 
