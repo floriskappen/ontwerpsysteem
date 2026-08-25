@@ -24,4 +24,12 @@ export function memoByArgs(fn) {
   };
 }
 
+// The stepped clock: every periodic animation quantises at the system's 8fps
+// flip-book rate — steps(durSec × 8), floored at 2 so even a sub-second loop
+// steps — shared by every effect that emits animation timing (weather fields,
+// breathing grid). Periodic motion steps through discrete states; it never
+// eases between them.
+const STEP_FPS = 8;
+export const stepTF = (durSec) => `steps(${Math.max(2, Math.round(durSec * STEP_FPS))})`;
+
 export const implementsRecipes = [];

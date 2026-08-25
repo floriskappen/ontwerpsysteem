@@ -89,4 +89,24 @@ describe('design-language', () => {
     );
     expect(doc, 'distinct from a frozen mid-cycle frame').toMatch(/never a frozen mid-cycle frame/i);
   });
+
+  // Spec: design-language / Scenario: Reader finds the stepped-motion rule stated
+  // normatively — interactions are immediate with no easing curve anywhere in the
+  // interaction path, periodic motion runs on the stepped clock rather than being
+  // smoothly eased, and the value layer carries periodic loop lengths only.
+  it('motion language states the immediate-interaction, stepped-periodic rule', () => {
+    const doc = readFileSync(join(root, 'design-system', 'language', 'motion.md'), 'utf8');
+    expect(doc, 'interactions are immediate — no transition, no easing curve').toMatch(
+      /interactions are immediate/i,
+    );
+    expect(doc, 'periodic motion runs on the stepped clock').toMatch(
+      /periodic motion[^.]*runs on the stepped clock/is,
+    );
+    expect(doc, 'smooth easing affordances are named out of system').toMatch(
+      /smooth easing affordances[^.]*out of system/is,
+    );
+    expect(doc, 'the value layer carries no transition duration and no easing curve').toMatch(
+      /no transition duration and no easing curve among the canonical motion values/i,
+    );
+  });
 });

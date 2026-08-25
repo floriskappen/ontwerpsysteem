@@ -1,8 +1,5 @@
-import { escapeHtml, memoByArgs } from './helpers.mjs';
+import { escapeHtml, memoByArgs, stepTF } from './helpers.mjs';
 import { lcg, r2 } from './deterministic-random.mjs';
-
-const WX_FPS = 8; // deliberately low — the flip-book rate everything animates at
-const stepTF = (durSec) => `steps(${Math.max(2, Math.round(durSec * WX_FPS))})`;
 
 // Every field below has the same shape: a memoised data primary returning one
 // plain object per particle — its element class, stable index, and the CSS

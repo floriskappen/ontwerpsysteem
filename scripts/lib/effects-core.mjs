@@ -72,7 +72,7 @@ function effectsDts() {
     '/* generated alongside effects.js from design-system/source/zoo/effects/ — do not edit by hand. */\n\n' +
     'export interface SeedDot { cx: number; cy: number; r: number; index: number }\n' +
     'export interface GrowingSeedDot { cx: number; cy: number; r: number; gi: number; index: number }\n' +
-    'export interface GridCell { index: number; a: string; b: string; d: string; dl: string }\n' +
+    'export interface GridCell { index: number; a: string; b: string; d: string; dl: string; tf: string }\n' +
     'export interface GridField { cells: GridCell[]; cols: number; rows: number }\n' +
     '// One element of a weather field: its element class, stable index, and the CSS\n' +
     '// custom properties — in render order — that the shipped effects CSS animates it by.\n' +

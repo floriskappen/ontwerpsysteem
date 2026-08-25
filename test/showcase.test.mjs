@@ -346,16 +346,34 @@ function scanForEffectMarkup(file, src) {
 }
 
 describe('showcase effect markup through the data-derived wrappers', () => {
+  // The one recorded motion-correction exemption (design.md: byte-identical
+  // output *outside* the intended motion correction). The stepped-clock change
+  // appends a per-cell step count to every grid cell's style attribute —
+  // `;--tf:steps(N)` — and nothing else. It is stripped from BOTH sides before
+  // the byte comparison, exactly like C7's recorded rest-frame relocations in
+  // zoo-parity: any other byte difference in any region still fails.
+  const stripMotionClock = (html) => html.replace(/;--tf:steps\(\d+\)/g, '');
+
   // Spec: showcase / Scenario: Effect output stays stable across rebuilds.
-  it('effect markup is byte-identical to the accepted baseline', async () => {
+  it('effect markup is byte-identical to the accepted baseline, modulo the recorded stepped-clock addition', async () => {
     const { page } = await zooBuiltOnce();
-    const built = effectRegions(page);
-    const base = effectRegions(readFileSync(BASELINE, 'utf8'));
+    const built = effectRegions(stripMotionClock(page));
+    const base = effectRegions(stripMotionClock(readFileSync(BASELINE, 'utf8')));
     expect(built.map(([kind]) => kind), 'same regions in the same order').toEqual(base.map(([kind]) => kind));
     for (let i = 0; i < base.length; i++) {
       const [kind] = built[i];
       expect(built[i][1], `${kind} region ${i} must be byte-identical`).toBe(base[i][1]);
     }
+  });
+
+  // …and the stripped addition is really there: every grid cell carries its
+  // stepped clock into the shipped page (weather fields carried --tf before
+  // this change, so the count is taken inside the grid region only).
+  it('grid cells carry the per-cell stepped clock against the unchanged baseline geometry', async () => {
+    const { page } = await zooBuiltOnce();
+    const gridRegion = page.match(/<div class="grid"[^>]*>[\s\S]*?<\/div>/)[0];
+    expect(gridRegion).toMatch(/--dl:-?\d+\.\d+s;--tf:steps\(\d+\)/);
+    expect([...gridRegion.matchAll(/--tf:steps\((\d+)\)/g)].length).toBe(160); // 16×10 cells
   });
 
   // Spec: Scenario: Effect markup comes from the data-derived wrappers — no

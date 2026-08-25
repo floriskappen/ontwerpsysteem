@@ -1,13 +1,13 @@
 [
   {
     "id": "motion.clock.stepped",
-    "intent": "system stepped animation clock",
-    "useWhen": "all periodic animations",
-    "avoid": "continuous linear transitions",
+    "intent": "system stepped animation clock — immediate interactions, stepped periodic timing",
+    "useWhen": "all periodic animations (atmosphere, weather fields, grown lifecycle states); interactions get no recipe at all — they are immediate hard cuts with no transition and no easing",
+    "avoid": "smooth easing affordances on any animation (ease, ease-in-out, linear, cubic-bezier) and every interaction transition",
     "sourceModules": ["design-system/source/zoo/effects/weather-particles.mjs"],
     "valueRefs": [],
     "reducedMotion": "disabled",
-    "notes": "evaluated at 8fps using stepped keyframe timing"
+    "notes": "periodic motion is evaluated at 8fps using stepped keyframe timing; the motion tokens carry periodic loop lengths only — no transition duration and no easing curve"
   },
   {
     "id": "motion.weather.wind",

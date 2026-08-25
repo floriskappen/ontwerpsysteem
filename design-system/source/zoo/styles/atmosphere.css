@@ -1,4 +1,11 @@
-/* atmosphere: a pulsing grid, grain, and a slow warm bloom */
+/* atmosphere: a pulsing grid, grain, and a slow warm bloom.
+   Timing is the system's stepped clock (language/motion.md): periodic motion is
+   quantised with steps() at 8fps — never continuously eased. The grid reads its
+   per-cell step count from the generator (--tf, computed at each cell's own
+   duration exactly as the weather fields do; a bare .grid i without generator
+   data still steps via the fallback); the blooms carry their count literally at
+   their authored durations (38s/51s/67s × 8fps). Selectors, keyframes,
+   durations and endpoints are unchanged by this clock. */
 .grid {
   position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
   display: grid; grid-template-columns: repeat(var(--cols), 1fr); grid-template-rows: repeat(var(--rows), 1fr);
@@ -8,15 +15,15 @@
   --bo: var(--a);
   border-right: 1px solid rgb(31 27 22 / var(--bo));
   border-bottom: 1px solid rgb(31 27 22 / var(--bo));
-  animation: ontwerp-bo var(--d) ease-in-out infinite; animation-delay: var(--dl);
+  animation: ontwerp-bo var(--d) var(--tf, steps(64)) infinite; animation-delay: var(--dl);
 }
 @keyframes ontwerp-bo { 0%, 100% { --bo: var(--a); } 50% { --bo: var(--b); } }
 
 .bloom { position: fixed; inset: -20vmax; z-index: 0; pointer-events: none; mix-blend-mode: multiply; filter: blur(64px); }
 .bloom i { position: absolute; width: 68vmax; height: 68vmax; opacity: 0.85; will-change: transform; display: block; }
-.bloom .b1 { background: radial-gradient(circle, var(--wx-bloom-a) 0%, transparent 68%); top: -14vmax; left: -8vmax; animation: ontwerp-d1 38s ease-in-out infinite alternate; }
-.bloom .b2 { background: radial-gradient(circle, var(--wx-bloom-b) 0%, transparent 64%); top: 24vmax; right: -18vmax; opacity: 0.42; animation: ontwerp-d2 51s ease-in-out infinite alternate; }
-.bloom .b3 { background: radial-gradient(circle, var(--wx-bloom-c) 0%, transparent 60%); bottom: -26vmax; left: 20vmax; opacity: 0.34; animation: ontwerp-d3 67s ease-in-out infinite alternate; }
+.bloom .b1 { background: radial-gradient(circle, var(--wx-bloom-a) 0%, transparent 68%); top: -14vmax; left: -8vmax; animation: ontwerp-d1 38s steps(304) infinite alternate; }
+.bloom .b2 { background: radial-gradient(circle, var(--wx-bloom-b) 0%, transparent 64%); top: 24vmax; right: -18vmax; opacity: 0.42; animation: ontwerp-d2 51s steps(408) infinite alternate; }
+.bloom .b3 { background: radial-gradient(circle, var(--wx-bloom-c) 0%, transparent 60%); bottom: -26vmax; left: 20vmax; opacity: 0.34; animation: ontwerp-d3 67s steps(536) infinite alternate; }
 @keyframes ontwerp-d1 { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
 @keyframes ontwerp-d2 { to { transform: translate(-10vmax, -5vmax) scale(0.95); } }
 @keyframes ontwerp-d3 { to { transform: translate(12vmax, -8vmax) scale(1.1); } }

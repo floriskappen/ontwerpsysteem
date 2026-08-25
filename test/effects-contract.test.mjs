@@ -76,10 +76,14 @@ describe('effects contract', () => {
     expect(field.rows).toBe(10);
     expect(field.cells.length).toBe(field.cols * field.rows);
     for (const c of field.cells) {
+      // `tf` is the per-cell stepped clock (motion.contract: steps at the cell's
+      // own duration) — the motion tokens carry no easing, so the grid emits its
+      // quantised step count per cell instead.
       expect(c).toEqual({
         index: expect.any(Number), a: expect.any(String), b: expect.any(String),
-        d: expect.any(String), dl: expect.any(String),
+        d: expect.any(String), dl: expect.any(String), tf: expect.any(String),
       });
+      expect(c.tf, 'per-cell timing steps').toMatch(/^steps\(\d+\)$/);
     }
     for (const name of ['wind', 'rain', 'fleck', 'drift', 'firefly', 'flake', 'haze', 'sunpool']) {
       for (const p of weather[`${name}ParticlesData`]()) {
@@ -237,6 +241,7 @@ describe('effects contract', () => {
           expect(varValues(out, '--b')).toEqual(field.cells.map((c) => c.b));
           expect(varValues(out, '--d')).toEqual(field.cells.map((c) => `${c.d}s`));
           expect(varValues(out, '--dl')).toEqual(field.cells.map((c) => `${c.dl}s`));
+          expect(varValues(out, '--tf')).toEqual(field.cells.map((c) => c.tf));
         },
       },
       ...['wind', 'rain', 'fleck', 'drift', 'firefly', 'flake', 'haze', 'sunpool'].map(

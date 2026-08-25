@@ -14,6 +14,10 @@
 // defaults (source/zoo/effects/atmosphere.mjs), failing on any default weather
 // field outside the 6–51 particle envelope, a bloom default other than three,
 // weather enabled without opt-in, or a field no contract entry covers.
+//
+// Finally it runs the motion-contract gate over authored motion tokens, recipes
+// and language examples plus the shipped CSS/zoo page: interactions stay
+// immediate (no transitions, no easing curves) and periodic motion steps.
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -22,6 +26,7 @@ import { validateTokenDir } from './lib/validate-core.mjs';
 import { checkKeyframeCoverage, cssEntriesUnder } from './lib/keyframe-coverage.mjs';
 import { checkAtmosphereContract, collectAtmosphereInputs } from './lib/atmosphere-contract.mjs';
 import { checkAdapterOutputs, tiersFromManifest } from './lib/shadcn-adapter.mjs';
+import { checkMotionContract, collectMotionInputs } from './lib/motion-contract.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const tokensDir = join(root, 'design-system', 'source', 'values');
@@ -50,6 +55,29 @@ try {
     file: 'design-system/source/zoo/effects/atmosphere.mjs',
     rule: 'atmosphere-cost',
     message: `The atmosphere contract could not be loaded: ${err.message}`,
+  });
+}
+
+// Motion-contract gate: immediate interactions, stepped periodic motion — over
+// the authored motion tokens, recipes and language examples AND the shipped
+// CSS/zoo page (see module header for why both ends are checked). Runs beside
+// the keyframe-coverage gate above, which it retains untouched.
+try {
+  errors.push(
+    ...checkMotionContract(
+      await collectMotionInputs({
+        tokensDir,
+        recipesDir: join(root, 'design-system', 'recipes'),
+        languageDir: join(root, 'design-system', 'language'),
+        distDir: join(root, 'design-system', 'dist'),
+      }),
+    ).errors,
+  );
+} catch (err) {
+  errors.push({
+    file: 'design-system/dist',
+    rule: 'motion-contract',
+    message: `The motion contract could not be checked: ${err.message}`,
   });
 }
 
@@ -103,3 +131,4 @@ if (errors.length > 0) {
 console.log('✓ Tokens valid.');
 console.log('✓ Reduced-motion keyframe coverage complete.');
 console.log('✓ Atmosphere cost contract enforced.');
+console.log('✓ Motion contract enforced (immediate interactions, stepped periodic timing).');
