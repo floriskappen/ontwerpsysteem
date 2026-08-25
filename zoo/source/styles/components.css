@@ -16,9 +16,15 @@
   border: 1px solid var(--button-border-default); border-bottom-width: 3px; padding: var(--button-padding-block) var(--button-padding-inline);
   position: relative; overflow: hidden; cursor: pointer; }
 .btn::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background-image: radial-gradient(rgb(31 27 22) 1px, transparent 1.4px); background-size: 5px 5px; background-position: center; opacity: 0.06; }
+  background-image: radial-gradient(var(--color-ink) 1px, transparent 1.4px); background-size: 5px 5px; background-position: center; opacity: 0.06; }
 .btn:hover { background: var(--button-surface-hover); color: var(--button-text-hover); border-color: var(--button-border-hover); }
 .btn:active { transform: translateY(2px); border-bottom-width: 1px; }
+/* Focus is the accent claiming the edge (colour.md): a hard 2px rule in the
+   dedicated focus-ring role, never a soft glow or a borrowed browser blue. It is
+   authored here rather than in the page reset because the reset is showcase-only —
+   a consumer importing the component bundle must receive the indicator together
+   with the components it belongs to. */
+.btn:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
 .btn-red { color: var(--color-accent-base); border-color: var(--color-accent-base); }
 .btn-red:hover { background: var(--color-accent-base); color: var(--color-text-on-ink); border-color: var(--color-accent-base); }
 .btn-ink { background: var(--color-surface-ink); color: var(--color-text-on-ink); border-color: var(--color-surface-ink); }
@@ -27,7 +33,7 @@
 /* fields — label as gutter */
 .field { display: grid; grid-template-columns: 104px 1fr; align-items: stretch; border: 1px solid var(--field-border-default); width: 100%; max-width: 360px; }
 .field + .field { margin-top: -1px; }
-.field-label { font: var(--typography-mark); text-transform: uppercase; color: var(--color-text-quiet); padding: 0 var(--space-md); display: flex; align-items: center;
+.field-label { font: var(--typography-label); text-transform: lowercase; color: var(--color-text-quiet); padding: 0 var(--space-md); display: flex; align-items: center;
   background: var(--color-surface-deep); border-right: 1px solid var(--color-border-quiet); }
 .field input { border: 0; background: transparent; font: var(--field-typography); color: var(--field-text); padding: var(--field-padding-block) var(--field-padding-inline); outline: none; text-transform: lowercase; width: 100%; }
 .field input::placeholder { color: var(--field-placeholder); }
@@ -48,3 +54,32 @@
 .card-body { margin: 0; max-width: 34ch; }
 .lnk { color: var(--link-text-default); text-decoration: underline; text-decoration-color: var(--link-underline-default); text-underline-offset: 3px; }
 .lnk:hover { color: var(--link-text-hover); text-decoration-color: var(--link-underline-hover); }
+
+/* status marks — a lifecycle state frozen at its resting pose, the compliant
+   static fallback where the animated states cannot be mounted. Dots and rules
+   only (the pill convention): never a green tick, never a checkbox glyph.
+   pass = ripe-at-rest (accent), warn = quiet (hollow), fail = the DESTRUCTIVE
+   pigment confined to a thin rule — it never floods the mark and never borrows
+   the accent. No transitions and no keyframes: a mark is already at rest. */
+.mark { display: inline-flex; align-items: center; gap: var(--space-inline-gap); font: var(--badge-typography); text-transform: uppercase;
+  color: var(--color-text-default); border: 1px solid var(--color-border-default); padding: var(--badge-padding-block) var(--badge-padding-inline); }
+.mark .mk { width: 6px; height: 6px; flex: none; }
+.mark-pass .mk { background: var(--color-accent-base); }
+.mark-warn .mk { background: transparent; border: 1px solid var(--color-text-quiet); }
+.mark-fail .mk { width: 2px; height: 10px; background: var(--color-destructive-base); }
+
+/* segmented control — the theme tabs' joined square cells + heavy bottom-edge
+   plate, generalised into a reusable pick-one class with no :has() wiring. The
+   selected cell inverts the unselected treatment (solid ink + paper text vs
+   paper + ink text) and the switch is INSTANT: no transition, no slide, no
+   @keyframes. Works with radios+labels as shown or with bare buttons (the
+   first cell drops its left rule either way). */
+.seg { display: inline-flex; border: 1px solid var(--color-border-strong); border-bottom-width: 3px; }
+.seg-radio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.seg-cell { display: inline-flex; align-items: center; font: var(--typography-label); text-transform: lowercase;
+  color: var(--color-text-default); background: var(--color-surface-page); padding: 6px var(--space-md);
+  cursor: pointer; border-left: 1px solid var(--color-border-default); }
+.seg-cell:first-child, .seg-radio:first-child + .seg-cell { border-left: 0; }
+.seg-cell:hover { background: var(--color-surface-deep); }
+.seg-cell:focus-visible, .seg-radio:focus-visible + .seg-cell { outline: 2px solid var(--color-focus-ring); outline-offset: -2px; }
+.seg-radio:checked + .seg-cell { background: var(--color-surface-ink); color: var(--color-text-on-ink); }

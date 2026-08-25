@@ -1,139 +1,145 @@
 @theme {
-  --button-text-default: #1f1b16;
-  --button-text-hover: #f1ece0; /** buttons invert on hover — paper on ink */
-  --button-surface-default: rgba(0, 0, 0, 0);
-  --button-surface-hover: #1f1b16;
-  --button-border-default: rgba(31, 27, 22, 0.95);
-  --button-border-hover: #1f1b16;
-  --button-radius: 0px;
-  --button-padding-block: 8px;
-  --button-padding-inline: 12px;
-  --button-typography: 600 13px/1.2 Archivo, 'Helvetica Neue', system-ui, sans-serif;
-  --field-text: #1f1b16;
-  --field-placeholder: #b8ae99;
-  --field-surface: rgba(0, 0, 0, 0);
-  --field-border-default: rgba(31, 27, 22, 0.65);
-  --field-border-focus: #b84a39; /** focus turns the full border red */
-  --field-radius: 0px;
-  --field-padding-block: 8px;
-  --field-padding-inline: 12px;
-  --field-typography: 500 15px/1.5 Archivo, 'Helvetica Neue', system-ui, sans-serif;
-  --selection-accent: #b84a39;
-  --selection-text: #1f1b16;
-  --card-surface: rgba(244, 237, 219, 0.55);
-  --card-text: #1f1b16;
-  --card-border: rgba(31, 27, 22, 0.65);
-  --card-radius: 0px;
-  --card-padding: 16px;
-  --card-typography: 500 15px/1.5 Archivo, 'Helvetica Neue', system-ui, sans-serif;
-  --badge-text: #1f1b16;
-  --badge-surface: rgba(0, 0, 0, 0);
-  --badge-border: rgba(31, 27, 22, 0.65);
-  --badge-radius: 0px;
-  --badge-padding-block: 4px;
-  --badge-padding-inline: 8px;
-  --badge-typography: 500 10px/1 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --alert-surface: #e4dbc4;
-  --alert-text: #1f1b16;
-  --alert-border: rgba(31, 27, 22, 0.65);
-  --alert-radius: 0px;
-  --alert-padding: 16px;
-  --link-text-default: #1f1b16;
-  --link-text-hover: #b84a39;
-  --link-underline-default: rgba(31, 27, 22, 0.25);
-  --link-underline-hover: #b84a39;
-  --color-paper: #f1ece0; /** warm cream — the base sheet */
-  --color-paper-warm: #ece4d2; /** slightly toasted */
-  --color-paper-deep: #e4dbc4; /** margin / footer strips */
-  --color-ink: #1f1b16; /** warm near-black, never #000 */
-  --color-ink-soft: #4a4239; /** secondary text */
-  --color-ink-quiet: #8a8170; /** tertiary / utility marks */
-  --color-ink-faint: #b8ae99; /** footnote, axis labels, placeholders */
-  --color-red: #b84a39; /** toasted red — margin rule, never decoration */
-  --color-red-soft: #c9614f;
-  --color-amber: #d49a56; /** bloom only */
-  --color-cream-bloom: #f4e5c7; /** bloom only */
-  --color-ink-a25: rgba(31, 27, 22, 0.25); /** ink @ 25% — quiet rule */
-  --color-ink-a65: rgba(31, 27, 22, 0.65); /** ink @ 65% — default rule */
-  --color-ink-a95: rgba(31, 27, 22, 0.95); /** ink @ 95% — strong rule */
-  --color-red-a85: rgba(184, 74, 57, 0.85); /** red @ 85% — accent rule */
-  --color-cream-bloom-a55: rgba(244, 237, 219, 0.55); /** claimed-cell fill */
-  --color-cream-bloom-a85: rgba(244, 237, 219, 0.85); /** claimed-cell fill on hover */
-  --color-amber-a55: rgba(212, 154, 86, 0.55); /** cursor-bloom inner stop */
-  --color-amber-a18: rgba(212, 154, 86, 0.18); /** cursor-bloom outer stop */
-  --color-surface-page: #f1ece0; /** the base sheet */
-  --color-surface-warm: #ece4d2;
-  --color-surface-deep: #e4dbc4; /** margin / footer strips */
-  --color-surface-claim: rgba(244, 237, 219, 0.55); /** claimed-cell fill */
-  --color-surface-claim-hover: rgba(244, 237, 219, 0.85);
-  --color-surface-ink: #1f1b16; /** inverted ink cells / solid buttons */
-  --color-text-default: #1f1b16;
-  --color-text-soft: #4a4239;
-  --color-text-quiet: #8a8170; /** utility marks */
-  --color-text-faint: #b8ae99; /** axis labels, placeholders */
-  --color-text-on-ink: #f1ece0; /** text on ink surfaces */
-  --color-accent-base: #b84a39; /** the single accent — margin rule, links on hover */
-  --color-accent-soft: #c9614f;
-  --color-border-default: rgba(31, 27, 22, 0.65);
-  --color-border-quiet: rgba(31, 27, 22, 0.25);
-  --color-border-strong: rgba(31, 27, 22, 0.95);
-  --color-border-accent: rgba(184, 74, 57, 0.85);
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 24px;
-  --space-2xl: 32px;
-  --space-inset: 16px; /** surface / card padding (source 16–18px → 16) */
-  --space-inline-gap: 8px; /** gap between inline items (source 6–8px → 8) */
-  --space-control-block: 8px; /** control vertical padding (source ~10px → 8, snapped to scale) */
-  --space-control-inline: 12px; /** control horizontal padding (source ~12–14px → 12, snapped) */
-  --space-badge-block: 4px; /** badge vertical padding */
-  --space-badge-inline: 8px; /** badge horizontal padding (source 9px → 8) */
-  --radius-0: 0px; /** default — corners are square */
-  --radius-1: 1px; /** utility chips */
-  --radius-2: 2px; /** maximum, very rare */
-  --radius-none: 0px; /** default — square corners everywhere */
-  --radius-chip: 1px; /** utility chips */
-  --radius-chip-max: 2px; /** maximum allowed, very rare */
-  --size-hairline: 1px; /** cell border / margin-rule width */
-  --size-dot: 7px; /** margin-rule dot */
-  --size-tick: 18px; /** tick-strip height */
-  --size-cell-min: 120px; /** claimed-cell min height */
-  --size-page-inset: 32px; /** page margin (top / right) */
-  --size-page-left: 96px; /** left margin where the red rule lives */
-  --size-margin-rule-x: 56px; /** x position of the red margin rule */
-  --blur-bloom: 80px; /** bloom-blob blur */
-  --blur-cursor: 18px; /** cursor-bloom blur */
-  --font-sans: Archivo, 'Helvetica Neue', system-ui, sans-serif; /** display + ui, lowercased, weights 500–700 */
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; /** utility marks, 10px uppercase */
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-  --duration-bloom: 180ms; /** cursor-bloom lag */
-  --duration-ui-fast: 200ms; /** button hover */
-  --duration-ui: 240ms; /** cell background / border */
-  --duration-ui-slow: 320ms; /** upper bound of hover transitions */
-  --duration-breathe-min: 7s; /** fastest breathing-rule loop */
-  --duration-breathe-max: 16s; /** slowest breathing-rule loop */
-  --duration-drift-1: 38s; /** cream bloom drift loop */
-  --duration-drift-2: 51s; /** amber bloom drift loop */
-  --duration-drift-3: 67s; /** red bloom drift loop */
-  --easing-paper: cubic-bezier(0.22, 0.61, 0.36, 1); /** the one easing — quiet, never snappy */
-  --opacity-muted: 0.45; /** disabled controls */
-  --motion-duration-bloom: 180ms; /** cursor-bloom lag */
-  --motion-duration-hover: 200ms; /** interactive hover */
-  --motion-duration-transition: 240ms; /** surface background / border */
-  --motion-easing-standard: cubic-bezier(0.22, 0.61, 0.36, 1); /** the one easing — quiet */
-  --typography-display: 700 168px/0.92 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** source is fluid: clamp(72px, 11vw, 168px); 168px is the max */
-  --typography-heading-xl: 700 88px/0.95 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** h1 — source fluid: clamp(48px, 6vw, 88px) */
-  --typography-heading-lg: 600 40px/1.02 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** h2 — source fluid: clamp(28px, 3vw, 40px) */
-  --typography-heading-md: 600 20px/1.1 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** h3 */
-  --typography-heading-sm: 600 15px/1.2 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** h4 */
-  --typography-body: 500 15px/1.5 Archivo, 'Helvetica Neue', system-ui, sans-serif;
-  --typography-body-lg: 500 18px/1.45 Archivo, 'Helvetica Neue', system-ui, sans-serif;
-  --typography-body-sm: 500 13px/1.45 Archivo, 'Helvetica Neue', system-ui, sans-serif;
-  --typography-mark: 500 10px/1 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; /** utility marks — the one place uppercase is allowed (apply text-transform in CSS) */
-  --typography-label: 600 13px/1.2 Archivo, 'Helvetica Neue', system-ui, sans-serif; /** control labels — buttons, etc. */
+  --button-ontwerp-surface-default: rgba(0, 0, 0, 0);
+  --field-ontwerp-surface: rgba(0, 0, 0, 0);
+  --badge-ontwerp-surface: rgba(0, 0, 0, 0);
+  --color-ontwerp-paper: #f1ece0; /** warm cream — the base sheet */
+  --color-ontwerp-paper-warm: #ece4d2; /** slightly toasted */
+  --color-ontwerp-paper-deep: #e4dbc4; /** margin / footer strips */
+  --color-ontwerp-ink: #1f1b16; /** warm near-black, never #000 */
+  --color-ontwerp-ink-soft: #4a4239; /** secondary text */
+  --color-ontwerp-ink-quiet: #8a8170; /** tertiary / utility marks */
+  --color-ontwerp-ink-faint: #b8ae99; /** footnote, axis labels, placeholders */
+  --color-ontwerp-red: #b84a39; /** toasted red — margin rule, never decoration */
+  --color-ontwerp-red-soft: #c9614f;
+  --color-ontwerp-oxblood: #8a2b1d; /** the destructive pigment — deeper and browner than the accent, never doubles as it */
+  --color-ontwerp-oxblood-soft: #9f5244; /** oxblood let down toward the paper */
+  --color-ontwerp-amber: #d49a56; /** bloom only */
+  --color-ontwerp-cream-bloom: #f4e5c7; /** bloom only */
+  --color-ontwerp-ink-a8: rgba(31, 27, 22, 0.08); /** ink @ 8% — disabled fill wash */
+  --color-ontwerp-ink-a15: rgba(31, 27, 22, 0.15); /** ink @ 15% — disabled rule */
+  --color-ontwerp-ink-a25: rgba(31, 27, 22, 0.25); /** ink @ 25% — quiet rule */
+  --color-ontwerp-ink-a45: rgba(31, 27, 22, 0.45); /** ink @ 45% — disabled text */
+  --color-ontwerp-ink-a65: rgba(31, 27, 22, 0.65); /** ink @ 65% — default rule */
+  --color-ontwerp-ink-a95: rgba(31, 27, 22, 0.95); /** ink @ 95% — strong rule */
+  --color-ontwerp-red-a85: rgba(184, 74, 57, 0.85); /** red @ 85% — accent rule */
+  --color-ontwerp-cream-bloom-a55: rgba(244, 237, 219, 0.55); /** claimed-cell fill */
+  --color-ontwerp-cream-bloom-a85: rgba(244, 237, 219, 0.85); /** claimed-cell fill on hover */
+  --color-ontwerp-amber-a55: rgba(212, 154, 86, 0.55); /** cursor-bloom inner stop */
+  --color-ontwerp-amber-a18: rgba(212, 154, 86, 0.18); /** cursor-bloom outer stop */
+  --space-ontwerp-xs: 4px;
+  --space-ontwerp-sm: 8px;
+  --space-ontwerp-md: 12px;
+  --space-ontwerp-lg: 16px;
+  --space-ontwerp-xl: 24px;
+  --space-ontwerp-2xl: 32px;
+  --radius-ontwerp-0: 0px; /** default — corners are square */
+  --radius-ontwerp-1: 1px; /** utility chips */
+  --radius-ontwerp-2: 2px; /** maximum, very rare */
+  --size-ontwerp-hairline: 1px; /** cell border / margin-rule width */
+  --size-ontwerp-dot: 7px; /** margin-rule dot */
+  --size-ontwerp-tick: 18px; /** tick-strip height */
+  --size-ontwerp-cell-min: 120px; /** claimed-cell min height */
+  --size-ontwerp-page-inset: 32px; /** page margin (top / right) */
+  --size-ontwerp-page-left: 96px; /** left margin where the red rule lives */
+  --size-ontwerp-margin-rule-x: 56px; /** x position of the red margin rule */
+  --blur-ontwerp-bloom: 80px; /** bloom-blob blur */
+  --blur-ontwerp-cursor: 18px; /** cursor-bloom blur */
+  --font-ontwerp-sans: Archivo, 'Helvetica Neue', system-ui, sans-serif; /** display + ui, lowercased, weights 400–700 */
+  --font-ontwerp-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; /** utility marks, 10px uppercase */
+  --weight-ontwerp-regular: 400;
+  --weight-ontwerp-medium: 500;
+  --weight-ontwerp-semibold: 600;
+  --weight-ontwerp-bold: 700;
+  --duration-ontwerp-bloom: 180ms; /** cursor-bloom lag */
+  --duration-ontwerp-breathe-min: 7s; /** fastest breathing-rule loop */
+  --duration-ontwerp-breathe-max: 16s; /** slowest breathing-rule loop */
+  --duration-ontwerp-drift-1: 38s; /** cream bloom drift loop */
+  --duration-ontwerp-drift-2: 51s; /** amber bloom drift loop */
+  --duration-ontwerp-drift-3: 67s; /** red bloom drift loop */
+  --opacity-ontwerp-muted: 0.45; /** disabled controls */
+  --color-ontwerp-surface-page: var(--color-ontwerp-paper); /** the base sheet */
+  --color-ontwerp-surface-warm: var(--color-ontwerp-paper-warm);
+  --color-ontwerp-surface-deep: var(--color-ontwerp-paper-deep); /** margin / footer strips */
+  --color-ontwerp-surface-claim: var(--color-ontwerp-cream-bloom-a55); /** claimed-cell fill */
+  --color-ontwerp-surface-claim-hover: var(--color-ontwerp-cream-bloom-a85);
+  --color-ontwerp-surface-ink: var(--color-ontwerp-ink); /** inverted ink cells / solid buttons */
+  --color-ontwerp-surface-disabled: var(--color-ontwerp-ink-a8); /** inert control fills — the faintest ink wash */
+  --color-ontwerp-text-default: var(--color-ontwerp-ink);
+  --color-ontwerp-text-soft: var(--color-ontwerp-ink-soft);
+  --color-ontwerp-text-quiet: var(--color-ontwerp-ink-quiet); /** utility marks */
+  --color-ontwerp-text-muted: var(--color-ontwerp-ink-quiet); /** the borrowed word — same ink as quiet, for consumers arriving with muted vocabulary */
+  --color-ontwerp-text-faint: var(--color-ontwerp-ink-faint); /** axis labels, placeholders */
+  --color-ontwerp-text-on-ink: var(--color-ontwerp-paper); /** text on ink surfaces */
+  --color-ontwerp-text-disabled: var(--color-ontwerp-ink-a45); /** inert control text */
+  --color-ontwerp-accent-base: var(--color-ontwerp-red); /** the single accent — margin rule, links on hover */
+  --color-ontwerp-accent-soft: var(--color-ontwerp-red-soft);
+  --color-ontwerp-focus-ring: var(--color-ontwerp-red); /** focus claims the full border in the accent — never a default blue ring */
+  --color-ontwerp-destructive-base: var(--color-ontwerp-oxblood); /** irreversible actions — its own pigment, so the accent stops doubling as danger */
+  --color-ontwerp-destructive-soft: var(--color-ontwerp-oxblood-soft); /** destructive, softened — hover washes and secondary danger */
+  --color-ontwerp-border-default: var(--color-ontwerp-ink-a65);
+  --color-ontwerp-border-quiet: var(--color-ontwerp-ink-a25);
+  --color-ontwerp-border-muted: var(--color-ontwerp-ink-a25); /** the borrowed word — same rule weight as quiet */
+  --color-ontwerp-border-strong: var(--color-ontwerp-ink-a95);
+  --color-ontwerp-border-accent: var(--color-ontwerp-red-a85);
+  --color-ontwerp-border-disabled: var(--color-ontwerp-ink-a15); /** inert control borders */
+  --space-ontwerp-inset: var(--space-ontwerp-lg); /** surface / card padding (source 16–18px → 16) */
+  --space-ontwerp-inline-gap: var(--space-ontwerp-sm); /** gap between inline items (source 6–8px → 8) */
+  --space-ontwerp-control-block: var(--space-ontwerp-sm); /** control vertical padding (source ~10px → 8, snapped to scale) */
+  --space-ontwerp-control-inline: var(--space-ontwerp-md); /** control horizontal padding (source ~12–14px → 12, snapped) */
+  --space-ontwerp-badge-block: var(--space-ontwerp-xs); /** badge vertical padding */
+  --space-ontwerp-badge-inline: var(--space-ontwerp-sm); /** badge horizontal padding (source 9px → 8) */
+  --radius-ontwerp-none: var(--radius-ontwerp-0); /** default — square corners everywhere */
+  --radius-ontwerp-chip: var(--radius-ontwerp-1); /** utility chips */
+  --radius-ontwerp-chip-max: var(--radius-ontwerp-2); /** maximum allowed, very rare */
+  --motion-ontwerp-duration-bloom: var(--duration-ontwerp-bloom); /** cursor-bloom lag */
+  --typography-ontwerp-display: var(--weight-ontwerp-bold) clamp(72px, 11vw, 168px)/0.92 var(--font-ontwerp-sans); /** fluid: 72px floor, 11vw, 168px ceiling — $value carries the ceiling as a portable dimension */
+  --typography-ontwerp-heading-xl: var(--weight-ontwerp-bold) clamp(48px, 6vw, 88px)/0.95 var(--font-ontwerp-sans); /** h1 — fluid: 48px floor, 6vw, 88px ceiling — $value carries the ceiling as a portable dimension */
+  --typography-ontwerp-heading-lg: var(--weight-ontwerp-semibold) clamp(28px, 3vw, 40px)/1.02 var(--font-ontwerp-sans); /** h2 — fluid: 28px floor, 3vw, 40px ceiling — $value carries the ceiling as a portable dimension */
+  --typography-ontwerp-heading-md: var(--weight-ontwerp-semibold) 20px/1.1 var(--font-ontwerp-sans); /** h3 */
+  --typography-ontwerp-heading-sm: var(--weight-ontwerp-semibold) 15px/1.2 var(--font-ontwerp-sans); /** h4 */
+  --typography-ontwerp-body: var(--weight-ontwerp-medium) 15px/1.5 var(--font-ontwerp-sans);
+  --typography-ontwerp-body-lg: var(--weight-ontwerp-medium) 18px/1.45 var(--font-ontwerp-sans);
+  --typography-ontwerp-body-sm: var(--weight-ontwerp-medium) 13px/1.45 var(--font-ontwerp-sans);
+  --typography-ontwerp-mark: var(--weight-ontwerp-medium) 10px/1 var(--font-ontwerp-mono); /** utility marks — the one place uppercase is allowed (apply text-transform in CSS) */
+  --typography-ontwerp-label: var(--weight-ontwerp-semibold) 13px/1.2 var(--font-ontwerp-sans); /** control labels — buttons, etc. */
+  --button-ontwerp-text-default: var(--color-ontwerp-text-default);
+  --button-ontwerp-text-hover: var(--color-ontwerp-text-on-ink); /** buttons invert on hover — paper on ink */
+  --button-ontwerp-surface-hover: var(--color-ontwerp-surface-ink);
+  --button-ontwerp-border-default: var(--color-ontwerp-border-strong);
+  --button-ontwerp-border-hover: var(--color-ontwerp-surface-ink);
+  --button-ontwerp-radius: var(--radius-ontwerp-none);
+  --button-ontwerp-padding-block: var(--space-ontwerp-control-block);
+  --button-ontwerp-padding-inline: var(--space-ontwerp-control-inline);
+  --button-ontwerp-typography: var(--typography-ontwerp-label);
+  --field-ontwerp-text: var(--color-ontwerp-text-default);
+  --field-ontwerp-placeholder: var(--color-ontwerp-text-faint);
+  --field-ontwerp-border-default: var(--color-ontwerp-border-default);
+  --field-ontwerp-border-focus: var(--color-ontwerp-focus-ring); /** focus turns the full border to the focus-ring role — the accent claiming the frame */
+  --field-ontwerp-radius: var(--radius-ontwerp-none);
+  --field-ontwerp-padding-block: var(--space-ontwerp-control-block);
+  --field-ontwerp-padding-inline: var(--space-ontwerp-control-inline);
+  --field-ontwerp-typography: var(--typography-ontwerp-body);
+  --selection-ontwerp-accent: var(--color-ontwerp-accent-base);
+  --selection-ontwerp-text: var(--color-ontwerp-text-default);
+  --card-ontwerp-surface: var(--color-ontwerp-surface-claim);
+  --card-ontwerp-text: var(--color-ontwerp-text-default);
+  --card-ontwerp-border: var(--color-ontwerp-border-default);
+  --card-ontwerp-radius: var(--radius-ontwerp-none);
+  --card-ontwerp-padding: var(--space-ontwerp-inset);
+  --card-ontwerp-typography: var(--typography-ontwerp-body);
+  --badge-ontwerp-text: var(--color-ontwerp-text-default);
+  --badge-ontwerp-border: var(--color-ontwerp-border-default);
+  --badge-ontwerp-radius: var(--radius-ontwerp-none);
+  --badge-ontwerp-padding-block: var(--space-ontwerp-badge-block);
+  --badge-ontwerp-padding-inline: var(--space-ontwerp-badge-inline);
+  --badge-ontwerp-typography: var(--typography-ontwerp-mark);
+  --alert-ontwerp-surface: var(--color-ontwerp-surface-deep);
+  --alert-ontwerp-text: var(--color-ontwerp-text-default);
+  --alert-ontwerp-border: var(--color-ontwerp-border-default);
+  --alert-ontwerp-radius: var(--radius-ontwerp-none);
+  --alert-ontwerp-padding: var(--space-ontwerp-inset);
+  --link-ontwerp-text-default: var(--color-ontwerp-text-default);
+  --link-ontwerp-text-hover: var(--color-ontwerp-accent-base);
+  --link-ontwerp-underline-default: var(--color-ontwerp-border-quiet);
+  --link-ontwerp-underline-hover: var(--color-ontwerp-accent-base);
 }

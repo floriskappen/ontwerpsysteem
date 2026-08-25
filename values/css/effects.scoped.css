@@ -1,0 +1,355 @@
+/* generated — .ontwerp-scoped build of atmosphere.css + material.css + states.css + weather.css
+   from the showcase's style sources; do not edit by hand. */
+
+/* atmosphere: a pulsing grid, grain, and a slow warm bloom.
+   Timing is the system's stepped clock (language/motion.md): periodic motion is
+   quantised with steps() at 8fps — never continuously eased. The grid reads its
+   per-cell step count from the generator (--tf, computed at each cell's own
+   duration exactly as the weather fields do; a bare .grid i without generator
+   data still steps via the fallback); the blooms carry their count literally at
+   their authored durations (38s/51s/67s × 8fps). Selectors, keyframes,
+   durations and endpoints are unchanged by this clock. */
+.ontwerp .grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  display: grid; grid-template-columns: repeat(var(--cols), 1fr); grid-template-rows: repeat(var(--rows), 1fr);
+}
+@property --bo { syntax: '<number>'; initial-value: 0.08; inherits: false; }
+.ontwerp .grid i {
+  --bo: var(--a);
+  /* ink comes from the ink colour role, so a skin recolours the breathing grid;
+     only the hue is role-driven — the animated alpha (--bo) is unchanged */
+  border-right: 1px solid rgb(from var(--color-ink) r g b / var(--bo));
+  border-bottom: 1px solid rgb(from var(--color-ink) r g b / var(--bo));
+  animation: ontwerp-bo var(--d) var(--tf, steps(64)) infinite; animation-delay: var(--dl);
+}
+@keyframes ontwerp-bo { 0%, 100% { --bo: var(--a); } 50% { --bo: var(--b); } }
+
+.ontwerp .bloom { position: fixed; inset: -20vmax; z-index: 0; pointer-events: none; mix-blend-mode: multiply; filter: blur(64px); }
+.ontwerp .bloom i { position: absolute; width: 68vmax; height: 68vmax; opacity: 0.85; will-change: transform; display: block; }
+.ontwerp .bloom .b1 { background: radial-gradient(circle, var(--wx-bloom-a) 0%, transparent 68%); top: -14vmax; left: -8vmax; animation: ontwerp-d1 38s steps(304) infinite alternate; }
+.ontwerp .bloom .b2 { background: radial-gradient(circle, var(--wx-bloom-b) 0%, transparent 64%); top: 24vmax; right: -18vmax; opacity: 0.42; animation: ontwerp-d2 51s steps(408) infinite alternate; }
+.ontwerp .bloom .b3 { background: radial-gradient(circle, var(--wx-bloom-c) 0%, transparent 60%); bottom: -26vmax; left: 20vmax; opacity: 0.34; animation: ontwerp-d3 67s steps(536) infinite alternate; }
+@keyframes ontwerp-d1 { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
+@keyframes ontwerp-d2 { to { transform: translate(-10vmax, -5vmax) scale(0.95); } }
+@keyframes ontwerp-d3 { to { transform: translate(12vmax, -8vmax) scale(1.1); } }
+
+/* Fixed-behind-scope mounting (S23): the chrome root that hosts the ambient stack
+   is its own isolated stacking context, so fixed ambience can never paint over UI
+   outside the subtree it belongs to. The ambient layers stay descendants of the
+   scope (their tokens arrive through the tree) and content is lifted above them —
+   the layers paint at z-index 0, content sits at z-0 or higher. Scoped builds
+   prefix this rule (.ontwerp .ontwerp-root), so the chrome root mounts INSIDE the
+   scope subtree, one element below the token scope. */
+.ontwerp .ontwerp-root { isolation: isolate; }
+
+/* Reduced motion — a still atmosphere: the grid hairlines hold their base strength
+   (the breathing cell custom property pinned back to its authored --a value) and the
+   blooms sit at their authored positions instead of drifting. The warmth is structural,
+   so the layers settle rather than hide; the pose is declared beside the keyframes it
+   neutralises so it ships with the effects bundle, and each selector is named exactly
+   as its animation rule names it, so the rest wins the cascade. */
+@media (prefers-reduced-motion: reduce) {
+
+  .ontwerp .grid i { animation: none; --bo: var(--a); }
+  .ontwerp .bloom .b1, .ontwerp .bloom .b2, .ontwerp .bloom .b3 { animation: none; transform: none; }
+
+}
+
+/* paper tooth, pigment, dividers and soft bleed blot structures */
+
+/* the section divider — a phyllotactic seed head: the system's ink dot, placed by the
+   golden angle (a sunflower's packing). Quiet, centred. */
+.ontwerp .divider { display: flex; justify-content: center; margin: var(--space-2xl) 0; }
+.ontwerp .seed { width: 42px; height: 42px; fill: var(--color-text-soft); opacity: 0.8; }
+
+/* the hairline botanical mark in the colophon — a leaf as a drawing, at rule weight */
+.ontwerp .leaf-mark { width: 16px; height: 23px; flex: none; color: var(--color-border-strong); }
+
+/* panel-level tooth grain backgrounds */
+.ontwerp .role-swatches::before, .ontwerp .use-grid::before, .ontwerp .state-grid::before, .ontwerp .pigment-plate::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 180px 180px; mix-blend-mode: multiply; opacity: 0.5;
+}
+/* swatch / grid contents sit above the grain underlay */
+.ontwerp .role-swatches > .sw, .ontwerp .use-grid > .use-cell, .ontwerp .state-grid > .state-cell { position: relative; z-index: 1; }
+
+/* palette by role — the colour panels are solid paper (they mask the atmosphere
+   behind), carrying the SAME light grain as the page. auto-fit (not auto-fill) lets
+   the swatches stretch to fill the row, so the last colours meet the right border. */
+.ontwerp .palette { display: grid; gap: var(--space-xl); }
+.ontwerp .role-head { display: flex; align-items: baseline; gap: var(--space-md); margin-bottom: var(--space-md); }
+.ontwerp .role-name { font: var(--typography-heading-md); text-transform: lowercase; }
+.ontwerp .role-note { font: var(--typography-body-sm); color: var(--color-text-soft); }
+.ontwerp .role-swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border: 1px solid var(--color-border-default);
+  position: relative; isolation: isolate; background: var(--color-surface-page); }
+.ontwerp .sw { margin: 0; border-left: 1px solid var(--color-border-quiet); }
+.ontwerp .sw:first-child { border-left: 0; }
+.ontwerp .sw-chip { height: 80px; border-bottom: 1px solid var(--color-border-quiet); position: relative; }
+.ontwerp .sw-here .sw-chip { box-shadow: inset 0 0 0 2px var(--color-accent-base); }
+.ontwerp .sw-here-tag { position: absolute; left: 8px; bottom: 6px; font-family: 'Archivo', sans-serif; font-weight: 600; font-size: 11px; letter-spacing: -0.01em; text-transform: lowercase; color: var(--color-accent-base); line-height: 1; }
+.ontwerp .sw-meta { display: flex; flex-direction: column; gap: 2px; padding: var(--space-sm); }
+.ontwerp .sw-name { font: var(--typography-label); text-transform: lowercase; }
+.ontwerp .sw-use { font: var(--typography-body-sm); color: var(--color-text-soft); }
+.ontwerp .sw-val { margin-top: 2px; }
+
+/* pigment coda — colours behaving like ink: soft-bled organic blots, each multiplying
+   into the paper tooth so the colour stains the sheet rather than sitting on top.
+   The system carries one chromatic hue per skin, so the dye is shown honestly: the
+   accent laid down at full and let-down strength, crossing ink. All three derive from
+   the skin's own accent + ink, so they stay distinct and coherent in every theme —
+   no fixed hue that would clash on a warm skin or wash out on a cool one. */
+.ontwerp .pigment-plate { position: relative; height: 132px; border: 1px solid var(--color-border-default);
+  background: var(--color-surface-page); isolation: isolate; overflow: hidden; }
+.ontwerp .blot { position: absolute; z-index: 1; width: 92px; height: 92px; transform: translateX(-50%); mix-blend-mode: multiply; filter: blur(1.5px); opacity: 0.85; }
+.ontwerp .blot-a { left: 16.67%; top: 16px; background: var(--color-accent-base); border-radius: 47% 53% 45% 55% / 55% 47% 53% 45%; }
+.ontwerp .blot-b { left: 50%; top: 26px; background: var(--color-text-soft); border-radius: 52% 48% 56% 44% / 46% 54% 44% 56%; }
+.ontwerp .blot-c { left: 83.33%; top: 14px; background: var(--color-accent-soft); border-radius: 45% 55% 50% 50% / 53% 45% 55% 47%; }
+
+/* states, as a life-cycle — a second register under the components, on the same light-
+   grain paper. Each state is a natural stage, not an icon, and loops on the stepped
+   clock: fallow (empty), germinating (loading), ripe (done), rising (progress). */
+.ontwerp .use-sub { display: block; margin: var(--space-xl) 0 var(--space-md); font: var(--typography-label); text-transform: lowercase; color: var(--color-text-soft); }
+.ontwerp .state-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--color-border-default);
+  position: relative; isolation: isolate; background: var(--color-surface-page); }
+.ontwerp .state-cell { margin: 0; padding: var(--space-lg) var(--space-md); border-left: 1px solid var(--color-border-quiet); border-top: 1px solid var(--color-border-quiet);
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-md); text-align: center; }
+.ontwerp .state-cell:nth-child(-n+4) { border-top: 0; }
+.ontwerp .state-cell:nth-child(4n+1) { border-left: 0; }
+.ontwerp .state-art { width: 100%; height: 64px; display: flex; align-items: center; justify-content: center; position: relative; }
+.ontwerp .state-cap { display: flex; flex-direction: column; gap: 2px; }
+.ontwerp .state-name { font: var(--typography-label); text-transform: lowercase; }
+.ontwerp .state-note { font: var(--typography-body-sm); color: var(--color-text-soft); }
+
+/* fallow — a tilled but empty plot: faint furrows ruled across the paper, resting. */
+.ontwerp .fallow { width: 52px; height: 40px; border: 1px solid var(--color-border-quiet);
+  background-image: repeating-linear-gradient(to bottom, var(--color-border-quiet) 0 1px, transparent 1px 7px); opacity: 0.7; }
+
+/* germinating — the seed head fills in golden-angle order; each seed pops in on a stagger
+   keyed to its index, so the spiral grows outward, then clears and grows again. */
+.ontwerp .gseedhead { width: 56px; height: 56px; fill: var(--color-text-soft); }
+.ontwerp .gseed { opacity: 0; animation: ontwerp-germinate 4s steps(12) infinite; animation-delay: calc(var(--gi) * 0.05s); }
+@keyframes ontwerp-germinate { 0% { opacity: 0; } 8% { opacity: 0.9; } 82% { opacity: 0.9; } 92%, 100% { opacity: 0; } }
+
+/* ripe — a fruit that deepens through its stages (pale → soft → ripe) and swells a touch;
+   the colour itself reports doneness, in discrete steps, never a green tick. */
+.ontwerp .ripe { width: 30px; height: 30px; border-radius: 50%; background: var(--color-surface-claim); animation: ontwerp-ripen 4s steps(5) infinite; }
+@keyframes ontwerp-ripen {
+  0% { background: var(--color-surface-claim); transform: scale(0.82); }
+  45% { background: var(--color-accent-soft); transform: scale(0.95); }
+  80%, 100% { background: var(--color-accent-base); transform: scale(1); }
+}
+
+/* rising — water filling a vessel from the foot, tick by tick (stepped), the way a level
+   climbs rather than a bar sliding. */
+.ontwerp .rising { width: 34px; height: 46px; border: 1px solid var(--color-border-default); background: var(--color-surface-page); position: relative; overflow: hidden; }
+.ontwerp .rising-fill { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; background: var(--color-accent-soft); opacity: 0.5; transform: translateY(100%); animation: ontwerp-rise 4.5s steps(9) infinite; }
+@keyframes ontwerp-rise { 0% { transform: translateY(100%); } 80%, 100% { transform: translateY(0); } }
+
+/* Reduced motion — each state settles into a deliberate, fully-formed rest pose, never
+   a frozen mid-cycle frame: the seed head grown in (every seed at its lit opacity), the
+   fruit ripe at full size, the vessel holding water part-way. The poses live beside
+   their keyframes so they ship with the effects bundle (an animated state without a
+   rest pose is incomplete; the keyframe-coverage gate enforces it). Selectors mirror
+   the animation rules exactly, so the pose wins the cascade it must. */
+@media (prefers-reduced-motion: reduce) {
+
+  .ontwerp .gseed { opacity: 0.9; animation: none; }
+  .ontwerp .ripe { animation: none; background: var(--color-accent-base); transform: scale(1); }
+  .ontwerp .rising-fill { animation: none; transform: translateY(45%); }
+
+}
+
+/* weather — staggered per-glyph motion for a header (.wx-wind / .wx-rain / .wx-leaves
+   / .wx-drift). Each glyph is an inline-block carrying its index (--ci); the index
+   offsets the delay so the effect ripples across, like the grid's staggered cells.
+   All four are STEPPED (steps()) — the system's low-FPS, stop-motion look. */
+.ontwerp .wxc { display: inline-block; will-change: transform; }
+.ontwerp .wx-wind .wxc { animation: ontwerp-wx-wind 2.6s steps(6) infinite; animation-delay: calc(var(--ci) * 0.08s); }
+@keyframes ontwerp-wx-wind {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  35% { transform: translateX(0.045em) rotate(1.6deg); }
+  65% { transform: translateX(-0.02em) rotate(-0.9deg); }
+}
+.ontwerp .wx-rain .wxc { animation: ontwerp-wx-rain 2.1s steps(5) infinite; animation-delay: calc(var(--ci) * 0.07s); }
+@keyframes ontwerp-wx-rain {
+  0%, 72%, 100% { transform: translateY(0); opacity: 1; }
+  10% { transform: translateY(0.16em); opacity: 0.78; }
+  34% { transform: translateY(0); opacity: 1; }
+}
+/* leaves: each glyph drifts down a touch and tips, like a leaf catching air */
+.ontwerp .wx-leaves .wxc { animation: ontwerp-wx-leaves 3.4s steps(7) infinite; animation-delay: calc(var(--ci) * 0.1s); }
+@keyframes ontwerp-wx-leaves {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  40% { transform: translateY(0.08em) rotate(-2.4deg); }
+  70% { transform: translateY(0.03em) rotate(1.4deg); }
+}
+/* pollen/drift: each glyph lifts and settles, the way a thing rides warm air */
+.ontwerp .wx-drift .wxc { animation: ontwerp-wx-drift 4s steps(8) infinite; animation-delay: calc(var(--ci) * 0.12s); }
+@keyframes ontwerp-wx-drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.05em); }
+}
+/* fireflies: the word glows a touch warmer as the swarm pulses — a soft amber breath */
+.ontwerp .wx-fireflies .wxc { animation: ontwerp-wx-fireflies 3s steps(6) infinite; animation-delay: calc(var(--ci) * 0.11s); }
+@keyframes ontwerp-wx-fireflies {
+  0%, 100% { transform: translateY(0); text-shadow: none; }
+  50% { transform: translateY(-0.03em); text-shadow: 0 0 0.5em var(--wx-pollen); }
+}
+/* snow: each glyph settles — a slow, soft downward sink and recover */
+.ontwerp .wx-snow .wxc { animation: ontwerp-wx-snow 4.4s steps(8) infinite; animation-delay: calc(var(--ci) * 0.13s); }
+@keyframes ontwerp-wx-snow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(0.05em); }
+}
+/* mist: glyphs soften, fading a little as a bank passes, as if seen through haze */
+.ontwerp .wx-mist .wxc { animation: ontwerp-wx-mist 5s steps(6) infinite; animation-delay: calc(var(--ci) * 0.09s); }
+@keyframes ontwerp-wx-mist {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.62; }
+}
+/* light: glyphs warm and lift faintly as a sun-pool drifts over them */
+.ontwerp .wx-sun .wxc { animation: ontwerp-wx-sun 4.6s steps(7) infinite; animation-delay: calc(var(--ci) * 0.12s); }
+@keyframes ontwerp-wx-sun {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+/* four STANDALONE headers — no boxes. Each .wx-cell is borderless; its .wx-field is
+   feathered at the top and sides (a mask) so the weather bleeds into the page instead
+   of being clipped to a panel. The word's own glyphs carry the .wx-* motion; the
+   particles move around it. Under reduced motion the fields are removed and the
+   glyphs settle (see the reduced-motion block at the foot of this file). */
+.ontwerp .wx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-2xl) var(--space-xl); }
+.ontwerp .wx-cell { position: relative; overflow: hidden; margin: 0; min-height: 140px;
+  padding: var(--space-md) 0; display: flex; flex-direction: column; justify-content: center; gap: var(--space-sm); }
+.ontwerp .wx-field { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  -webkit-mask: linear-gradient(to bottom, transparent, #000 18%), linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-composite: source-in;
+  mask: linear-gradient(to bottom, transparent, #000 18%), linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+  mask-composite: intersect; }
+.ontwerp .wx-word { position: relative; z-index: 1; margin: 0; font: var(--typography-heading-lg); text-transform: lowercase; }
+.ontwerp .wx-cap { position: relative; z-index: 1; display: flex; align-items: baseline; gap: var(--space-md); flex-wrap: wrap; }
+.ontwerp .wx-name { font: var(--typography-label); text-transform: lowercase; }
+.ontwerp .wx-note { font: var(--typography-body-sm); color: var(--color-text-soft); }
+
+/* rain stands on a faint ground rule near the cell foot: the drops land there and
+   fade (drop-land), and the splashes flash open on the same line. */
+.ontwerp .wx-ground { position: absolute; left: 0; right: 0; bottom: var(--space-md); height: 1px; z-index: 1; pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--color-border-default) 7%, var(--color-border-default) 93%, transparent); }
+.ontwerp .is-rain .drop { animation-name: ontwerp-drop-land; }
+@keyframes ontwerp-drop-land { 0% { top: -16%; opacity: var(--o); } 84% { opacity: var(--o); } 100% { top: calc(100% - var(--space-md)); opacity: 0; } }
+.ontwerp .is-rain .splash { bottom: var(--space-md); }
+
+/* wind: tapered hairline streaks blow left→right; a few square ink specks ride along,
+   bobbing on the same wind. Both cross the plate on the shared gust keyframe, stepped
+   per-particle (var(--tf)) so they advance frame by frame. Particle ink reads the
+   ink colour role (--color-ink) through relative-colour syntax, so skins recolour
+   every effect here; only the hue moves — each declaration's alpha stays as authored. */
+.ontwerp .gust { position: absolute; top: var(--y); left: calc(-1 * var(--len)); width: var(--len); height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(from var(--color-ink) r g b / var(--o)) 35%, rgb(from var(--color-ink) r g b / var(--o)) 65%, transparent);
+  animation: ontwerp-gust var(--d) var(--tf) infinite; animation-delay: var(--dl); will-change: left; }
+@keyframes ontwerp-gust { to { left: 100%; } }
+.ontwerp .mote { position: absolute; top: var(--y); left: -4%; width: var(--sz); height: var(--sz);
+  background: rgb(from var(--color-ink) r g b / var(--o)); will-change: left, transform;
+  animation: ontwerp-gust var(--d) var(--tf) infinite, ontwerp-bob var(--bd) var(--tf2) infinite;
+  animation-delay: var(--dl), var(--dl); }
+@keyframes ontwerp-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+/* rain: slanted hairline drops streak top→bottom; short splash ticks flash open along
+   the floor to read as impacts. */
+.ontwerp .drop { position: absolute; top: -20%; left: var(--x); width: 1px; height: var(--len);
+  background: linear-gradient(180deg, transparent, rgb(from var(--color-ink) r g b / var(--o)));
+  transform: rotate(9deg); transform-origin: top; animation: ontwerp-drop var(--d) var(--tf) infinite; animation-delay: var(--dl); will-change: top; }
+@keyframes ontwerp-drop { to { top: 120%; } }
+.ontwerp .splash { position: absolute; bottom: 7%; left: var(--x); width: 7px; height: 1px; transform: scaleX(0);
+  background: rgb(from var(--color-ink) r g b / var(--o)); animation: ontwerp-splash var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-splash { 0%, 68% { transform: scaleX(0); opacity: 0; } 80% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1.8); opacity: 0; } }
+
+/* fall (abstract): a thin hairline sliver that falls while tumbling and drifting on a
+   single graceful S — it fades in at the top and dissolves before it lands, so it never
+   meets a hard edge. One animation, so the tumble and the descent stay in step. */
+.ontwerp .fleck { position: absolute; top: -14%; left: var(--x); width: var(--w); height: var(--h);
+  background: var(--color-text-soft); will-change: top, transform, opacity;
+  animation: ontwerp-fleckfall var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-fleckfall {
+  0% { top: -14%; transform: translateX(0) rotate(0deg); opacity: 0; }
+  12% { opacity: var(--o); }
+  50% { transform: translateX(calc(var(--drift) * -0.5)) rotate(calc(var(--spin) * 0.5)); }
+  85% { opacity: var(--o); }
+  100% { top: 116%; transform: translateX(var(--drift)) rotate(var(--spin)); opacity: 0; }
+}
+
+/* pollen/drift: warm amber motes lifting and wandering on a slow current, fading in
+   and out at the edges of sight — light made visible. */
+.ontwerp .pollen { position: absolute; left: var(--x); top: var(--y); width: var(--sz); height: var(--sz);
+  background: var(--wx-pollen); will-change: transform, opacity;
+  animation: ontwerp-drift var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-drift {
+  0% { transform: translate(0, 0); opacity: 0; }
+  25%, 75% { opacity: var(--o); }
+  100% { transform: translate(var(--dx), calc(-1 * var(--dy))); opacity: 0; }
+}
+
+/* fireflies (the animal): warm motes wander on one slow clock and blink on a second,
+   faster one — the stepped timing makes the light snap on and off the way a firefly
+   pulses, rather than fade. Each carries a small amber glow. */
+.ontwerp .firefly { position: absolute; left: var(--x); top: var(--y); width: var(--sz); height: var(--sz);
+  background: var(--wx-pollen); box-shadow: 0 0 5px 1px var(--wx-pollen); opacity: 0; will-change: transform, opacity;
+  animation: ontwerp-firefly-wander var(--dw) var(--tf) infinite, ontwerp-firefly-blink var(--bd) var(--tf2) infinite;
+  animation-delay: var(--dl), var(--bl); }
+@keyframes ontwerp-firefly-wander { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(var(--dx), var(--dy)); } }
+@keyframes ontwerp-firefly-blink { 0%, 44%, 100% { opacity: 0; } 54%, 70% { opacity: var(--o); } }
+
+/* snow: small open (hairline-outlined) squares — snow as line-art — swaying down slow
+   and fading before they reach the foot, so nothing piles at a hard edge. */
+.ontwerp .flake { position: absolute; top: -10%; left: var(--x); width: var(--sz); height: var(--sz);
+  border: 1px solid rgb(from var(--color-ink) r g b / 0.55); opacity: 0; will-change: top, transform, opacity;
+  animation: ontwerp-snowfall var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-snowfall {
+  0% { top: -10%; transform: translateX(0) rotate(0deg); opacity: 0; }
+  12% { opacity: var(--o); }
+  25% { transform: translateX(var(--sw)) rotate(calc(var(--rot) * 0.25)); }
+  50% { transform: translateX(0) rotate(calc(var(--rot) * 0.5)); }
+  75% { transform: translateX(calc(-1 * var(--sw))) rotate(calc(var(--rot) * 0.75)); }
+  88% { opacity: var(--o); }
+  100% { top: 112%; transform: translateX(0) rotate(var(--rot)); opacity: 0; }
+}
+
+/* mist: wide, very soft paper-pale bands drifting slowly sideways at their own heights
+   and speeds, so the layers part like morning fog. The faintest, slowest field. */
+.ontwerp .haze { position: absolute; left: 10%; top: var(--y); width: 80%; height: var(--bh); opacity: 0;
+  background: linear-gradient(90deg, transparent, var(--color-surface-page) 30%, var(--color-surface-page) 70%, transparent);
+  filter: blur(6px); will-change: transform, opacity;
+  animation: ontwerp-haze-drift var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-haze-drift {
+  0% { transform: translateX(calc(var(--dir) * -22%)); opacity: 0; }
+  25%, 75% { opacity: var(--o); }
+  100% { transform: translateX(calc(var(--dir) * 22%)); opacity: 0; }
+}
+
+/* light (dappled sun): soft warm pools — the bloom shrunk and scattered — breathing and
+   drifting a little, warm-multiplied onto the paper so they read as sunlight pooling. */
+.ontwerp .sunpool { position: absolute; left: var(--x); top: var(--y); width: var(--sz); height: var(--sz);
+  border-radius: 50%; background: radial-gradient(circle, var(--wx-pollen), transparent 70%);
+  mix-blend-mode: multiply; filter: blur(10px); opacity: 0; will-change: transform, opacity;
+  animation: ontwerp-sunpool-breathe var(--d) var(--tf) infinite; animation-delay: var(--dl); }
+@keyframes ontwerp-sunpool-breathe {
+  0%, 100% { transform: translate(0, 0) scale(0.85); opacity: 0; }
+  50% { transform: translate(var(--dx), var(--dy)) scale(1.1); opacity: var(--o); }
+}
+
+/* Reduced motion — the header weather settles. The per-glyph animations stop and each
+   glyph holds its neutral frame (no offset, no tilt, full ink, no glow) — the S26 gap:
+   these headers animate even when every other surface rests, so they carry their own
+   poses here, named selector-for-selector after the animation rules so the rest wins
+   the cascade. A frozen mid-fall reads as broken, so the particle fields are removed
+   outright: the field containers first, and the particles themselves by name, so the
+   pose holds even if a consumer rebuilds a field in a container of its own. */
+@media (prefers-reduced-motion: reduce) {
+
+  .ontwerp .wx-field { display: none; }
+  .ontwerp .gust, .ontwerp .mote, .ontwerp .drop, .ontwerp .is-rain .drop, .ontwerp .splash, .ontwerp .fleck, .ontwerp .pollen, .ontwerp .firefly, .ontwerp .flake, .ontwerp .haze, .ontwerp .sunpool { display: none; animation: none; }
+  .ontwerp .wx-wind .wxc, .ontwerp .wx-rain .wxc, .ontwerp .wx-leaves .wxc, .ontwerp .wx-drift .wxc, .ontwerp .wx-fireflies .wxc, .ontwerp .wx-snow .wxc, .ontwerp .wx-mist .wxc, .ontwerp .wx-sun .wxc { animation: none; transform: none; opacity: 1; text-shadow: none; }
+
+}

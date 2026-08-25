@@ -1,0 +1,60 @@
+/* generated skin — wine. Complete colour role set computed from the skin's
+   four supplied roles (paper, ink, accent, destructive); do not edit by hand.
+   Import this file and set data-skin="wine" on a .ontwerp root (island)
+   or on :root (whole-app) to reskin the whole colour surface. */
+.ontwerp[data-skin="wine"] {
+  --color-ink: #2A1718;
+  --color-surface-page: #F2E7E7;
+  --color-surface-warm: #EDDEDF;
+  --color-surface-deep: #E8D6D6;
+  --color-surface-claim: rgba(217, 188, 189, 0.55);
+  --color-surface-claim-hover: rgba(217, 188, 189, 0.85);
+  --color-surface-ink: #2A1718;
+  --color-surface-disabled: rgba(42, 23, 24, 0.08);
+  --color-text-default: #2A1718;
+  --color-text-soft: #524141;
+  --color-text-quiet: #8E7F80;
+  --color-text-muted: #8E7F80;
+  --color-text-faint: #B6A9A9;
+  --color-text-on-ink: #F2E7E7;
+  --color-text-disabled: rgba(42, 23, 24, 0.45);
+  --color-accent-base: #8E3A3F;
+  --color-accent-soft: #A25D61;
+  --color-focus-ring: #8E3A3F;
+  --color-destructive-base: #6E1D22;
+  --color-destructive-soft: #884549;
+  --color-border-default: rgba(42, 23, 24, 0.65);
+  --color-border-quiet: rgba(42, 23, 24, 0.25);
+  --color-border-muted: rgba(42, 23, 24, 0.25);
+  --color-border-strong: rgba(42, 23, 24, 0.95);
+  --color-border-accent: rgba(142, 58, 63, 0.85);
+  --color-border-disabled: rgba(42, 23, 24, 0.15);
+}
+:root[data-skin="wine"] {
+  --color-ink: #2A1718;
+  --color-surface-page: #F2E7E7;
+  --color-surface-warm: #EDDEDF;
+  --color-surface-deep: #E8D6D6;
+  --color-surface-claim: rgba(217, 188, 189, 0.55);
+  --color-surface-claim-hover: rgba(217, 188, 189, 0.85);
+  --color-surface-ink: #2A1718;
+  --color-surface-disabled: rgba(42, 23, 24, 0.08);
+  --color-text-default: #2A1718;
+  --color-text-soft: #524141;
+  --color-text-quiet: #8E7F80;
+  --color-text-muted: #8E7F80;
+  --color-text-faint: #B6A9A9;
+  --color-text-on-ink: #F2E7E7;
+  --color-text-disabled: rgba(42, 23, 24, 0.45);
+  --color-accent-base: #8E3A3F;
+  --color-accent-soft: #A25D61;
+  --color-focus-ring: #8E3A3F;
+  --color-destructive-base: #6E1D22;
+  --color-destructive-soft: #884549;
+  --color-border-default: rgba(42, 23, 24, 0.65);
+  --color-border-quiet: rgba(42, 23, 24, 0.25);
+  --color-border-muted: rgba(42, 23, 24, 0.25);
+  --color-border-strong: rgba(42, 23, 24, 0.95);
+  --color-border-accent: rgba(142, 58, 63, 0.85);
+  --color-border-disabled: rgba(42, 23, 24, 0.15);
+}

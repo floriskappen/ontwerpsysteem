@@ -5,8 +5,18 @@
     "useWhen": "interactive primary or secondary actions",
     "avoid": "standard flat system default buttons",
     "sourceModules": ["design-system/source/zoo/sections/components.mjs", "design-system/source/zoo/styles/components.css"],
-    "valueRefs": ["color.border.strong", "color.text.default"],
+    "valueRefs": ["color.border.strong", "color.text.default", "color.focus-ring"],
     "reducedMotion": "unaffected",
-    "notes": "press effect is immediate with 2px transform"
+    "notes": "press effect is immediate with 2px transform; keyboard focus is a 2px focus-ring outline offset off the edge, shipped with the component rather than left to the host page"
+  },
+  {
+    "id": "component.tabs.segmented",
+    "intent": "pick-one segmented mode selector of joined square cells on a shared rule",
+    "useWhen": "choosing exactly one mode from a small fixed set",
+    "avoid": "dropdowns, loose toggle buttons, and animated tab sliders",
+    "sourceModules": ["design-system/source/zoo/sections/components.mjs", "design-system/source/zoo/styles/components.css"],
+    "valueRefs": ["color.border.strong", "color.surface.page", "color.text.default", "color.surface.ink", "color.text.on-ink", "color.focus-ring"],
+    "reducedMotion": "unaffected — the switch is immediate by contract; there is no transition or slide to suppress, so no rest frame is required",
+    "notes": "selected-state contract for a pick-one control: the selected cell inverts the unselected treatment (solid ink + paper text against paper + ink text) and switching is immediate; generalises the theme-switch tabs' joined-cells + heavy-bottom-edge shape as a reusable class decoupled from the theming machinery"
   }
 ]

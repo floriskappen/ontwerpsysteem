@@ -1,0 +1,88 @@
+/* generated — .ontwerp-scoped build of components.css
+   from the showcase's style sources; do not edit by hand. */
+
+/* components in use */
+.ontwerp .use-grid { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--color-border-default);
+  position: relative; isolation: isolate; background: var(--color-surface-page); }
+.ontwerp .use-cell { position: relative; padding: var(--space-xl); border-left: 1px solid var(--color-border-default); border-top: 1px solid var(--color-border-default); display: flex; flex-direction: column; gap: var(--space-md); align-items: flex-start; min-height: var(--size-cell-min); }
+.ontwerp .use-cell:nth-child(-n+2) { border-top: 0; }
+.ontwerp .use-cell:nth-child(odd) { border-left: 0; }
+.ontwerp .use-label { font: var(--typography-label); text-transform: lowercase; color: var(--color-text-default); }
+.ontwerp .use-row { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: center; }
+
+.ontwerp .lbl { position: relative; z-index: 1; }
+
+/* buttons — opaque (the grid never shows through), a faint halftone (Ben-Day) dot
+   screen on every one, a heavier bottom-edge, an INSTANT press (transform is not
+   transitioned, so it reads as a hard drop) and a snappy, few-step hover. */
+.ontwerp .btn { font: var(--button-typography); text-transform: lowercase; color: var(--button-text-default); background: var(--color-surface-page);
+  border: 1px solid var(--button-border-default); border-bottom-width: 3px; padding: var(--button-padding-block) var(--button-padding-inline);
+  position: relative; overflow: hidden; cursor: pointer; }
+.ontwerp .btn::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(var(--color-ink) 1px, transparent 1.4px); background-size: 5px 5px; background-position: center; opacity: 0.06; }
+.ontwerp .btn:hover { background: var(--button-surface-hover); color: var(--button-text-hover); border-color: var(--button-border-hover); }
+.ontwerp .btn:active { transform: translateY(2px); border-bottom-width: 1px; }
+/* Focus is the accent claiming the edge (colour.md): a hard 2px rule in the
+   dedicated focus-ring role, never a soft glow or a borrowed browser blue. It is
+   authored here rather than in the page reset because the reset is showcase-only —
+   a consumer importing the component bundle must receive the indicator together
+   with the components it belongs to. */
+.ontwerp .btn:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+.ontwerp .btn-red { color: var(--color-accent-base); border-color: var(--color-accent-base); }
+.ontwerp .btn-red:hover { background: var(--color-accent-base); color: var(--color-text-on-ink); border-color: var(--color-accent-base); }
+.ontwerp .btn-ink { background: var(--color-surface-ink); color: var(--color-text-on-ink); border-color: var(--color-surface-ink); }
+.ontwerp .btn-ink:hover { background: var(--color-surface-page); color: var(--color-text-default); border-color: var(--color-border-strong); }
+
+/* fields — label as gutter */
+.ontwerp .field { display: grid; grid-template-columns: 104px 1fr; align-items: stretch; border: 1px solid var(--field-border-default); width: 100%; max-width: 360px; }
+.ontwerp .field + .field { margin-top: -1px; }
+.ontwerp .field-label { font: var(--typography-label); text-transform: lowercase; color: var(--color-text-quiet); padding: 0 var(--space-md); display: flex; align-items: center;
+  background: var(--color-surface-deep); border-right: 1px solid var(--color-border-quiet); }
+.ontwerp .field input { border: 0; background: transparent; font: var(--field-typography); color: var(--field-text); padding: var(--field-padding-block) var(--field-padding-inline); outline: none; text-transform: lowercase; width: 100%; }
+.ontwerp .field input::placeholder { color: var(--field-placeholder); }
+.ontwerp .field:focus-within { border-color: var(--field-border-focus); }
+.ontwerp .field:focus-within .field-label { color: var(--color-accent-base); }
+
+/* marks (pills) */
+.ontwerp .pill { display: inline-flex; align-items: center; gap: var(--space-inline-gap); font: var(--badge-typography); text-transform: uppercase; color: var(--badge-text);
+  border: 1px solid var(--badge-border); padding: var(--badge-padding-block) var(--badge-padding-inline); }
+.ontwerp .pill .pdot { width: 6px; height: 6px; background: currentColor; position: relative; z-index: 1; }
+.ontwerp .pill-red { color: var(--color-accent-base); border-color: var(--color-accent-base); }
+.ontwerp .pill-ink { background: var(--color-surface-ink); color: var(--color-text-on-ink); border-color: var(--color-surface-ink); }
+.ontwerp .pill-quiet { color: var(--color-text-quiet); border-color: var(--color-border-quiet); }
+
+/* card */
+.ontwerp .card { background: var(--color-surface-claim); }
+.ontwerp .card-title { margin: 0; }
+.ontwerp .card-body { margin: 0; max-width: 34ch; }
+.ontwerp .lnk { color: var(--link-text-default); text-decoration: underline; text-decoration-color: var(--link-underline-default); text-underline-offset: 3px; }
+.ontwerp .lnk:hover { color: var(--link-text-hover); text-decoration-color: var(--link-underline-hover); }
+
+/* status marks — a lifecycle state frozen at its resting pose, the compliant
+   static fallback where the animated states cannot be mounted. Dots and rules
+   only (the pill convention): never a green tick, never a checkbox glyph.
+   pass = ripe-at-rest (accent), warn = quiet (hollow), fail = the DESTRUCTIVE
+   pigment confined to a thin rule — it never floods the mark and never borrows
+   the accent. No transitions and no keyframes: a mark is already at rest. */
+.ontwerp .mark { display: inline-flex; align-items: center; gap: var(--space-inline-gap); font: var(--badge-typography); text-transform: uppercase;
+  color: var(--color-text-default); border: 1px solid var(--color-border-default); padding: var(--badge-padding-block) var(--badge-padding-inline); }
+.ontwerp .mark .mk { width: 6px; height: 6px; flex: none; }
+.ontwerp .mark-pass .mk { background: var(--color-accent-base); }
+.ontwerp .mark-warn .mk { background: transparent; border: 1px solid var(--color-text-quiet); }
+.ontwerp .mark-fail .mk { width: 2px; height: 10px; background: var(--color-destructive-base); }
+
+/* segmented control — the theme tabs' joined square cells + heavy bottom-edge
+   plate, generalised into a reusable pick-one class with no :has() wiring. The
+   selected cell inverts the unselected treatment (solid ink + paper text vs
+   paper + ink text) and the switch is INSTANT: no transition, no slide, no
+   @keyframes. Works with radios+labels as shown or with bare buttons (the
+   first cell drops its left rule either way). */
+.ontwerp .seg { display: inline-flex; border: 1px solid var(--color-border-strong); border-bottom-width: 3px; }
+.ontwerp .seg-radio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ontwerp .seg-cell { display: inline-flex; align-items: center; font: var(--typography-label); text-transform: lowercase;
+  color: var(--color-text-default); background: var(--color-surface-page); padding: 6px var(--space-md);
+  cursor: pointer; border-left: 1px solid var(--color-border-default); }
+.ontwerp .seg-cell:first-child, .ontwerp .seg-radio:first-child + .seg-cell { border-left: 0; }
+.ontwerp .seg-cell:hover { background: var(--color-surface-deep); }
+.ontwerp .seg-cell:focus-visible, .ontwerp .seg-radio:focus-visible + .seg-cell { outline: 2px solid var(--color-focus-ring); outline-offset: -2px; }
+.ontwerp .seg-radio:checked + .seg-cell { background: var(--color-surface-ink); color: var(--color-text-on-ink); }

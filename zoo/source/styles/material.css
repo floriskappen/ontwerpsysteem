@@ -36,11 +36,15 @@
 .sw-use { font: var(--typography-body-sm); color: var(--color-text-soft); }
 .sw-val { margin-top: 2px; }
 
-/* pigment coda — colours behaving like ink: soft-bled organic blots that LAYER by
-   multiply, deepening where they cross (subtractive, like real dye on paper). */
+/* pigment coda — colours behaving like ink: soft-bled organic blots, each multiplying
+   into the paper tooth so the colour stains the sheet rather than sitting on top.
+   The system carries one chromatic hue per skin, so the dye is shown honestly: the
+   accent laid down at full and let-down strength, crossing ink. All three derive from
+   the skin's own accent + ink, so they stay distinct and coherent in every theme —
+   no fixed hue that would clash on a warm skin or wash out on a cool one. */
 .pigment-plate { position: relative; height: 132px; border: 1px solid var(--color-border-default);
   background: var(--color-surface-page); isolation: isolate; overflow: hidden; }
-.blot { position: absolute; z-index: 1; width: 92px; height: 92px; mix-blend-mode: multiply; filter: blur(1.5px); opacity: 0.85; }
-.blot-a { left: 8%; top: 16px; background: var(--color-accent-soft); border-radius: 47% 53% 45% 55% / 55% 47% 53% 45%; }
-.blot-b { left: 30%; top: 26px; background: var(--color-text-soft); border-radius: 52% 48% 56% 44% / 46% 54% 44% 56%; }
-.blot-c { left: 52%; top: 14px; background: var(--wx-pollen); border-radius: 45% 55% 50% 50% / 53% 45% 55% 47%; }
+.blot { position: absolute; z-index: 1; width: 92px; height: 92px; transform: translateX(-50%); mix-blend-mode: multiply; filter: blur(1.5px); opacity: 0.85; }
+.blot-a { left: 16.67%; top: 16px; background: var(--color-accent-base); border-radius: 47% 53% 45% 55% / 55% 47% 53% 45%; }
+.blot-b { left: 50%; top: 26px; background: var(--color-text-soft); border-radius: 52% 48% 56% 44% / 46% 54% 44% 56%; }
+.blot-c { left: 83.33%; top: 14px; background: var(--color-accent-soft); border-radius: 45% 55% 50% 50% / 53% 45% 55% 47%; }

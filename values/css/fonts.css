@@ -1,0 +1,5 @@
+/* generated from assets/fonts/faces.json — do not edit by hand.
+   Import this file to wire the shipped faces; urls resolve to the bundle's fonts/ directory. */
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 400 700; font-display: swap; src: url(../../fonts/archivo-latin.woff2) format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url(../../fonts/jetbrains-mono-latin.woff2) format('woff2'); }
+@font-face { font-family: 'Caveat'; font-style: normal; font-weight: 500 700; font-display: swap; src: url(../../fonts/caveat-latin.woff2) format('woff2'); }

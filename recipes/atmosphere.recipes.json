@@ -7,6 +7,12 @@
     "sourceModules": ["design-system/source/zoo/effects/grid.mjs", "design-system/source/zoo/styles/atmosphere.css"],
     "valueRefs": [],
     "reducedMotion": "disabled",
-    "notes": "desynchronized using cell indices"
+    "mountCardinality": "once-per-root",
+    "cost": {
+      "particlesPerField": { "min": 6, "max": 51 },
+      "blooms": 3,
+      "weatherEnabledByDefault": false
+    },
+    "notes": "desynchronized using cell indices; the ambient stack mounts once per chrome root, never per tile, card, or list item; weather fields are opt-in"
   }
 ]

@@ -1,5 +1,19 @@
 * { box-sizing: border-box; border-radius: 0; }
 html, body { margin: 0; }
+:root {
+  /* bloom + pollen colours — routed through the colour roles a complete skin sets
+     (the claim bloom and the softened accent), not through fixed cream primitives.
+     These are zoo-local effect vars, not built tokens. Declared on :root — the
+     element that carries the built token declarations — so a skin's :root:has()
+     role overrides (see renderThemeBar) reskin the atmosphere and the pollen with
+     the rest of the surface; a custom property's var() resolves where it is
+     declared. The skin sets surface-claim / accent-soft, so the blooms move with
+     the greys and destructive and the theme bar needs no hand-set bloom block. */
+  --wx-bloom-a: var(--color-surface-claim);
+  --wx-bloom-b: var(--color-accent-soft);
+  --wx-bloom-c: var(--color-accent-soft);
+  --wx-pollen: var(--color-accent-soft);
+}
 body {
   background: var(--color-surface-page);
   color: var(--color-text-default);
@@ -14,31 +28,20 @@ body {
   /* interactions are instant — hover changes have no transition and the press is an
      untransitioned hard drop; the only motion on the page is the ambient grid and
      bloom. */
-  /* re-link the colour-carrying component vars to their colour roles so one role
-     override (the theming demo) reskins the whole page. The build flattens these
-     aliases to literals; the showcase restores the link for the live reskin. */
-  --button-text-default: var(--color-text-default);
-  --button-text-hover: var(--color-text-on-ink);
-  --button-surface-hover: var(--color-surface-ink);
-  --button-border-default: var(--color-border-strong);
-  --button-border-hover: var(--color-surface-ink);
-  --field-border-default: var(--color-border-default);
-  --field-border-focus: var(--color-accent-base);
-  --field-text: var(--color-text-default);
-  --field-placeholder: var(--color-text-faint);
-  --badge-text: var(--color-text-default);
-  --badge-border: var(--color-border-default);
-  --link-text-default: var(--color-text-default);
-  --link-text-hover: var(--color-accent-base);
-  --link-underline-default: var(--color-border-quiet);
-  --link-underline-hover: var(--color-accent-base);
-  /* bloom + pollen colours — the cream baseline (a warm amber + soft red glow, amber
-     motes). The theming demo overrides these per skin (see renderThemeBar) so the
-     atmosphere and the pollen reskin with the theme too. */
-  --wx-bloom-a: var(--color-cream-bloom);
-  --wx-bloom-b: var(--color-amber);
-  --wx-bloom-c: var(--color-red-soft);
-  --wx-pollen: var(--color-amber);
+  /* no token re-linking here: the built tokens.css keeps alias chains live as
+     var() references on :root, so one colour-role override there (the theming
+     demo) reskins every component var with no showcase-side re-declaration. */
+}
+
+/* page-level paper grain — the whole sheet's tooth. Lives here (zoo-only page
+   styling, like body itself) rather than in atmosphere.css: the shipped, scoped
+   effects bundle carries only class-rooted rules, and panel-level grain ships via
+   material.css. */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: multiply; opacity: 0.62;
 }
 
 .sheet { position: relative; z-index: 1; padding: var(--space-2xl); max-width: 1180px; margin: 0 auto; }

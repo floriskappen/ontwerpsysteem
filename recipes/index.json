@@ -10,7 +10,16 @@
     ],
     "valueRefs": [],
     "reducedMotion": "disabled",
-    "notes": "desynchronized using cell indices"
+    "mountCardinality": "once-per-root",
+    "cost": {
+      "particlesPerField": {
+        "min": 6,
+        "max": 51
+      },
+      "blooms": 3,
+      "weatherEnabledByDefault": false
+    },
+    "notes": "desynchronized using cell indices; the ambient stack mounts once per chrome root, never per tile, card, or list item; weather fields are opt-in"
   },
   {
     "id": "component.button.ink-press",
@@ -23,10 +32,31 @@
     ],
     "valueRefs": [
       "color.border.strong",
-      "color.text.default"
+      "color.text.default",
+      "color.focus-ring"
     ],
     "reducedMotion": "unaffected",
-    "notes": "press effect is immediate with 2px transform"
+    "notes": "press effect is immediate with 2px transform; keyboard focus is a 2px focus-ring outline offset off the edge, shipped with the component rather than left to the host page"
+  },
+  {
+    "id": "component.tabs.segmented",
+    "intent": "pick-one segmented mode selector of joined square cells on a shared rule",
+    "useWhen": "choosing exactly one mode from a small fixed set",
+    "avoid": "dropdowns, loose toggle buttons, and animated tab sliders",
+    "sourceModules": [
+      "design-system/source/zoo/sections/components.mjs",
+      "design-system/source/zoo/styles/components.css"
+    ],
+    "valueRefs": [
+      "color.border.strong",
+      "color.surface.page",
+      "color.text.default",
+      "color.surface.ink",
+      "color.text.on-ink",
+      "color.focus-ring"
+    ],
+    "reducedMotion": "unaffected — the switch is immediate by contract; there is no transition or slide to suppress, so no rest frame is required",
+    "notes": "selected-state contract for a pick-one control: the selected cell inverts the unselected treatment (solid ink + paper text against paper + ink text) and switching is immediate; generalises the theme-switch tabs' joined-cells + heavy-bottom-edge shape as a reusable class decoupled from the theming machinery"
   },
   {
     "id": "material.surface.paper-grain",
@@ -61,15 +91,15 @@
   },
   {
     "id": "motion.clock.stepped",
-    "intent": "system stepped animation clock",
-    "useWhen": "all periodic animations",
-    "avoid": "continuous linear transitions",
+    "intent": "system stepped animation clock — immediate interactions, stepped periodic timing",
+    "useWhen": "all periodic animations (atmosphere, weather fields, grown lifecycle states); interactions get no recipe at all — they are immediate hard cuts with no transition and no easing",
+    "avoid": "smooth easing affordances on any animation (ease, ease-in-out, linear, cubic-bezier) and every interaction transition",
     "sourceModules": [
       "design-system/source/zoo/effects/weather-particles.mjs"
     ],
     "valueRefs": [],
     "reducedMotion": "disabled",
-    "notes": "evaluated at 8fps using stepped keyframe timing"
+    "notes": "periodic motion is evaluated at 8fps using stepped keyframe timing; the motion tokens carry periodic loop lengths only — no transition duration and no easing curve"
   },
   {
     "id": "motion.weather.wind",
@@ -126,6 +156,23 @@
     ],
     "reducedMotion": "static fully-colored rest state",
     "notes": "shape deepens through stages"
+  },
+  {
+    "id": "state.mark.static",
+    "intent": "static pass/fail/warn status mark — a lifecycle state rendered inert",
+    "useWhen": "showing status where the animated lifecycle states cannot be mounted",
+    "avoid": "green check marks and checkbox glyphs",
+    "sourceModules": [
+      "design-system/source/zoo/sections/components.mjs",
+      "design-system/source/zoo/styles/components.css"
+    ],
+    "valueRefs": [
+      "color.accent.base",
+      "color.text.quiet",
+      "color.destructive.base"
+    ],
+    "reducedMotion": "already at rest — the mark IS the reduced-motion rest frame of a lifecycle state (pass = ripe-at-rest, warn = quiet, fail = the destructive pigment confined to a rule), so no animation exists to suppress and no separate rest pose is needed",
+    "notes": "the compliant static fallback when the animated states cannot be mounted: a status mark is the inert rest frame of a lifecycle state, not a second status idiom — pass is ripe at its resting pose (accent), warn stays quiet (text-quiet), fail keeps the destructive role confined to a thin rule and never borrows the accent; dots and rules only, never a green tick or checkbox glyph"
   },
   {
     "id": "theme.recipes.json",

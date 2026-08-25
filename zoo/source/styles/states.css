@@ -20,13 +20,13 @@
 /* germinating — the seed head fills in golden-angle order; each seed pops in on a stagger
    keyed to its index, so the spiral grows outward, then clears and grows again. */
 .gseedhead { width: 56px; height: 56px; fill: var(--color-text-soft); }
-.gseed { opacity: 0; animation: germinate 4s steps(12) infinite; animation-delay: calc(var(--gi) * 0.05s); }
-@keyframes germinate { 0% { opacity: 0; } 8% { opacity: 0.9; } 82% { opacity: 0.9; } 92%, 100% { opacity: 0; } }
+.gseed { opacity: 0; animation: ontwerp-germinate 4s steps(12) infinite; animation-delay: calc(var(--gi) * 0.05s); }
+@keyframes ontwerp-germinate { 0% { opacity: 0; } 8% { opacity: 0.9; } 82% { opacity: 0.9; } 92%, 100% { opacity: 0; } }
 
 /* ripe — a fruit that deepens through its stages (pale → soft → ripe) and swells a touch;
    the colour itself reports doneness, in discrete steps, never a green tick. */
-.ripe { width: 30px; height: 30px; border-radius: 50%; background: var(--color-surface-claim); animation: ripen 4s steps(5) infinite; }
-@keyframes ripen {
+.ripe { width: 30px; height: 30px; border-radius: 50%; background: var(--color-surface-claim); animation: ontwerp-ripen 4s steps(5) infinite; }
+@keyframes ontwerp-ripen {
   0% { background: var(--color-surface-claim); transform: scale(0.82); }
   45% { background: var(--color-accent-soft); transform: scale(0.95); }
   80%, 100% { background: var(--color-accent-base); transform: scale(1); }
@@ -35,5 +35,17 @@
 /* rising — water filling a vessel from the foot, tick by tick (stepped), the way a level
    climbs rather than a bar sliding. */
 .rising { width: 34px; height: 46px; border: 1px solid var(--color-border-default); background: var(--color-surface-page); position: relative; overflow: hidden; }
-.rising-fill { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; background: var(--color-accent-soft); opacity: 0.5; transform: translateY(100%); animation: rise 4.5s steps(9) infinite; }
-@keyframes rise { 0% { transform: translateY(100%); } 80%, 100% { transform: translateY(0); } }
+.rising-fill { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; background: var(--color-accent-soft); opacity: 0.5; transform: translateY(100%); animation: ontwerp-rise 4.5s steps(9) infinite; }
+@keyframes ontwerp-rise { 0% { transform: translateY(100%); } 80%, 100% { transform: translateY(0); } }
+
+/* Reduced motion — each state settles into a deliberate, fully-formed rest pose, never
+   a frozen mid-cycle frame: the seed head grown in (every seed at its lit opacity), the
+   fruit ripe at full size, the vessel holding water part-way. The poses live beside
+   their keyframes so they ship with the effects bundle (an animated state without a
+   rest pose is incomplete; the keyframe-coverage gate enforces it). Selectors mirror
+   the animation rules exactly, so the pose wins the cascade it must. */
+@media (prefers-reduced-motion: reduce) {
+  .gseed { opacity: 0.9; animation: none; }
+  .ripe { animation: none; background: var(--color-accent-base); transform: scale(1); }
+  .rising-fill { animation: none; transform: translateY(45%); }
+}

@@ -4,11 +4,9 @@ import { join, dirname } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Sync utility to read modular CSS files
-const readCss = (file) => readFileSync(join(__dirname, 'styles', file), 'utf8').trim();
-
 // Import modular components
 import { renderGrid } from './effects/grid.mjs';
+import { ambientBlooms } from './effects/atmosphere.mjs';
 import { driftParticles, weatherText } from './effects/weather-particles.mjs';
 import { renderThemeBar } from './sections/theme-bar.mjs';
 import { renderMasthead } from './sections/masthead.mjs';
@@ -20,7 +18,12 @@ import { renderStates } from './sections/states.mjs';
 import { renderWeather } from './sections/weather.mjs';
 import { renderColophon } from './sections/colophon.mjs';
 
-export function renderShowcase({ manifest, tokenCss, fontCss = '' }) {
+export function renderShowcase({ manifest, tokenCss, fontCss = '', stylesDir = join(__dirname, 'styles'), skins }) {
+  // Sync utility to read the modular CSS files. `stylesDir` defaults to the zoo's
+  // own styles/ and exists so tests can point one build at an edited copy and
+  // watch the edit land on both surfaces (zoo + shipped scoped bundles).
+  const readCss = (file) => readFileSync(join(stylesDir, file), 'utf8').trim();
+
   // Bundle modular CSS stylesheets
   const pageStyles = [
     readCss('base.css'),
@@ -50,10 +53,10 @@ ${pageStyles}
 </head>
 <body>
 ${renderGrid()}
-<div class="bloom" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+<div class="bloom" aria-hidden="true">${ambientBlooms()}</div>
 <div class="sheet">
 
-  ${renderThemeBar()}
+  ${renderThemeBar(skins)}
 
   ${renderMasthead()}
 

@@ -1,0 +1,60 @@
+/* generated skin — ochre. Complete colour role set computed from the skin's
+   four supplied roles (paper, ink, accent, destructive); do not edit by hand.
+   Import this file and set data-skin="ochre" on a .ontwerp root (island)
+   or on :root (whole-app) to reskin the whole colour surface. */
+.ontwerp[data-skin="ochre"] {
+  --color-ink: #292210;
+  --color-surface-page: #F3ECDD;
+  --color-surface-warm: #F0E6D4;
+  --color-surface-deep: #ECE1CA;
+  --color-surface-claim: rgba(226, 208, 174, 0.55);
+  --color-surface-claim-hover: rgba(226, 208, 174, 0.85);
+  --color-surface-ink: #292210;
+  --color-surface-disabled: rgba(41, 34, 16, 0.08);
+  --color-text-default: #292210;
+  --color-text-soft: #514A39;
+  --color-text-quiet: #8E8777;
+  --color-text-muted: #8E8777;
+  --color-text-faint: #B6AFA0;
+  --color-text-on-ink: #F3ECDD;
+  --color-text-disabled: rgba(41, 34, 16, 0.45);
+  --color-accent-base: #B07C20;
+  --color-accent-soft: #BD9246;
+  --color-focus-ring: #B07C20;
+  --color-destructive-base: #9E2E1C;
+  --color-destructive-soft: #AF5443;
+  --color-border-default: rgba(41, 34, 16, 0.65);
+  --color-border-quiet: rgba(41, 34, 16, 0.25);
+  --color-border-muted: rgba(41, 34, 16, 0.25);
+  --color-border-strong: rgba(41, 34, 16, 0.95);
+  --color-border-accent: rgba(176, 124, 32, 0.85);
+  --color-border-disabled: rgba(41, 34, 16, 0.15);
+}
+:root[data-skin="ochre"] {
+  --color-ink: #292210;
+  --color-surface-page: #F3ECDD;
+  --color-surface-warm: #F0E6D4;
+  --color-surface-deep: #ECE1CA;
+  --color-surface-claim: rgba(226, 208, 174, 0.55);
+  --color-surface-claim-hover: rgba(226, 208, 174, 0.85);
+  --color-surface-ink: #292210;
+  --color-surface-disabled: rgba(41, 34, 16, 0.08);
+  --color-text-default: #292210;
+  --color-text-soft: #514A39;
+  --color-text-quiet: #8E8777;
+  --color-text-muted: #8E8777;
+  --color-text-faint: #B6AFA0;
+  --color-text-on-ink: #F3ECDD;
+  --color-text-disabled: rgba(41, 34, 16, 0.45);
+  --color-accent-base: #B07C20;
+  --color-accent-soft: #BD9246;
+  --color-focus-ring: #B07C20;
+  --color-destructive-base: #9E2E1C;
+  --color-destructive-soft: #AF5443;
+  --color-border-default: rgba(41, 34, 16, 0.65);
+  --color-border-quiet: rgba(41, 34, 16, 0.25);
+  --color-border-muted: rgba(41, 34, 16, 0.25);
+  --color-border-strong: rgba(41, 34, 16, 0.95);
+  --color-border-accent: rgba(176, 124, 32, 0.85);
+  --color-border-disabled: rgba(41, 34, 16, 0.15);
+}

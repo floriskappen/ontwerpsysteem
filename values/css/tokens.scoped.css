@@ -1,0 +1,155 @@
+.ontwerp {
+  --button-surface-default: rgba(0, 0, 0, 0);
+  --field-surface: rgba(0, 0, 0, 0);
+  --badge-surface: rgba(0, 0, 0, 0);
+  --color-paper: #f1ece0; /** warm cream — the base sheet */
+  --color-paper-warm: #ece4d2; /** slightly toasted */
+  --color-paper-deep: #e4dbc4; /** margin / footer strips */
+  --color-ink: #1f1b16; /** warm near-black, never #000 */
+  --color-ink-soft: #4a4239; /** secondary text */
+  --color-ink-quiet: #8a8170; /** tertiary / utility marks */
+  --color-ink-faint: #b8ae99; /** footnote, axis labels, placeholders */
+  --color-red: #b84a39; /** toasted red — margin rule, never decoration */
+  --color-red-soft: #c9614f;
+  --color-oxblood: #8a2b1d; /** the destructive pigment — deeper and browner than the accent, never doubles as it */
+  --color-oxblood-soft: #9f5244; /** oxblood let down toward the paper */
+  --color-amber: #d49a56; /** bloom only */
+  --color-cream-bloom: #f4e5c7; /** bloom only */
+  --color-ink-a8: rgba(31, 27, 22, 0.08); /** ink @ 8% — disabled fill wash */
+  --color-ink-a15: rgba(31, 27, 22, 0.15); /** ink @ 15% — disabled rule */
+  --color-ink-a25: rgba(31, 27, 22, 0.25); /** ink @ 25% — quiet rule */
+  --color-ink-a45: rgba(31, 27, 22, 0.45); /** ink @ 45% — disabled text */
+  --color-ink-a65: rgba(31, 27, 22, 0.65); /** ink @ 65% — default rule */
+  --color-ink-a95: rgba(31, 27, 22, 0.95); /** ink @ 95% — strong rule */
+  --color-red-a85: rgba(184, 74, 57, 0.85); /** red @ 85% — accent rule */
+  --color-cream-bloom-a55: rgba(244, 237, 219, 0.55); /** claimed-cell fill */
+  --color-cream-bloom-a85: rgba(244, 237, 219, 0.85); /** claimed-cell fill on hover */
+  --color-amber-a55: rgba(212, 154, 86, 0.55); /** cursor-bloom inner stop */
+  --color-amber-a18: rgba(212, 154, 86, 0.18); /** cursor-bloom outer stop */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --radius-0: 0px; /** default — corners are square */
+  --radius-1: 1px; /** utility chips */
+  --radius-2: 2px; /** maximum, very rare */
+  --size-hairline: 1px; /** cell border / margin-rule width */
+  --size-dot: 7px; /** margin-rule dot */
+  --size-tick: 18px; /** tick-strip height */
+  --size-cell-min: 120px; /** claimed-cell min height */
+  --size-page-inset: 32px; /** page margin (top / right) */
+  --size-page-left: 96px; /** left margin where the red rule lives */
+  --size-margin-rule-x: 56px; /** x position of the red margin rule */
+  --blur-bloom: 80px; /** bloom-blob blur */
+  --blur-cursor: 18px; /** cursor-bloom blur */
+  --font-sans: Archivo, 'Helvetica Neue', system-ui, sans-serif; /** display + ui, lowercased, weights 400–700 */
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; /** utility marks, 10px uppercase */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --duration-bloom: 180ms; /** cursor-bloom lag */
+  --duration-breathe-min: 7s; /** fastest breathing-rule loop */
+  --duration-breathe-max: 16s; /** slowest breathing-rule loop */
+  --duration-drift-1: 38s; /** cream bloom drift loop */
+  --duration-drift-2: 51s; /** amber bloom drift loop */
+  --duration-drift-3: 67s; /** red bloom drift loop */
+  --opacity-muted: 0.45; /** disabled controls */
+  --color-surface-page: var(--color-paper); /** the base sheet */
+  --color-surface-warm: var(--color-paper-warm);
+  --color-surface-deep: var(--color-paper-deep); /** margin / footer strips */
+  --color-surface-claim: var(--color-cream-bloom-a55); /** claimed-cell fill */
+  --color-surface-claim-hover: var(--color-cream-bloom-a85);
+  --color-surface-ink: var(--color-ink); /** inverted ink cells / solid buttons */
+  --color-surface-disabled: var(--color-ink-a8); /** inert control fills — the faintest ink wash */
+  --color-text-default: var(--color-ink);
+  --color-text-soft: var(--color-ink-soft);
+  --color-text-quiet: var(--color-ink-quiet); /** utility marks */
+  --color-text-muted: var(--color-ink-quiet); /** the borrowed word — same ink as quiet, for consumers arriving with muted vocabulary */
+  --color-text-faint: var(--color-ink-faint); /** axis labels, placeholders */
+  --color-text-on-ink: var(--color-paper); /** text on ink surfaces */
+  --color-text-disabled: var(--color-ink-a45); /** inert control text */
+  --color-accent-base: var(--color-red); /** the single accent — margin rule, links on hover */
+  --color-accent-soft: var(--color-red-soft);
+  --color-focus-ring: var(--color-red); /** focus claims the full border in the accent — never a default blue ring */
+  --color-destructive-base: var(--color-oxblood); /** irreversible actions — its own pigment, so the accent stops doubling as danger */
+  --color-destructive-soft: var(--color-oxblood-soft); /** destructive, softened — hover washes and secondary danger */
+  --color-border-default: var(--color-ink-a65);
+  --color-border-quiet: var(--color-ink-a25);
+  --color-border-muted: var(--color-ink-a25); /** the borrowed word — same rule weight as quiet */
+  --color-border-strong: var(--color-ink-a95);
+  --color-border-accent: var(--color-red-a85);
+  --color-border-disabled: var(--color-ink-a15); /** inert control borders */
+  --space-inset: var(--space-lg); /** surface / card padding (source 16–18px → 16) */
+  --space-inline-gap: var(--space-sm); /** gap between inline items (source 6–8px → 8) */
+  --space-control-block: var(--space-sm); /** control vertical padding (source ~10px → 8, snapped to scale) */
+  --space-control-inline: var(--space-md); /** control horizontal padding (source ~12–14px → 12, snapped) */
+  --space-badge-block: var(--space-xs); /** badge vertical padding */
+  --space-badge-inline: var(--space-sm); /** badge horizontal padding (source 9px → 8) */
+  --radius-none: var(--radius-0); /** default — square corners everywhere */
+  --radius-chip: var(--radius-1); /** utility chips */
+  --radius-chip-max: var(--radius-2); /** maximum allowed, very rare */
+  --motion-duration-bloom: var(--duration-bloom); /** cursor-bloom lag */
+  --typography-display: var(--weight-bold) clamp(72px, 11vw, 168px)/0.92 var(--font-sans); /** fluid: 72px floor, 11vw, 168px ceiling — $value carries the ceiling as a portable dimension */
+  --typography-heading-xl: var(--weight-bold) clamp(48px, 6vw, 88px)/0.95 var(--font-sans); /** h1 — fluid: 48px floor, 6vw, 88px ceiling — $value carries the ceiling as a portable dimension */
+  --typography-heading-lg: var(--weight-semibold) clamp(28px, 3vw, 40px)/1.02 var(--font-sans); /** h2 — fluid: 28px floor, 3vw, 40px ceiling — $value carries the ceiling as a portable dimension */
+  --typography-heading-md: var(--weight-semibold) 20px/1.1 var(--font-sans); /** h3 */
+  --typography-heading-sm: var(--weight-semibold) 15px/1.2 var(--font-sans); /** h4 */
+  --typography-body: var(--weight-medium) 15px/1.5 var(--font-sans);
+  --typography-body-lg: var(--weight-medium) 18px/1.45 var(--font-sans);
+  --typography-body-sm: var(--weight-medium) 13px/1.45 var(--font-sans);
+  --typography-mark: var(--weight-medium) 10px/1 var(--font-mono); /** utility marks — the one place uppercase is allowed (apply text-transform in CSS) */
+  --typography-label: var(--weight-semibold) 13px/1.2 var(--font-sans); /** control labels — buttons, etc. */
+  --button-text-default: var(--color-text-default);
+  --button-text-hover: var(--color-text-on-ink); /** buttons invert on hover — paper on ink */
+  --button-surface-hover: var(--color-surface-ink);
+  --button-border-default: var(--color-border-strong);
+  --button-border-hover: var(--color-surface-ink);
+  --button-radius: var(--radius-none);
+  --button-padding-block: var(--space-control-block);
+  --button-padding-inline: var(--space-control-inline);
+  --button-typography: var(--typography-label);
+  --field-text: var(--color-text-default);
+  --field-placeholder: var(--color-text-faint);
+  --field-border-default: var(--color-border-default);
+  --field-border-focus: var(--color-focus-ring); /** focus turns the full border to the focus-ring role — the accent claiming the frame */
+  --field-radius: var(--radius-none);
+  --field-padding-block: var(--space-control-block);
+  --field-padding-inline: var(--space-control-inline);
+  --field-typography: var(--typography-body);
+  --selection-accent: var(--color-accent-base);
+  --selection-text: var(--color-text-default);
+  --card-surface: var(--color-surface-claim);
+  --card-text: var(--color-text-default);
+  --card-border: var(--color-border-default);
+  --card-radius: var(--radius-none);
+  --card-padding: var(--space-inset);
+  --card-typography: var(--typography-body);
+  --badge-text: var(--color-text-default);
+  --badge-border: var(--color-border-default);
+  --badge-radius: var(--radius-none);
+  --badge-padding-block: var(--space-badge-block);
+  --badge-padding-inline: var(--space-badge-inline);
+  --badge-typography: var(--typography-mark);
+  --alert-surface: var(--color-surface-deep);
+  --alert-text: var(--color-text-default);
+  --alert-border: var(--color-border-default);
+  --alert-radius: var(--radius-none);
+  --alert-padding: var(--space-inset);
+  --link-text-default: var(--color-text-default);
+  --link-text-hover: var(--color-accent-base);
+  --link-underline-default: var(--color-border-quiet);
+  --link-underline-hover: var(--color-accent-base);
+}
+
+/* boundary primitive — stops the system's inherited voice at a descendant seam.
+   Set --ontwerp-boundary-font on or above the boundary to re-point the bounded voice. */
+.ontwerp-boundary {
+  --font-sans: var(--ontwerp-boundary-font, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+  --font-heading: var(--ontwerp-boundary-font, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+  font-family: var(--ontwerp-boundary-font, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+  text-transform: none;
+  letter-spacing: normal;
+}
