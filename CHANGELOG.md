@@ -312,13 +312,32 @@ Entry format:
   Archivo lowercase voice. Mono-uppercase applied to prose was always outside
   the system's intent and is now ruled out normatively.
 
+- `typography.display`, `typography.heading-xl`, `typography.heading-lg`: the fluid
+  ranges these tokens described in prose are now carried in the values themselves —
+  `clamp(72px, 11vw, 168px)`, `clamp(48px, 6vw, 88px)` and `clamp(28px, 3vw, 40px)`.
+  Each previously shipped only its ceiling, so display and heading type never scaled
+  down and narrow viewports overflowed horizontally. The CSS `font` shorthand carries
+  the clamp, so `--typography-*` is fluid everywhere it is consumed; rendering at or
+  above the ceiling width is unchanged.
+- `component.button.ink-press`, `components` language: the keyboard focus indicator
+  now ships with the component. `.btn:focus-visible` draws a 2px outline in the
+  focus-ring role, offset off the edge, from `values/css/components.scoped.css`. It
+  previously lived only in the showcase's page reset, which is not part of the bundle,
+  so a consumer importing the component CSS received a button with no focus indicator
+  while the zoo demonstrated one. Bare `<a>`/`<button>` focus is unchanged and stays
+  the host page's responsibility: the scoped bundle styles only class-rooted selectors.
+
 **Propagation:** consumers that parsed literal values out of
 `values/css/tokens.css` or `values/tailwind/theme.css` must read
 `values/manifest/tokens.json` or `values/js/tokens.js` instead — those stay fully
 resolved. Skin/theme overrides must target the token scope root (the element that
 carries the token declarations, `:root` for the baseline build): a custom
 property's `var()` resolves where the property is declared, so overrides on a
-descendant element no longer re-link the chain.
+descendant element no longer re-link the chain. Consumers who hand-wrote a focus
+style for `.btn`, or who re-declared display/heading sizes to get responsive type,
+should delete those local copies: both now ship. Anything that pinned a literal
+`168px`/`88px`/`40px` off `--typography-*` should re-measure — those values are now
+the ceilings of a clamp, not constants.
 
 Scoped distribution: island consumers should delete hand-maintained re-scoped
 copies of the tokens/components/effects CSS and import

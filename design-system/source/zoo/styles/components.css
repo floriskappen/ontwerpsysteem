@@ -19,6 +19,12 @@
   background-image: radial-gradient(var(--color-ink) 1px, transparent 1.4px); background-size: 5px 5px; background-position: center; opacity: 0.06; }
 .btn:hover { background: var(--button-surface-hover); color: var(--button-text-hover); border-color: var(--button-border-hover); }
 .btn:active { transform: translateY(2px); border-bottom-width: 1px; }
+/* Focus is the accent claiming the edge (colour.md): a hard 2px rule in the
+   dedicated focus-ring role, never a soft glow or a borrowed browser blue. It is
+   authored here rather than in the page reset because the reset is showcase-only —
+   a consumer importing the component bundle must receive the indicator together
+   with the components it belongs to. */
+.btn:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
 .btn-red { color: var(--color-accent-base); border-color: var(--color-accent-base); }
 .btn-red:hover { background: var(--color-accent-base); color: var(--color-text-on-ink); border-color: var(--color-accent-base); }
 .btn-ink { background: var(--color-surface-ink); color: var(--color-text-on-ink); border-color: var(--color-surface-ink); }

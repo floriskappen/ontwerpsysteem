@@ -20,3 +20,24 @@ Frontier pass: read this first. One short entry per thing hit; newest last.
   poses for particle fields are removal (`display: none`), per
   `openspec/changes/reduced-motion-rest-frames-travel-with-states/DECISIONS.md`.
   Behavioural check: `npm run check:motion` (headless, no screenshots).
+- Frontier/visual pass: the three fluid type ranges were documented in `$description`
+  prose only (`"source is fluid: clamp(72px, 11vw, 168px)"`) while the composite shipped
+  the ceiling, so display type never scaled and the zoo scrolled sideways at 375px
+  (document 773px wide in a 375px window). Moved each documented range into the token
+  value — the CSS `font` shorthand accepts `clamp()`, verified in Chromium — so one
+  source now serves the showcase and consumers. Residual, and deliberately not decided
+  here: at the 72px floor the masthead still exceeds a 375px viewport by ~48px and breaks
+  "de ontwer/p". Lowering the floor is a new visual value, so it is the owner's call.
+- Frontier/visual pass: keyboard focus for buttons lived only in `base.css`, which is
+  showcase-only and never ships, so `components.scoped.css` gave consumers a `.btn` with
+  no focus indicator at all while the zoo demonstrated one. Added a class-rooted
+  `.btn:focus-visible` to `components.css` in the focus-ring role. The page reset keeps
+  its bare-element rule: `scopeCss()` deliberately refuses non-class-rooted selectors so
+  the bundle never styles a host page's own elements, which is why bare `<a>`/`<button>`
+  focus stays the consumer's business.
+- Frontier/visual pass, not actioned: `--color-text-quiet` (the `.field-label` colour)
+  measures 3.0–3.3:1 on page across all twelve skins — cream 3.27, derived skins ~3.0 —
+  below WCAG AA 4.5:1 for normal text. Not a regression (the derivations reproduce
+  cream faithfully) and the system states no contrast bar, but v1 propagates it to
+  consumers. Ochre's accent is the floor at 3.10:1. Changing any of it is a visual
+  decision, so it is recorded rather than taken.

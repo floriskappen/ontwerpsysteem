@@ -5,9 +5,9 @@
     "useWhen": "interactive primary or secondary actions",
     "avoid": "standard flat system default buttons",
     "sourceModules": ["design-system/source/zoo/sections/components.mjs", "design-system/source/zoo/styles/components.css"],
-    "valueRefs": ["color.border.strong", "color.text.default"],
+    "valueRefs": ["color.border.strong", "color.text.default", "color.focus-ring"],
     "reducedMotion": "unaffected",
-    "notes": "press effect is immediate with 2px transform"
+    "notes": "press effect is immediate with 2px transform; keyboard focus is a 2px focus-ring outline offset off the edge, shipped with the component rather than left to the host page"
   },
   {
     "id": "component.tabs.segmented",
