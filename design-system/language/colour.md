@@ -19,7 +19,7 @@ contradicts the token's metadata.
 | `color.surface.page` | the sheet itself — page background, the root of every layout | supply |
 | `color.surface.warm` | slightly toasted panels and strips | derive · `surface-warm` |
 | `color.surface.deep` | margins, footer strips, the alert folio | derive · `surface-deep` |
-| `color.surface.claim` | claimed / selected cells, the card fill | derive · `surface-claim` |
+| `color.surface.claim` | claimed / selected cells — translucent by design, never a card or popover ground | derive · `surface-claim` |
 | `color.surface.claim-hover` | claimed cells on hover | derive · `surface-claim-hover` |
 | `color.surface.ink` | inverted ink cells, solid and hovered buttons | derive · `surface-ink` |
 | `color.surface.disabled` | inert control fills | derive · `surface-disabled` |

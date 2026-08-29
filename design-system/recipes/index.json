@@ -59,6 +59,91 @@
     "notes": "selected-state contract for a pick-one control: the selected cell inverts the unselected treatment (solid ink + paper text against paper + ink text) and switching is immediate; generalises the theme-switch tabs' joined-cells + heavy-bottom-edge shape as a reusable class decoupled from the theming machinery"
   },
   {
+    "id": "component.menu.dropdown",
+    "intent": "pick-an-action menu whose paper height grows under its invoker around fixed items",
+    "useWhen": "a button offers a short list of actions on the same object",
+    "avoid": "using it as a select control for a value, a drop shadow or rounded corner under it, a chevron glyph on the invoker, or a script to open it",
+    "sourceModules": [
+      "design-system/source/zoo/sections/surfaces.mjs",
+      "design-system/source/zoo/styles/surfaces.css"
+    ],
+    "valueRefs": [
+      "color.surface.page",
+      "color.border.strong",
+      "color.border.quiet",
+      "color.text.default",
+      "color.surface.ink",
+      "color.text.on-ink",
+      "color.text.quiet",
+      "color.focus-ring",
+      "size.dot"
+    ],
+    "reducedMotion": "rest-pose",
+    "notes": "composes motion.reveal.stepped-height; content never staggers independently. rides the platform popover attribute with a popovertarget invoker, so it needs no script and gets light-dismiss and top-layer stacking from the platform. anchored with CSS anchor positioning; where a browser lacks anchor support the popover keeps its default top-layer centring — degraded placement, not a broken control. the invoker's affordance is a solid square in the pill-dot convention, not a chevron."
+  },
+  {
+    "id": "component.popover.note",
+    "intent": "short opaque-paper annotation whose height grows around fixed lines",
+    "useWhen": "a term or control needs a sentence or two of explanation in place",
+    "avoid": "hover-triggered tooltips, paragraphs of body copy, or anything the reader must act on — a note explains, it does not ask",
+    "sourceModules": [
+      "design-system/source/zoo/sections/surfaces.mjs",
+      "design-system/source/zoo/styles/surfaces.css"
+    ],
+    "valueRefs": [
+      "color.surface.warm",
+      "color.border.default",
+      "color.accent.base",
+      "color.text.default",
+      "size.dot"
+    ],
+    "reducedMotion": "rest-pose",
+    "notes": "composes motion.reveal.stepped-height; content never staggers independently. same platform popover mechanism and the same anchor-positioning caveat as component.menu.dropdown. opaque warm paper plus an accent left rule marks it as spoken-for paper rather than a translucent wash or floating card; it carries no drop shadow, per the anti-goals."
+  },
+  {
+    "id": "component.dialog.sheet",
+    "intent": "sheet laid over the page on the top layer, its height growing around fixed rows",
+    "useWhen": "a decision or a confirmation needs the reader's whole attention without leaving the page",
+    "avoid": "reaching for it where a note or a fold would do; stacking one sheet over another; a rounded or shadowed panel",
+    "sourceModules": [
+      "design-system/source/zoo/sections/surfaces.mjs",
+      "design-system/source/zoo/styles/surfaces.css"
+    ],
+    "valueRefs": [
+      "color.surface.page",
+      "color.border.strong",
+      "color.border.default",
+      "color.text.default",
+      "color.text.quiet",
+      "color.accent.base",
+      "color.focus-ring",
+      "color.ink"
+    ],
+    "reducedMotion": "rest-pose",
+    "notes": "composes motion.reveal.stepped-height; content never staggers independently. IT IS NOT A MODAL: built on the platform popover attribute, it light-dismisses but does not trap focus and its backdrop is not inert, so a reader can still tab into the page behind it. a consumer who needs a true modal keeps these classes and mounts them on a dialog element opened with showModal(), which supplies the focus trap and the inert backdrop the popover cannot. the backdrop is an ink wash, not a blur."
+  },
+  {
+    "id": "component.disclosure.fold",
+    "intent": "in-place fold whose body height grows around fixed lines when it opens",
+    "useWhen": "secondary detail belongs on the page but should not compete with it until asked for",
+    "avoid": "hiding anything the reader needs to complete the task, nesting folds, or a rotating chevron affordance",
+    "sourceModules": [
+      "design-system/source/zoo/sections/surfaces.mjs",
+      "design-system/source/zoo/styles/surfaces.css"
+    ],
+    "valueRefs": [
+      "color.surface.page",
+      "color.surface.deep",
+      "color.border.default",
+      "color.border.quiet",
+      "color.text.default",
+      "color.text.soft",
+      "color.focus-ring"
+    ],
+    "reducedMotion": "rest-pose",
+    "notes": "composes motion.reveal.stepped-height; content never staggers independently. rides the details element's own open state, so it needs no script and keeps the platform's built-in semantics. the sign is two hairline rules — a plus that loses its upright to become a minus — because this system draws its marks as rules and dots."
+  },
+  {
     "id": "material.surface.paper-grain",
     "intent": "tactile unbleached paper tooth",
     "useWhen": "any background surface or container panel",
@@ -126,6 +211,19 @@
     "valueRefs": [],
     "reducedMotion": "disabled",
     "notes": "impact timing desynchronized"
+  },
+  {
+    "id": "motion.reveal.stepped-height",
+    "intent": "short one-shot stepped growth from zero to the intrinsic block size of a newly present surface",
+    "useWhen": "a menu, popover, sheet, or fold body has just become present and its paper boundary should grow into place around fixed content",
+    "avoid": "per-member delay, opacity animation, or transform; a state change on an element already on the page (hover, press, selection, focus stay immediate hard cuts); any transition declaration; any smooth easing curve (ease, ease-in-out, linear, cubic-bezier)",
+    "sourceModules": [
+      "design-system/source/zoo/styles/surfaces.css",
+      "design-system/source/zoo/sections/surfaces.mjs"
+    ],
+    "valueRefs": [],
+    "reducedMotion": "rest-pose",
+    "notes": "reveal is periodic-clock motion that runs once rather than an interaction affordance — the boundary is whether the element was rendered a frame ago. the invoking press is instant; the surface then grows from zero to intrinsic block size over two 8fps frames (250ms). content stays fixed with no independent animation. timing remains in the style module, so the value layer keeps holding periodic loop lengths only. the reduced-motion pose holds the container at intrinsic block size."
   },
   {
     "id": "state.loading.germinating",

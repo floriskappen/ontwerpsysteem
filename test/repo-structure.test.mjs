@@ -91,13 +91,14 @@ describe('design-language', () => {
   });
 
   // Spec: design-language / Scenario: Reader finds the stepped-motion rule stated
-  // normatively — interactions are immediate with no easing curve anywhere in the
-  // interaction path, periodic motion runs on the stepped clock rather than being
-  // smoothly eased, and the value layer carries periodic loop lengths only.
+  // normatively — a state change on an ALREADY-RENDERED element is immediate with no
+  // easing curve anywhere in the interaction path, while periodic motion and the
+  // arrival of a newly-rendered surface both run on the stepped clock rather than
+  // being smoothly eased, and the value layer carries periodic loop lengths only.
   it('motion language states the immediate-interaction, stepped-periodic rule', () => {
     const doc = readFileSync(join(root, 'design-system', 'language', 'motion.md'), 'utf8');
-    expect(doc, 'interactions are immediate — no transition, no easing curve').toMatch(
-      /interactions are immediate/i,
+    expect(doc, 'a state change on an already-rendered element is immediate').toMatch(
+      /state change on an element that is already rendered is immediate/i,
     );
     expect(doc, 'periodic motion runs on the stepped clock').toMatch(
       /periodic motion[^.]*runs on the stepped clock/is,

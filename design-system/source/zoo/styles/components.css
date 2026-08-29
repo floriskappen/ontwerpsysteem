@@ -49,7 +49,7 @@
 .pill-quiet { color: var(--color-text-quiet); border-color: var(--color-border-quiet); }
 
 /* card */
-.card { background: var(--color-surface-claim); }
+.card { background: var(--card-surface); }
 .card-title { margin: 0; }
 .card-body { margin: 0; max-width: 34ch; }
 .lnk { color: var(--link-text-default); text-decoration: underline; text-decoration-color: var(--link-underline-default); text-underline-offset: 3px; }

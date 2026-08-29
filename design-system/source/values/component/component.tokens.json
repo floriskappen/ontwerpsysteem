@@ -49,7 +49,7 @@
   },
 
   "card": {
-    "surface": { "$type": "color", "$value": "{color.surface.claim}" },
+    "surface": { "$type": "color", "$value": "{color.surface.warm}", "$description": "opaque warm paper — cards mask atmosphere behind them" },
     "text": { "$type": "color", "$value": "{color.text.default}" },
     "border": { "$type": "color", "$value": "{color.border.default}" },
     "radius": { "$type": "dimension", "$value": "{radius.none}" },

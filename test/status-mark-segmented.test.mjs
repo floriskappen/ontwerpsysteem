@@ -219,7 +219,11 @@ describe('status mark & segmented control — showcase worked examples (showcase
       expect(componentsScoped).toContain(sel);
     }
     expect(componentsScoped).toContain('var(--color-destructive-base)');
-    // nothing animated added (comments stripped — they may mention the words)
-    expect(componentsScoped.replace(/\/\*[\s\S]*?\*\//g, '')).not.toContain('@keyframes');
+    // Neither primitive is animated — a mark is already at rest and the segmented
+    // switch is instant. Asserted against components.css, the module they live in,
+    // rather than the whole bundle: the bundle also carries surfaces.css, whose
+    // reveal keyframes are a different family's motion, not these two primitives'.
+    // (comments stripped — they may mention the words)
+    expect(COMPONENTS_CSS().replace(/\/\*[\s\S]*?\*\//g, '')).not.toContain('@keyframes');
   });
 });

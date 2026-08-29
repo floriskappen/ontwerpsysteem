@@ -69,7 +69,7 @@ describe('shadcn adapter — whole-app consumption (:root form)', () => {
     const expected = {
       '--background': '--color-surface-page',
       '--foreground': '--color-text-default',
-      '--card': '--color-surface-claim',
+      '--card': '--color-surface-warm',
       '--card-foreground': '--color-text-default',
       '--popover': '--color-surface-warm',
       '--popover-foreground': '--color-text-default',

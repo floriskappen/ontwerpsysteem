@@ -39,7 +39,7 @@ const ZOO_SKINS_MODULE = join(REPO_ROOT, 'design-system', 'source', 'zoo', 'data
 // import can never lag the showcase. Zoo-only files (base.css, type.css,
 // themes.css, responsive.css) style the page, not the system, and stay internal.
 // Effects sources are listed in the zoo's own cascade order.
-const SHIPPED_COMPONENT_SOURCES = ['components.css'];
+const SHIPPED_COMPONENT_SOURCES = ['components.css', 'surfaces.css'];
 const SHIPPED_EFFECTS_SOURCES = ['atmosphere.css', 'material.css', 'states.css', 'weather.css'];
 
 // Self-hosted fonts. Every @font-face rule — the base64-inlined flavour the zoo

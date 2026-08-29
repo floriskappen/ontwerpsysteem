@@ -202,7 +202,7 @@ describe('showcase reskins through the built alias-preserving CSS', () => {
       'button text': '--button-text-default',
       'button halftone': '--color-ink',
       'field text': '--field-text',
-      'card surface': '--color-surface-claim',
+      'card surface': '--color-surface-warm',
       'badge text': '--badge-text',
       'link hover': '--link-text-hover',
     };
@@ -294,10 +294,121 @@ describe('showcase consumes the shipped keyframe names', () => {
   });
 });
 
+describe('showcase reveal surfaces', () => {
+  const stylesDir = join(root, 'design-system', 'source', 'zoo', 'styles');
+  const surfaces = () => readFileSync(join(stylesDir, 'surfaces.css'), 'utf8');
+
+  // Spec: showcase / Scenario: Each reveal surface is shown token-styled — the four
+  // surfaces that ARRIVE (menu, note, sheet, fold) are rendered in the zoo.
+  it('renders all four reveal surfaces', () => {
+    const h = html();
+    const css = surfaces();
+    const componentCss = readFileSync(join(stylesDir, 'components.css'), 'utf8');
+    const componentValues = JSON.parse(
+      readFileSync(join(root, 'design-system', 'source', 'values', 'component', 'component.tokens.json'), 'utf8'),
+    );
+    expect(h).toContain('class="od-menu"');
+    expect(h).toContain('class="od-note"');
+    expect(h).toContain('class="od-sheet"');
+    expect(h).toContain('class="od-fold"');
+    // Top-layer popovers cannot use their DOM wrapper as a containing block.
+    // Their invokers therefore expose distinct named anchors, enhanced behind
+    // @supports so unsupported browsers retain the platform-centred fallback.
+    expect(h).toContain('class="btn od-menu-invoker"');
+    expect(h).toContain('class="btn od-note-invoker"');
+    expect(css).toMatch(/\.od-menu-invoker\s*\{\s*anchor-name:\s*--od-menu-invoker/);
+    expect(css).toMatch(/\.od-note-invoker\s*\{\s*anchor-name:\s*--od-note-invoker/);
+    expect(css).toContain('@supports (top: anchor(bottom))');
+    expect(css).toMatch(/\.od-menu\s*\{[^}]*position-anchor:\s*--od-menu-invoker[^}]*top:\s*anchor\(bottom\)[^}]*left:\s*anchor\(left\)/s);
+    expect(css).toMatch(/\.od-note\s*\{[^}]*position-anchor:\s*--od-note-invoker[^}]*top:\s*anchor\(bottom\)[^}]*left:\s*anchor\(left\)/s);
+    // Cards and notes are opaque paper, never alpha-bearing claim washes.
+    expect(componentValues.card.surface.$value).toBe('{color.surface.warm}');
+    expect(componentCss).toContain('.card { background: var(--card-surface); }');
+    expect(css).toMatch(/\.od-note\s*\{[^}]*background:\s*var\(--color-surface-warm\)/s);
+    expect(css).not.toMatch(/\.od-note\s*\{[^}]*surface-claim/s);
+  });
+
+  // Spec: showcase / Scenario: The generated page carries no script — open state is
+  // native platform state (details[open] and the popover attribute), never a script.
+  it('drives every reveal from native platform state, with no script', () => {
+    const h = html();
+    expect(h).not.toMatch(/<script/i);
+    expect(h).toContain('<details class="od-fold"'); // the fold's own open state
+    expect(h).toContain('popovertarget='); // the platform invoker
+    expect(h).toMatch(/<div class="od-menu" popover/); // top layer, light-dismiss, no script
+  });
+
+  // Spec: showcase / Scenario: Container height arrives stepped — one short
+  // block-size animation, with no animation or delay on individual content.
+  it('grows reveal-container height on the stepped clock without staggering content', () => {
+    const css = surfaces();
+    expect(css).toContain('@keyframes ontwerp-reveal-height { from { block-size: 0; } to { block-size: auto; } }');
+    for (const selector of [
+      '.od-menu:popover-open .od-menu-list',
+      '.od-note:popover-open .od-note-reveal',
+      '.od-sheet:popover-open .od-sheet-frame',
+      '.od-fold[open] .od-fold-reveal',
+    ]) {
+      expect(css, `${selector} gets the height reveal`).toContain(
+        `${selector} { animation: ontwerp-reveal-height 0.25s steps(2) both; }`,
+      );
+    }
+    expect(css).not.toMatch(/transition\s*:/);
+    expect(css).not.toContain('animation-delay:');
+    expect(css).not.toContain('ontwerp-reveal-member');
+    expect(html()).not.toMatch(/style="--i:\d+"/);
+    for (const cls of ['od-menu-item', 'od-note-line', 'od-sheet-line', 'od-fold-line']) {
+      const rule = css.match(new RegExp(`\\.${cls}\\s*\\{([^}]*)\\}`))?.[1] ?? '';
+      expect(rule, `${cls} has no independent animation`).not.toMatch(
+        /(?:^|[;\s])(?:animation(?:-[\w-]+)?|opacity|transform)\s*:/,
+      );
+    }
+  });
+
+  // Spec: showcase / Scenario: Reduced motion holds every reveal container at
+  // intrinsic height, never mid-growth.
+  it('holds every reveal fully arrived under reduced motion', () => {
+    const css = surfaces();
+    const block = css.split('@media (prefers-reduced-motion: reduce)')[1];
+    expect(block, 'surfaces.css declares a reduced-motion block').toBeTruthy();
+    for (const cls of ['od-menu-list', 'od-note-reveal', 'od-sheet-frame', 'od-fold-reveal']) {
+      expect(block, `${cls} rest pose`).toContain(cls);
+    }
+    expect(block).toContain('animation: none');
+    expect(block).toContain('block-size: auto');
+    expect(block).not.toMatch(/opacity|transform/);
+  });
+
+  // Spec: design-language / Scenario: Each reveal-surface recipe is registered and
+  // complete — each names the reveal motion it composes.
+  it('every reveal-surface recipe composes the stepped-height motion', () => {
+    const recipes = JSON.parse(
+      readFileSync(join(root, 'design-system', 'recipes', 'index.json'), 'utf8'),
+    );
+    const byId = new Map(recipes.map((r) => [r.id, r]));
+    expect(byId.has('motion.reveal.stepped-height')).toBe(true);
+    for (const id of [
+      'component.menu.dropdown',
+      'component.popover.note',
+      'component.dialog.sheet',
+      'component.disclosure.fold',
+    ]) {
+      expect(byId.has(id), `recipe ${id}`).toBe(true);
+      expect(byId.get(id).notes, `${id} names its reveal motion`).toContain('motion.reveal.stepped-height');
+      expect(byId.get(id).notes, `${id} forbids content staggering`).toMatch(/content never staggers/i);
+    }
+    // the sheet is a popover, not a modal — the recipe must say so, so a consumer
+    // does not ship it where a focus trap is required.
+    const sheet = byId.get('component.dialog.sheet').notes;
+    expect(sheet).toMatch(/not a modal/i);
+    expect(sheet).toMatch(/showModal\(\)/);
+  });
+});
+
 describe('showcase reduced-motion rest frames are co-located', () => {
   const stylesDir = join(root, 'design-system', 'source', 'zoo', 'styles');
   const readStyle = (f) => readFileSync(join(stylesDir, f), 'utf8');
-  const EFFECT_LAYERS = ['atmosphere.css', 'material.css', 'states.css', 'weather.css'];
+  const EFFECT_LAYERS = ['atmosphere.css', 'material.css', 'states.css', 'surfaces.css', 'weather.css'];
 
   // Spec: showcase / Scenario: Rest-pose rules are co-located with their animation —
   // every effect layer that declares an animation carries its reduced-motion rest

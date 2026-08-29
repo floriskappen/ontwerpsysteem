@@ -35,6 +35,7 @@ const FROZEN = {
     'material.css',
     'responsive.css',
     'states.css',
+    'surfaces.css',
     'themes.css',
     'type.css',
     'weather.css',
