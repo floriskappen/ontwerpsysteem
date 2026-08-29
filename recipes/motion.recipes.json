@@ -1,20 +1,25 @@
 [
   {
     "id": "motion.clock.stepped",
-    "intent": "system stepped animation clock — immediate interactions, stepped periodic timing",
-    "useWhen": "all periodic animations (atmosphere, weather fields, grown lifecycle states); interactions get no recipe at all — they are immediate hard cuts with no transition and no easing",
+    "intent": "system stepped animation clock \u2014 immediate interactions, stepped periodic timing",
+    "useWhen": "all periodic animations (atmosphere, weather fields, grown lifecycle states); interactions get no recipe at all \u2014 they are immediate hard cuts with no transition and no easing",
     "avoid": "smooth easing affordances on any animation (ease, ease-in-out, linear, cubic-bezier) and every interaction transition",
-    "sourceModules": ["design-system/source/zoo/effects/weather-particles.mjs"],
+    "sourceModules": [
+      "design-system/source/zoo/effects/weather-particles.mjs"
+    ],
     "valueRefs": [],
     "reducedMotion": "disabled",
-    "notes": "periodic motion is evaluated at 8fps using stepped keyframe timing; the motion tokens carry periodic loop lengths only — no transition duration and no easing curve"
+    "notes": "periodic motion is evaluated at 8fps using stepped keyframe timing; the motion tokens carry periodic loop lengths only \u2014 no transition duration and no easing curve"
   },
   {
     "id": "motion.weather.wind",
     "intent": "staggered horizontal wind gust streaks",
     "useWhen": "wind weather theme is selected",
     "avoid": "standard dashboard load cycles",
-    "sourceModules": ["design-system/source/zoo/effects/weather-particles.mjs", "design-system/source/zoo/styles/weather.css"],
+    "sourceModules": [
+      "design-system/source/zoo/effects/weather-particles.mjs",
+      "design-system/source/zoo/styles/weather.css"
+    ],
     "valueRefs": [],
     "reducedMotion": "disabled",
     "notes": "speed and delay randomized deterministically using LCG"
@@ -24,9 +29,25 @@
     "intent": "slanted rainfall streaks and splatters",
     "useWhen": "rain weather theme is active",
     "avoid": "regular page scroll animation",
-    "sourceModules": ["design-system/source/zoo/effects/weather-particles.mjs", "design-system/source/zoo/styles/weather.css"],
+    "sourceModules": [
+      "design-system/source/zoo/effects/weather-particles.mjs",
+      "design-system/source/zoo/styles/weather.css"
+    ],
     "valueRefs": [],
     "reducedMotion": "disabled",
     "notes": "impact timing desynchronized"
+  },
+  {
+    "id": "motion.reveal.stepped-height",
+    "intent": "short one-shot stepped growth from zero to the intrinsic block size of a newly present surface",
+    "useWhen": "a menu, popover, sheet, or fold body has just become present and its paper boundary should grow into place around fixed content",
+    "avoid": "per-member delay, opacity animation, or transform; a state change on an element already on the page (hover, press, selection, focus stay immediate hard cuts); any transition declaration; any smooth easing curve (ease, ease-in-out, linear, cubic-bezier)",
+    "sourceModules": [
+      "design-system/source/zoo/styles/surfaces.css",
+      "design-system/source/zoo/sections/surfaces.mjs"
+    ],
+    "valueRefs": [],
+    "reducedMotion": "rest-pose",
+    "notes": "reveal is periodic-clock motion that runs once rather than an interaction affordance \u2014 the boundary is whether the element was rendered a frame ago. the invoking press is instant; the surface then grows from zero to intrinsic block size over two 8fps frames (250ms). content stays fixed with no independent animation. timing remains in the style module, so the value layer keeps holding periodic loop lengths only. the reduced-motion pose holds the container at intrinsic block size."
   }
 ]

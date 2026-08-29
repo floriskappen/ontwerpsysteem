@@ -121,7 +121,7 @@
   --field-typography: var(--typography-body);
   --selection-accent: var(--color-accent-base);
   --selection-text: var(--color-text-default);
-  --card-surface: var(--color-surface-claim);
+  --card-surface: var(--color-surface-warm); /** opaque warm paper — cards mask atmosphere behind them */
   --card-text: var(--color-text-default);
   --card-border: var(--color-border-default);
   --card-radius: var(--radius-none);

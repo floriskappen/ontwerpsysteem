@@ -1,4 +1,4 @@
-/* generated — .ontwerp-scoped build of components.css
+/* generated — .ontwerp-scoped build of components.css + surfaces.css
    from the showcase's style sources; do not edit by hand. */
 
 /* components in use */
@@ -52,7 +52,7 @@
 .ontwerp .pill-quiet { color: var(--color-text-quiet); border-color: var(--color-border-quiet); }
 
 /* card */
-.ontwerp .card { background: var(--color-surface-claim); }
+.ontwerp .card { background: var(--card-surface); }
 .ontwerp .card-title { margin: 0; }
 .ontwerp .card-body { margin: 0; max-width: 34ch; }
 .ontwerp .lnk { color: var(--link-text-default); text-decoration: underline; text-decoration-color: var(--link-underline-default); text-underline-offset: 3px; }
@@ -86,3 +86,135 @@
 .ontwerp .seg-cell:hover { background: var(--color-surface-deep); }
 .ontwerp .seg-cell:focus-visible, .ontwerp .seg-radio:focus-visible + .seg-cell { outline: 2px solid var(--color-focus-ring); outline-offset: -2px; }
 .ontwerp .seg-radio:checked + .seg-cell { background: var(--color-surface-ink); color: var(--color-text-on-ink); }
+
+/* reveal surfaces — the chrome that ARRIVES rather than toggling in place: a
+   dropdown menu, a popover note, a dialog sheet, a disclosure fold.
+
+   The system's press is instant and stays instant. A surface that was not
+   rendered a frame ago grows its own paper boundary from zero to intrinsic
+   block size. Content stays fixed: no row, line, or action has its own delay,
+   opacity animation, or transform.
+
+   No script anywhere: the fold rides the details element's own open state, and
+   the menu, note, and sheet ride the platform popover attribute with a
+   popovertarget invoker. Every selector is class-rooted because the build's
+   scoper refuses anything else. */
+
+/* --- the shared reveal clock ---------------------------------------------- */
+/* A terse two-frame arrival at the system's 8fps: 250ms total. `interpolate-size`
+   lets the keyframe resolve the intrinsic `auto` endpoint without measuring it
+   in script. Overflow clips fixed content to the advancing paper edge. */
+@keyframes ontwerp-reveal-height { from { block-size: 0; } to { block-size: auto; } }
+
+.ontwerp .od-menu-list, .ontwerp .od-note-reveal, .ontwerp .od-sheet-frame, .ontwerp .od-fold-reveal {
+  overflow: hidden; interpolate-size: allow-keywords;
+}
+
+/* --- surfaces section scaffolding ----------------------------------------- */
+.ontwerp .surf-row { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: flex-start; }
+.ontwerp .surf-note { font: var(--typography-body-sm); color: var(--color-text-soft); margin: 0; max-width: 34ch; }
+
+/* the invoker's mark: a solid square in the pill-dot convention, never a
+   chevron glyph — the system draws affordances as rules and dots. */
+.ontwerp .od-cue { width: var(--size-dot); height: var(--size-dot); background: currentColor; display: inline-block; position: relative; z-index: 1; }
+
+/* --- dropdown menu --------------------------------------------------------
+   A popover is painted in the top layer, so its DOM wrapper is not a reliable
+   containing block. Give the invoker a named anchor and tuck the menu under it
+   only where anchor positioning is supported. Without support the declarations
+   below do not apply and the platform's centred top-layer placement remains a
+   usable fallback instead of stranding the menu at the viewport's origin. */
+.ontwerp .od-anchor { position: relative; display: inline-block; }
+.ontwerp .od-menu-invoker { anchor-name: --od-menu-invoker; }
+.ontwerp .od-menu { min-width: 168px; padding: 0; border: 1px solid var(--color-border-strong); border-bottom-width: 3px;
+  background: var(--color-surface-page); color: var(--color-text-default); overflow: visible; }
+.ontwerp .od-menu:popover-open { display: block; }
+.ontwerp .od-menu-list { list-style: none; margin: 0; padding: 0; }
+.ontwerp .od-menu:popover-open .od-menu-list { animation: ontwerp-reveal-height 0.25s steps(2) both; }
+.ontwerp .od-menu-item { display: block; width: 100%; text-align: left; font: var(--typography-label); text-transform: lowercase;
+  color: var(--color-text-default); background: var(--color-surface-page); border: 0; border-top: 1px solid var(--color-border-quiet);
+  padding: var(--space-sm) var(--space-md); cursor: pointer; }
+.ontwerp .od-menu-list li:first-child .od-menu-item { border-top: 0; }
+.ontwerp .od-menu-item:hover { background: var(--color-surface-ink); color: var(--color-text-on-ink); }
+.ontwerp .od-menu-item:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: -2px; }
+.ontwerp .od-menu-item-quiet { color: var(--color-text-quiet); }
+
+/* --- popover note ---------------------------------------------------------
+   An annotation that stands off the paper on a hairline, its lines arriving in
+   reading order. It has its own anchor name so either popover can be copied or
+   mounted independently without sharing placement state. */
+.ontwerp .od-note-invoker { anchor-name: --od-note-invoker; }
+.ontwerp .od-note { width: max-content; max-width: 30ch; padding: 0;
+  border: 1px solid var(--color-border-default); border-left-width: 3px;
+  border-left-color: var(--color-accent-base); background: var(--color-surface-warm); color: var(--color-text-default); }
+.ontwerp .od-note:popover-open { display: block; }
+.ontwerp .od-note:popover-open .od-note-reveal { animation: ontwerp-reveal-height 0.25s steps(2) both; }
+.ontwerp .od-note-body { padding: var(--space-md); }
+.ontwerp .od-note-line { margin: 0; font: var(--typography-body-sm); }
+.ontwerp .od-note-line + .od-note-line { margin-top: var(--space-sm); }
+.ontwerp .od-note-head { font: var(--typography-label); text-transform: lowercase; color: var(--color-text-default); }
+
+/* Top-layer placement enhancement. `position-anchor` supplies the default
+   anchor used by anchor(), while explicit physical edges keep the copied
+   component predictable in the system's left-to-right showcase. */
+@supports (top: anchor(bottom)) {
+
+  .ontwerp .od-menu { position: absolute; position-anchor: --od-menu-invoker; inset: auto;
+    top: anchor(bottom); left: anchor(left); margin: 4px 0 0; }
+  .ontwerp .od-note { position: absolute; position-anchor: --od-note-invoker; inset: auto;
+    top: anchor(bottom); left: anchor(left); margin: 4px 0 0; }
+
+}
+
+/* --- dialog sheet ---------------------------------------------------------
+   A sheet laid over the page on the top layer. It is a popover, not a modal
+   dialog: it light-dismisses, but it does not trap focus and its backdrop is
+   not inert. A consumer needing a true modal keeps these classes and mounts
+   them on a dialog element opened with showModal(). */
+.ontwerp .od-sheet { inset: 0; margin: auto; width: min(420px, calc(100vw - 2 * var(--space-xl))); padding: 0;
+  border: 1px solid var(--color-border-strong); border-bottom-width: 3px;
+  background: var(--color-surface-page); color: var(--color-text-default); }
+.ontwerp .od-sheet:popover-open { display: block; }
+.ontwerp .od-sheet:popover-open .od-sheet-frame { animation: ontwerp-reveal-height 0.25s steps(2) both; }
+.ontwerp .od-sheet::backdrop { background: rgb(from var(--color-ink) r g b / 0.28); }
+.ontwerp .od-sheet-head { display: flex; align-items: baseline; gap: var(--space-md); padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border-default); }
+.ontwerp .od-sheet-title { margin: 0; font: var(--typography-heading-md); text-transform: lowercase; }
+.ontwerp .od-sheet-dismiss { margin-left: auto; font: var(--typography-label); text-transform: lowercase; color: var(--color-text-quiet);
+  background: transparent; border: 0; cursor: pointer; padding: 0; }
+.ontwerp .od-sheet-dismiss:hover { color: var(--color-accent-base); }
+.ontwerp .od-sheet-dismiss:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+.ontwerp .od-sheet-body { margin: 0; padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-md); }
+.ontwerp .od-sheet-line { margin: 0; font: var(--typography-body-sm); color: var(--color-text-default); }
+
+/* --- disclosure fold ------------------------------------------------------
+   The details element's own open state. The affordance is two hairline rules —
+   a plus that loses its upright to become a minus — not a rotating chevron:
+   rules and dots are how this system draws its marks. */
+.ontwerp .od-fold { border: 1px solid var(--color-border-default); background: var(--color-surface-page); width: 100%; max-width: 360px; }
+.ontwerp .od-fold + .od-fold { margin-top: -1px; }
+.ontwerp .od-fold-head { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md);
+  font: var(--typography-label); text-transform: lowercase; cursor: pointer; list-style: none; }
+.ontwerp .od-fold-head::-webkit-details-marker { display: none; }
+.ontwerp .od-fold-head:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: -2px; }
+.ontwerp .od-fold-head:hover { background: var(--color-surface-deep); }
+.ontwerp .od-fold-sign { margin-left: auto; position: relative; width: 9px; height: 9px; flex: none; }
+.ontwerp .od-fold-sign::before, .ontwerp .od-fold-sign::after { content: ""; position: absolute; background: var(--color-text-default); }
+.ontwerp .od-fold-sign::before { left: 0; right: 0; top: 4px; height: 1px; }
+.ontwerp .od-fold-sign::after { top: 0; bottom: 0; left: 4px; width: 1px; }
+.ontwerp .od-fold[open] .od-fold-sign::after { content: none; }
+.ontwerp .od-fold-body { margin: 0; padding: 0 var(--space-md) var(--space-md); display: flex; flex-direction: column; gap: var(--space-sm);
+  border-top: 1px solid var(--color-border-quiet); padding-top: var(--space-md); }
+.ontwerp .od-fold[open] .od-fold-reveal { animation: ontwerp-reveal-height 0.25s steps(2) both; }
+.ontwerp .od-fold-line { margin: 0; font: var(--typography-body-sm); color: var(--color-text-soft); }
+
+/* Reduced motion — every reveal container settles fully ARRIVED at intrinsic
+   height with the animation stopped. Content needs no pose because it never
+   animates. Selectors mirror the animation rules exactly. */
+@media (prefers-reduced-motion: reduce) {
+
+  .ontwerp .od-menu:popover-open .od-menu-list, .ontwerp .od-note:popover-open .od-note-reveal, .ontwerp .od-sheet:popover-open .od-sheet-frame, .ontwerp .od-fold[open] .od-fold-reveal {
+    animation: none; block-size: auto;
+  }
+
+}

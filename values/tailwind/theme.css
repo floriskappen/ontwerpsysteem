@@ -121,7 +121,7 @@
   --field-ontwerp-typography: var(--typography-ontwerp-body);
   --selection-ontwerp-accent: var(--color-ontwerp-accent-base);
   --selection-ontwerp-text: var(--color-ontwerp-text-default);
-  --card-ontwerp-surface: var(--color-ontwerp-surface-claim);
+  --card-ontwerp-surface: var(--color-ontwerp-surface-warm); /** opaque warm paper — cards mask atmosphere behind them */
   --card-ontwerp-text: var(--color-ontwerp-text-default);
   --card-ontwerp-border: var(--color-ontwerp-border-default);
   --card-ontwerp-radius: var(--radius-ontwerp-none);

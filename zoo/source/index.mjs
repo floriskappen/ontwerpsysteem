@@ -15,6 +15,7 @@ import { renderDivider } from './effects/phyllotaxis.mjs';
 import { renderType } from './sections/type.mjs';
 import { renderComponents } from './sections/components.mjs';
 import { renderStates } from './sections/states.mjs';
+import { renderSurfaces } from './sections/surfaces.mjs';
 import { renderWeather } from './sections/weather.mjs';
 import { renderColophon } from './sections/colophon.mjs';
 
@@ -32,6 +33,7 @@ export function renderShowcase({ manifest, tokenCss, fontCss = '', stylesDir = j
     readCss('type.css'),
     readCss('components.css'),
     readCss('states.css'),
+    readCss('surfaces.css'),
     readCss('weather.css'),
     readCss('themes.css'),
     readCss('responsive.css')
@@ -75,9 +77,10 @@ ${renderGrid()}
   ${renderDivider()}
 
   <section>
-    <div class="sec-head"><span class="fig">3</span><h2>in use</h2><span class="sec-note">components, and states as a cycle</span></div>
+    <div class="sec-head"><span class="fig">3</span><h2>in use</h2><span class="sec-note">components, states as a cycle, surfaces as an arrival</span></div>
     ${renderComponents()}
     ${renderStates()}
+    ${renderSurfaces()}
   </section>
 
   ${renderDivider()}

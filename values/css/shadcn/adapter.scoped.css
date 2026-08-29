@@ -7,11 +7,10 @@
   --background: var(--color-surface-page);
   --foreground: var(--color-text-default);
 
-  /* --- claimed cells and floating sheets ----------------------------------
-     A card is the claimed-cell fill the zoo renders (`color.surface.claim`);
-     a popover is another toasted panel laid over the sheet. Both carry
-     default ink. */
-  --card: var(--color-surface-claim);
+  /* --- opaque cards and floating sheets -----------------------------------
+     Cards and popovers are warm paper laid over the sheet, not translucent
+     claim washes: both fully mask atmosphere and content behind them. */
+  --card: var(--color-surface-warm);
   --card-foreground: var(--color-text-default);
   --popover: var(--color-surface-warm);
   --popover-foreground: var(--color-text-default);

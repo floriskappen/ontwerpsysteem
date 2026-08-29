@@ -20,7 +20,7 @@ const tokens = {
   "field-typography": {"fontFamily":["Archivo","Helvetica Neue","system-ui","sans-serif"],"fontWeight":500,"fontSize":"15px","lineHeight":1.5,"letterSpacing":"-0.012em"},
   "selection-accent": "#b84a39",
   "selection-text": "#1f1b16",
-  "card-surface": "rgba(244, 237, 219, 0.55)",
+  "card-surface": "#ece4d2",
   "card-text": "#1f1b16",
   "card-border": "rgba(31, 27, 22, 0.65)",
   "card-radius": "0px",
