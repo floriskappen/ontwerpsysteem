@@ -33,7 +33,7 @@ relaxed.
   `component.menu.dropdown`, `component.popover.note`, `component.dialog.sheet`,
   `component.disclosure.fold`. Each carries the full recipe shape and names
   `motion.reveal.stepped-height` as the motion it composes.
-- **Language docs** — `motion.md` gains the staggered-reveal rule as a fourth guideline,
+- **Language docs** — `motion.md` gains the stepped-height reveal rule as a fourth guideline,
   stated so it cannot be misread as licence for interaction transitions;
   `components.md` gains the four surfaces.
 - **Zoo worked examples** — a new "surfaces" subsection under section 3 renders all four,

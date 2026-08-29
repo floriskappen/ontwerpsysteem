@@ -17,6 +17,39 @@ Entry format:
 **Propagation:** <what a consumer must re-check after advancing the pin>
 ```
 
+## 1.1.0 — 2026-08-29
+
+### Added
+- `component.menu.dropdown`: a script-free platform-popover action menu whose
+  paper grows below its invoker around fixed, unstaggered items.
+- `component.popover.note`: an opaque warm-paper annotation with an accent rule,
+  platform light-dismiss, and no shadow or action semantics.
+- `component.dialog.sheet`: a top-layer, light-dismiss sheet with an ink-wash
+  backdrop; intentionally non-modal unless consumers mount the treatment on a
+  modal `<dialog>`.
+- `component.disclosure.fold`: a native `<details>` fold with a rule-drawn
+  plus/minus sign and stepped intrinsic-height reveal.
+- `motion.reveal.stepped-height`: a shared 250ms, two-frame reveal in which the
+  surface boundary grows from zero to intrinsic block size while content stays
+  fixed; reduced motion holds the complete intrinsic-height rest pose.
+
+### Changed
+- `language/motion`: distinguishes immediate state changes from newly arriving
+  surfaces and forbids member delays, opacity fades, transforms, transitions,
+  and eased reveal curves.
+- `language/components`: documents the four new surface primitives and makes
+  opaque warm paper the card and popover material contract.
+- `language/colour`: reserves translucent `color.surface.claim` for claimed or
+  selected cells; card tokens and the shadcn card/popover adapter now resolve to
+  opaque `color.surface.warm`.
+- `language/anti-goals`: permits only stepped paper-boundary arrival for newly
+  rendered surfaces while keeping existing-element interactions immediate.
+
+**Propagation:** After advancing the pin, re-check card and popover grounds for
+full opacity; replace any per-item reveal delays/fades/transforms with container
+height reveal; verify reduced-motion rest poses and the non-modal semantics of
+`component.dialog.sheet` before adopting the new surface primitives.
+
 ## 1.0.0 — 2026-08-25
 
 ### Added
